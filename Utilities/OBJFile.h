@@ -5,6 +5,8 @@
 #include <vector>
 #include <glm/glm.hpp>
 
+#include "Model.h"
+
 // ignore me
 struct VertexIndex {
     size_t v, t, n;
@@ -21,6 +23,8 @@ public:
     std::vector<glm::vec2> textures;
     std::vector<glm::vec3> normals;
     std::vector<size_t> indices;
+    
+    Model *GenModel();
 
 private:
     void readFile(std::vector<glm::vec3>& vertCoords, std::vector<glm::vec2>& texCoords,

@@ -19,22 +19,33 @@ static bool operator<(const VertexIndex& l, const VertexIndex& r) {
     return l.v < r.v || l.t < r.t || l.n < r.n;
 }
 
-// TODO: make this more flexible
+/** Parses a single face element */
 void parseFaceElement(const string& str, size_t& v, size_t& t, size_t& n)
 {
-    if (str.find('/') == string::npos) { // only has vert coords
-        istringstream(str) >> v;
+    int components = sscanf(str.c_str(), "%lu/%lu/%lu", &v, &t, &n);
+    
+    // Vertex, texture, and normal indices all present
+    if (components == 3) {
+        v--;
+        t--;
+        n--;
+    }
+    // Vertex and texture or vertex and normal
+    else if (components == 2) {
+        v--;
+        if (!t) {
+            n--;
+            t = 0;
+        }
+        else if (!n) {
+            t--;
+            n = 0;
+        }
+    }
+    // Only vertex
+    else if (components == 1) {
         v--;
         t = n = 0;
-    } else { // has all indices
-        istringstream ss(str);
-        char ch;
-        ss >> v;
-        ss >> ch;
-        ss >> t;
-        ss >> ch;
-        ss >> n;
-        v--; t--; n--;
     }
 }
 
@@ -84,7 +95,7 @@ void OBJFile::readFile(vector<vec3>& vertCoords, vector<vec2>& texCoords,
     }
 }
 
-// map going from the vertex index to vector of normal indices
+/** Map from the vertex indices to normal indices */
 map<size_t, vector<size_t> > getNormalIndices(const vector<VertexIndex>& vertexIndices) {
     map<size_t, vector<size_t> > m;
     for (const VertexIndex& vi : vertexIndices) {
@@ -93,6 +104,7 @@ map<size_t, vector<size_t> > getNormalIndices(const vector<VertexIndex>& vertexI
     return m;
 }
 
+/** Parses a .obj file */
 OBJFile::OBJFile(const char *filename)
 {
     vector<vec3> vertCoords;
@@ -122,4 +134,15 @@ OBJFile::OBJFile(const char *filename)
 				this->normals.push_back(normals[vi.n]);
         }
     }
+}
+
+/** Generates a Model from a parsed obj file */
+Model *OBJFile::GenModel()
+{
+    ArrayBuffer<vec3> abv(vertices);
+    ArrayBuffer<vec2> abt(textures);
+    ArrayBuffer<vec3> abn(normals);
+	ElementArrayBuffer eab(indices);
+	ModelBuffer mb(abv, abt, abn, eab);
+    return new Model(mb, Material());
 }

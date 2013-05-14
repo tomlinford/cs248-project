@@ -15,10 +15,11 @@
 		786F680217422BB700E359E4 /* Texture.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 786F67F21742262300E359E4 /* Texture.cpp */; };
 		786F6805174232C800E359E4 /* Screen.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 786F6803174232C800E359E4 /* Screen.cpp */; };
 		786F6806174233F400E359E4 /* Program.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 786F67EF1742259B00E359E4 /* Program.cpp */; };
-		786F681A17423EE400E359E4 /* CMSpline.hpp in Sources */ = {isa = PBXBuildFile; fileRef = 786F681917423ED700E359E4 /* CMSpline.hpp */; };
 		78B0CB7F174244B200CBECC5 /* Model.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 78B0CB7A174244B200CBECC5 /* Model.cpp */; };
 		78B0CB80174244B200CBECC5 /* OBJFile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 78B0CB7C174244B200CBECC5 /* OBJFile.cpp */; };
 		78B0CB8417424B6B00CBECC5 /* Buffer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 78B0CB78174244B200CBECC5 /* Buffer.cpp */; };
+		78B1AA001742DF2E003E5C24 /* Scene.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 78B1A9FE1742DF2E003E5C24 /* Scene.cpp */; };
+		78B1AA041742EFAE003E5C24 /* ParticleSystem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 78B1AA021742EFAE003E5C24 /* ParticleSystem.cpp */; };
 		8DD76F650486A84900D96B5E /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 08FB7796FE84155DC02AAC07 /* main.cpp */; settings = {ATTRIBUTES = (); }; };
 /* End PBXBuildFile section */
 
@@ -61,6 +62,10 @@
 		78B0CB821742454B00CBECC5 /* wirefragment.frag */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; path = wirefragment.frag; sourceTree = "<group>"; };
 		78B0CB831742454B00CBECC5 /* wirevertex.vert */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; path = wirevertex.vert; sourceTree = "<group>"; };
 		78B0CB8517424E0C00CBECC5 /* Material.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Material.h; sourceTree = "<group>"; };
+		78B1A9FE1742DF2E003E5C24 /* Scene.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Scene.cpp; sourceTree = "<group>"; };
+		78B1A9FF1742DF2E003E5C24 /* Scene.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Scene.h; sourceTree = "<group>"; };
+		78B1AA021742EFAE003E5C24 /* ParticleSystem.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ParticleSystem.cpp; sourceTree = "<group>"; };
+		78B1AA031742EFAE003E5C24 /* ParticleSystem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ParticleSystem.h; sourceTree = "<group>"; };
 		8DD76F6C0486A84900D96B5E /* EndersGame */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = EndersGame; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -97,6 +102,8 @@
 			isa = PBXGroup;
 			children = (
 				08FB7796FE84155DC02AAC07 /* main.cpp */,
+				78B1A9FE1742DF2E003E5C24 /* Scene.cpp */,
+				78B1A9FF1742DF2E003E5C24 /* Scene.h */,
 			);
 			name = Source;
 			sourceTree = "<group>";
@@ -130,6 +137,8 @@
 				786F67F31742262300E359E4 /* Texture.h */,
 				786F67EF1742259B00E359E4 /* Program.cpp */,
 				786F67F01742259B00E359E4 /* Program.h */,
+				78B1AA021742EFAE003E5C24 /* ParticleSystem.cpp */,
+				78B1AA031742EFAE003E5C24 /* ParticleSystem.h */,
 			);
 			path = Utilities;
 			sourceTree = "<group>";
@@ -203,7 +212,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				78B0CB8417424B6B00CBECC5 /* Buffer.cpp in Sources */,
-				786F681A17423EE400E359E4 /* CMSpline.hpp in Sources */,
 				786F6806174233F400E359E4 /* Program.cpp in Sources */,
 				786F680217422BB700E359E4 /* Texture.cpp in Sources */,
 				8DD76F650486A84900D96B5E /* main.cpp in Sources */,
@@ -212,6 +220,8 @@
 				786F6805174232C800E359E4 /* Screen.cpp in Sources */,
 				78B0CB7F174244B200CBECC5 /* Model.cpp in Sources */,
 				78B0CB80174244B200CBECC5 /* OBJFile.cpp in Sources */,
+				78B1AA001742DF2E003E5C24 /* Scene.cpp in Sources */,
+				78B1AA041742EFAE003E5C24 /* ParticleSystem.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -13,7 +13,7 @@ struct Material {
     glm::vec3 Ks;   /// specular color
     glm::vec3 Ke;   /// emissivity
 
-   static std::map<std::string, Material> ParseFile(const char *filename);
+    static std::map<std::string, Material> ParseFile(const char *filename);
 };
 
 typedef std::map<std::string, Material> MTLFile;

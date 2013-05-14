@@ -3,6 +3,9 @@
 #include "gl.h"
 
 #include <iostream>
+#include <vector>
+#include "Buffer.h"
+#include "Model.h"
 #include "Program.h"
 
 class Screen
@@ -11,9 +14,8 @@ public:
     Screen();
     ~Screen();
     
-    void Draw(Program& program, glm::mat4 viewProjection);
+    void Draw(Program& program, glm::mat4& viewProjection);
     
 private:
-    GLuint handle, tex, indices;
-    GLint vertexID, textureID;
+    Model *quad;
 };

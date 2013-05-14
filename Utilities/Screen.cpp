@@ -24,61 +24,36 @@ const static GLubyte QUAD_INDICES[] = {
 
 Screen::Screen()
 {
-    // Create full-screen quad
-    glGenBuffers(1, &handle);
-    glBindBuffer(GL_ARRAY_BUFFER, handle);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(QUAD_COORDS),
-                 QUAD_COORDS, GL_STATIC_DRAW);
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    vector<vec3> vertices;
+    for (int i = 0; i < 12; i += 3) {
+        vertices.push_back(vec3(QUAD_COORDS[i],
+                                QUAD_COORDS[i + 1],
+                                QUAD_COORDS[i + 2]));
+    }
     
-    // Bind texture buffer
-    glGenBuffers(1, &tex);
-    glBindBuffer(GL_ARRAY_BUFFER, tex);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(QUAD_TEX), QUAD_TEX, GL_STATIC_DRAW);
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    vector<vec2> tex;
+    for (int i = 0; i < 8; i += 2) {
+        tex.push_back(vec2(QUAD_TEX[i],QUAD_TEX[i + 1]));
+    }
     
-    // Bind index buffer
-    glGenBuffers(1, &indices);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indices);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(QUAD_INDICES),
-                 QUAD_INDICES, GL_STATIC_DRAW);
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
+	vector<size_t> indices;
+	for (int i = 0; i < 6; i++) {
+        indices.push_back(QUAD_INDICES[i]);
+    }
+	
+	ArrayBuffer<vec3> abv(vertices);
+    ArrayBuffer<vec2> abt(tex);
+	ElementArrayBuffer eab(indices);
+	ModelBuffer mb(abv, abt, eab);
+    quad = new Model(mb, Material());
 }
 
 Screen::~Screen()
 {
-    glDeleteBuffers(1, &handle);
-    glDeleteBuffers(1, &tex);
-    glDeleteBuffers(1, &indices);
+    delete quad;
 }
 
-void Screen::Draw(Program& program, glm::mat4 viewProjection)
+void Screen::Draw(Program& program, glm::mat4& viewProjection)
 {
-    vertexID = program.GetAttribLocation("vertexCoordinates");
-    if (vertexID < 0)
-    {
-        cout << "Unable to find vertexCoordinates" << endl;
-        return;
-    }
-    
-    glEnableVertexAttribArray(vertexID);
-    glBindBuffer(GL_ARRAY_BUFFER, handle);
-    glVertexAttribPointer(vertexID, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
-    
-    textureID = program.GetAttribLocation("textureCoordinates");
-    if (textureID < 0)
-    {
-        cout << "Unable to find textureCoordinates" << endl;
-        return;
-    }
-    
-    glEnableVertexAttribArray(textureID);
-    glBindBuffer(GL_ARRAY_BUFFER, tex);
-    glVertexAttribPointer(textureID, 2, GL_UNSIGNED_INT, GL_FALSE, 0, (void*)0);
-    
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indices);
-    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_BYTE, 0);
-    
-    glDisableVertexAttribArray(vertexID);
-    glDisableVertexAttribArray(textureID);
+    quad->Draw(program, viewProjection, vec3(0), GL_TRIANGLES);
 }
