@@ -8,7 +8,11 @@ using namespace std;
 using namespace glm;
 
 
+#ifndef __APPLE__
 Buffer::Buffer(GLenum target, PFNGLGENBUFFERSPROC genFunc)
+#else
+Buffer::Buffer(GLenum target, void (*genFunc)(GLsizei, GLuint *))
+#endif
 	: target(target)
 {
 	genFunc(1, &id);

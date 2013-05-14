@@ -10,7 +10,11 @@
 class Buffer
 {
 public:
+#ifndef __APPLE__
 	Buffer(GLenum target, PFNGLGENBUFFERSPROC genFunc);
+#else
+    Buffer(GLenum target, void (*genFunc)(GLsizei, GLuint *));
+#endif
 	~Buffer(void);
 	virtual void Bind() const = 0;
 

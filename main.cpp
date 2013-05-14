@@ -17,7 +17,7 @@ void Init() {
 	}
 
 	// using opengl version 3.1
-	glfwOpenWindowHint(GLFW_OPENGL_VERSION_MAJOR, 3);
+	glfwOpenWindowHint(GLFW_OPENGL_VERSION_MAJOR, 2);
 	glfwOpenWindowHint(GLFW_OPENGL_VERSION_MINOR, 1);
 
 	if (!glfwOpenWindow(1024, 768, 5, 6, 5, 0, 24, 0, GLFW_WINDOW)) {
@@ -29,7 +29,9 @@ void Init() {
 	glfwSetWindowTitle("CS248 Project");
 	glfwSetKeyCallback(KeyCallback);
 	
+#ifndef __APPLE__
 	glewInit();
+#endif
 
 	glEnable(GL_DEPTH_TEST | GL_DEPTH_BUFFER_BIT);
 	glDepthFunc(GL_LEQUAL);
