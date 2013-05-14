@@ -1,8 +1,13 @@
 #include "gl.h"
 
 #include <iostream>
+#include <vector>
+#include <glm/glm.hpp>
+
+#include "Utilities/Buffer.h"
 
 using namespace std;
+using namespace glm;
 
 void GLFWCALL KeyCallback(int key, int action) {
 	switch(key) {
@@ -18,7 +23,7 @@ void Init() {
 		exit(-1);
 	}
 
-	// using opengl version 3.1
+	// using opengl version 2.1
 	glfwOpenWindowHint(GLFW_OPENGL_VERSION_MAJOR, 2);
 	glfwOpenWindowHint(GLFW_OPENGL_VERSION_MINOR, 1);
 
