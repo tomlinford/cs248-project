@@ -16,6 +16,9 @@
     <Filter Include="Utilities">
       <UniqueIdentifier>{b1c057b3-f1b5-4a42-b52f-4be6d35f09a6}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Shaders">
+      <UniqueIdentifier>{a156cc86-26cb-4c41-aac0-95f6f7a94850}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\main.cpp">
@@ -53,5 +56,13 @@
     <ClInclude Include="..\Utilities\OBJFile.h">
       <Filter>Utilities</Filter>
     </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\Shaders\wirefragment.glsl">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\Shaders\wirevertex.glsl">
+      <Filter>Shaders</Filter>
+    </None>
   </ItemGroup>
 </Project>

@@ -12,5 +12,7 @@ void Model::Draw(const Program& p, const glm::mat4& viewProjection,
 	p.Use();
 	mat4 mvp = viewProjection * model;
 
+	p.UniformMatrix4f("MVP", mvp);
+
 	modelBuffer.Draw(p, mode);
 }

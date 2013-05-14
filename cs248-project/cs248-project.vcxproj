@@ -25,6 +25,10 @@
     <ClInclude Include="..\Utilities\OBJFile.h" />
     <ClInclude Include="..\Utilities\Program.h" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="..\Shaders\wirefragment.glsl" />
+    <None Include="..\Shaders\wirevertex.glsl" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{F47A4C34-D485-4FF8-9C6A-DEC0647A15E9}</ProjectGuid>
     <RootNamespace>cs248project</RootNamespace>
