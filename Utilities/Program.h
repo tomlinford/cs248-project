@@ -1,10 +1,11 @@
 #pragma once
 
-#include "../gl.h"
+#include "gl.h"
 
 #include <glm/glm.hpp>
 #include <string>
 
+#include "Texture.h"
 #include "Material.h"
 
 /** The shader class serves as a wrapper around a GLint that openGL
@@ -29,6 +30,7 @@ public:
 
 private:
     Shader() : id(-1) {}
+    
     /** id used by OpenGL. */
     GLint id;
 };
@@ -55,34 +57,32 @@ public:
         @return true if shader successfully attached and linked. */
     bool AttachShader(const Shader& shader);
 
-    /** Use the program. */
+    /** Use, unuse the program. */
     void Use() const { glUseProgram(id); }
+    void Unuse() const { glBindTexture(GL_TEXTURE_2D, 0); };
 
-    /** Get Attribute location. */
-    GLuint GetAttribLocation(const char *name) const { 
-        return glGetAttribLocation(id, name); }
-
-    /** Get Uniform location. */
-    GLuint GetUniformLocation(const char *name) const { 
-        return glGetUniformLocation(id, name); }
-
-    void UniformMatrix4f(const char *name, const glm::mat4& mat) const
-        { glUniformMatrix4fv(GetUniformLocation(name), 1, GL_FALSE, &mat[0][0]); }
-
-    void Uniform2f(const char *name, const glm::vec2& vec) const
-        { glUniform2fv(GetUniformLocation(name), 1, &vec[0]); }
-
-    void Uniform3f(const char *name, const glm::vec3& vec) const
-        { glUniform3fv(GetUniformLocation(name), 1, &vec[0]); }
-
-    void UniformMaterial(const Material& mat) const {
-        glUniform1f(GetUniformLocation("mat.Ns"), mat.Ns);
-        glUniform1f(GetUniformLocation("mat.d"), mat.d);
-        glUniform3fv(GetUniformLocation("mat.Ka"), 1, &mat.Ka[0]);
-        glUniform3fv(GetUniformLocation("mat.Kd"), 1, &mat.Kd[0]);
-        glUniform3fv(GetUniformLocation("mat.Ks"), 1, &mat.Ks[0]);
-        glUniform3fv(GetUniformLocation("mat.Ke"), 1, &mat.Ke[0]);
-    }
+    /** Get the GLint associated with the program. */
+    GLint GetID() const { return id; }
+    
+    /** Setters for transformation matrices */
+    void SetModel(const glm::mat4& model);
+    void SetView(const glm::mat4& view);
+    void SetProjection(const glm::mat4& projection);
+    void SetMVP(const glm::mat4& mvp);
+    
+    /** Generic setters for uniforms */
+    void SetUniform(const char *name, GLint value);
+    void SetUniform(const char *name, GLfloat value);
+    void SetUniform(const char *name, glm::vec2 value);
+    void SetUniform(const char *name, glm::vec3 value);
+    void SetUniform(const char *name, glm::vec4 value);
+    void SetUniform(const char *name, glm::mat4 value);
+    void SetUniform(const char *name, Texture *texture, GLenum unit);
+    
+    /** Getters for attribute/uniform locations, for
+     users who may want more direct control */
+    GLint GetAttribLocation(const char *name);
+    GLint GetUniformLocation(const char *name);
 
     static Program Wire;
 

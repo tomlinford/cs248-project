@@ -6,7 +6,9 @@ using namespace std;
 
 void GLFWCALL KeyCallback(int key, int action) {
 	switch(key) {
-	case GLFW_KEY_ESC: glfwCloseWindow(); break;
+        case GLFW_KEY_ESC:
+            glfwCloseWindow();
+            break;
 	}
 }
 
@@ -37,11 +39,16 @@ void Init() {
 	glDepthFunc(GL_LEQUAL);
 }
 
+void Render() {
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+}
+
 int main(int argc, char *argv[]) {
 	Init();
 
 	// main render loop
 	while(glfwGetWindowParam(GLFW_OPENED)) {
+        Render();
 		glfwSwapBuffers();
 	}
 	return 0;

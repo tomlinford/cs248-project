@@ -5,6 +5,7 @@
 #include <sstream>
 
 using namespace std;
+using namespace glm;
 
 #define ERROR_BUFFER_LENGTH 1024
 
@@ -89,4 +90,115 @@ bool Program::AttachShader(const Shader& shader)
         return false;
     }
     return true;
+}
+
+/* Setters for transformation matrices */
+
+void Program::SetModel(const glm::mat4& model)
+{
+    GLint id = GetUniformLocation("model");
+    glUniformMatrix4fv(id, 1, false, &model[0][0]);
+}
+
+void Program::SetView(const glm::mat4& view)
+{
+    GLint id = GetUniformLocation("view");
+    glUniformMatrix4fv(id, 1, false, &view[0][0]);
+}
+
+void Program::SetProjection(const glm::mat4& projection)
+{
+    GLint id = GetUniformLocation("projection");
+    glUniformMatrix4fv(id, 1, false, &projection[0][0]);
+}
+
+void Program::SetMVP(const glm::mat4& mvp)
+{
+    GLint id = GetUniformLocation("MVP");
+    glUniformMatrix4fv(id, 1, false, &mvp[0][0]);
+}
+
+/* Generic setters for uniforms */
+
+void Program::SetUniform(const char *name, GLint value)
+{
+    GLint id = GetUniformLocation(name);
+    if (id < 0)
+        return;
+    glUniform1i(id, value);
+}
+
+void Program::SetUniform(const char *name, GLfloat value)
+{
+    GLint id = GetUniformLocation(name);
+    if (id < 0)
+        return;
+    glUniform1f(id, value);
+}
+
+void Program::SetUniform(const char *name, vec2 value)
+{
+    GLint id = GetUniformLocation(name);
+    if (id < 0)
+        return;
+    glUniform2f(id, value.x, value.y);
+}
+
+void Program::SetUniform(const char *name, vec3 value)
+{
+    GLint id = GetUniformLocation(name);
+    if (id < 0)
+        return;
+    glUniform3f(id, value.x, value.y, value.z);
+}
+
+void Program::SetUniform(const char *name, vec4 value)
+{
+    GLint id = GetUniformLocation(name);
+    if (id < 0)
+        return;
+    glUniform4f(id, value.x, value.y, value.z, value.w);
+}
+
+void Program::SetUniform(const char *name, mat4 value)
+{
+    GLint id = GetUniformLocation(name);
+    if (id < 0)
+        return;
+    glUniformMatrix4fv(id, 1, false, &value[0][0]);
+}
+
+/* We need an extra parameter for textures to specify
+   which texture unit to bind our texture to. If we are
+   using multiple textures, they must be bound to
+   distinct units. */
+void Program::SetUniform(const char *name, Texture *texture, GLenum unit)
+{
+    GLint id = GetUniformLocation(name);
+    if (id < 0)
+        return;
+    
+    glActiveTexture(unit);
+    glBindTexture(GL_TEXTURE_2D, texture->GetID());
+    glUniform1i(id, unit - GL_TEXTURE0);
+}
+
+/* Getters for attribute/uniform locations, for
+ users who may want more direct control */
+
+GLint Program::GetAttribLocation(const char *name) {
+    GLint location = glGetAttribLocation(id, name);
+    if (location < 0) {
+        cout << "Attribute " << name << " not found." << endl;
+    }
+    return location;
+}
+
+GLint Program::GetUniformLocation(const char *name)
+{
+    GLint location = glGetUniformLocation(id, name);
+    if (location < 0) {
+        cout << "Uniform " << name << " not found." << endl;
+    }
+    return location;
 }
