@@ -1,4 +1,4 @@
-#include "Buffer.h"
+#pragma once
 
 #include <climits>
 #include <iostream>
@@ -106,18 +106,17 @@ ArrayBuffer<T>::ArrayBuffer(const std::vector<T>& data)
 
 template <typename T>
 void ArrayBuffer<T>::Use(Program program) const {
-	cerr << "void ArrayBuffer<T>::Use not implemented" << endl;
+	GLuint loc = program.GetAttribLocation("modelspaceVertex");
+	glEnableVertexAttribArray(loc);
+	DataBuffer<T>::Bind();
+	glVertexAttribPointer(loc, vertexSize, DataBuffer<T>::dataType, GL_FALSE, 0, 0);
 }
 
 template <typename T>
 void ArrayBuffer<T>::Unuse(Program program) const {
-	cerr << "void ArrayBuffer<T>::Unuse not implemented" << endl;
+	GLuint loc = program.GetAttribLocation("modelspaceVertex");
+	glDisableVertexAttribArray(loc);
 }
-
-// generate templates
-template ArrayBuffer<float>;
-template ArrayBuffer<vec2>;
-template ArrayBuffer<vec3>;
 
 ElementArrayBuffer::ElementArrayBuffer(const std::vector<size_t>& data)
 	: DataBuffer<size_t>(data, GL_ELEMENT_ARRAY_BUFFER), size(data.size())

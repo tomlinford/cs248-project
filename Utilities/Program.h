@@ -59,30 +59,30 @@ public:
 
     /** Use, unuse the program. */
     void Use() const { glUseProgram(id); }
-    void Unuse() const { glBindTexture(GL_TEXTURE_2D, 0); };
+    void Unuse() const { glBindTexture(GL_TEXTURE_2D, 0); }
 
     /** Get the GLint associated with the program. */
     GLint GetID() const { return id; }
     
     /** Setters for transformation matrices */
-    void SetModel(const glm::mat4& model);
-    void SetView(const glm::mat4& view);
-    void SetProjection(const glm::mat4& projection);
-    void SetMVP(const glm::mat4& mvp);
+    void SetModel(const glm::mat4& model) const;
+    void SetView(const glm::mat4& view) const;
+    void SetProjection(const glm::mat4& projection) const;
+    void SetMVP(const glm::mat4& mvp) const;
     
     /** Generic setters for uniforms */
-    void SetUniform(const char *name, GLint value);
-    void SetUniform(const char *name, GLfloat value);
-    void SetUniform(const char *name, glm::vec2 value);
-    void SetUniform(const char *name, glm::vec3 value);
-    void SetUniform(const char *name, glm::vec4 value);
-    void SetUniform(const char *name, glm::mat4 value);
-    void SetUniform(const char *name, Texture *texture, GLenum unit);
+    void SetUniform(const char *name, const GLint value) const;
+    void SetUniform(const char *name, const GLfloat value) const;
+    void SetUniform(const char *name, const glm::vec2& value) const;
+    void SetUniform(const char *name, const glm::vec3& value) const;
+    void SetUniform(const char *name, const glm::vec4& value) const;
+    void SetUniform(const char *name, const glm::mat4& value) const;
+    void SetUniform(const char *name, Texture *texture, GLenum unit) const;
     
     /** Getters for attribute/uniform locations, for
      users who may want more direct control */
-    GLint GetAttribLocation(const char *name);
-    GLint GetUniformLocation(const char *name);
+    GLint GetAttribLocation(const char *name) const;
+    GLint GetUniformLocation(const char *name) const;
 
     static Program Wire;
 

@@ -20,7 +20,7 @@ static bool operator<(const VertexIndex& l, const VertexIndex& r) {
 }
 
 // TODO: make this more flexible
-void parseFaceElement(const string& str, GLuint& v, GLuint& t, GLuint& n)
+void parseFaceElement(const string& str, size_t& v, size_t& t, size_t& n)
 {
     if (str.find('/') == string::npos) { // only has vert coords
         istringstream(str) >> v;

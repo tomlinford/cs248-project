@@ -7,7 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		7819B94717324825001475C6 /* Buffer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7819B94517324825001475C6 /* Buffer.cpp */; };
 		782C9BF6174216EA00C1B104 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 782C9BF5174216EA00C1B104 /* Cocoa.framework */; };
 		782C9C0217421A0300C1B104 /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 782C9C0117421A0300C1B104 /* OpenGL.framework */; };
 		783346C9173B6FA80036E30F /* ApplicationServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 783346C8173B6FA80036E30F /* ApplicationServices.framework */; };
@@ -17,6 +16,8 @@
 		786F6805174232C800E359E4 /* Screen.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 786F6803174232C800E359E4 /* Screen.cpp */; };
 		786F6806174233F400E359E4 /* Program.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 786F67EF1742259B00E359E4 /* Program.cpp */; };
 		786F681A17423EE400E359E4 /* CMSpline.hpp in Sources */ = {isa = PBXBuildFile; fileRef = 786F681917423ED700E359E4 /* CMSpline.hpp */; };
+		78B0CB7F174244B200CBECC5 /* Model.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 78B0CB7A174244B200CBECC5 /* Model.cpp */; };
+		78B0CB80174244B200CBECC5 /* OBJFile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 78B0CB7C174244B200CBECC5 /* OBJFile.cpp */; };
 		8DD76F650486A84900D96B5E /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 08FB7796FE84155DC02AAC07 /* main.cpp */; settings = {ATTRIBUTES = (); }; };
 /* End PBXBuildFile section */
 
@@ -34,8 +35,6 @@
 
 /* Begin PBXFileReference section */
 		08FB7796FE84155DC02AAC07 /* main.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
-		7819B94517324825001475C6 /* Buffer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Buffer.cpp; sourceTree = "<group>"; };
-		7819B94617324825001475C6 /* Buffer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Buffer.h; sourceTree = "<group>"; };
 		782C9BF5174216EA00C1B104 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = ../../../../../../../System/Library/Frameworks/Cocoa.framework; sourceTree = "<group>"; };
 		782C9C0117421A0300C1B104 /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = ../../../../../../../System/Library/Frameworks/OpenGL.framework; sourceTree = "<group>"; };
 		783346C8173B6FA80036E30F /* ApplicationServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ApplicationServices.framework; path = ../../../../../../../System/Library/Frameworks/ApplicationServices.framework; sourceTree = "<group>"; };
@@ -52,6 +51,14 @@
 		786F68081742350100E359E4 /* quad.vert */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; path = quad.vert; sourceTree = "<group>"; };
 		786F68091742358200E359E4 /* quad.frag */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; path = quad.frag; sourceTree = "<group>"; };
 		786F681917423ED700E359E4 /* CMSpline.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = CMSpline.hpp; sourceTree = "<group>"; };
+		78B0CB78174244B200CBECC5 /* Buffer.inl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Buffer.inl; sourceTree = "<group>"; };
+		78B0CB79174244B200CBECC5 /* Buffer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Buffer.h; sourceTree = "<group>"; };
+		78B0CB7A174244B200CBECC5 /* Model.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Model.cpp; sourceTree = "<group>"; };
+		78B0CB7B174244B200CBECC5 /* Model.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Model.h; sourceTree = "<group>"; };
+		78B0CB7C174244B200CBECC5 /* OBJFile.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = OBJFile.cpp; sourceTree = "<group>"; };
+		78B0CB7D174244B200CBECC5 /* OBJFile.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OBJFile.h; sourceTree = "<group>"; };
+		78B0CB821742454B00CBECC5 /* wirefragment.frag */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; path = wirefragment.frag; sourceTree = "<group>"; };
+		78B0CB831742454B00CBECC5 /* wirevertex.vert */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; path = wirevertex.vert; sourceTree = "<group>"; };
 		8DD76F6C0486A84900D96B5E /* EndersGame */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = EndersGame; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -103,6 +110,12 @@
 		782BEAC117221FCD007668C8 /* Utilities */ = {
 			isa = PBXGroup;
 			children = (
+				78B0CB78174244B200CBECC5 /* Buffer.inl */,
+				78B0CB79174244B200CBECC5 /* Buffer.h */,
+				78B0CB7A174244B200CBECC5 /* Model.cpp */,
+				78B0CB7B174244B200CBECC5 /* Model.h */,
+				78B0CB7C174244B200CBECC5 /* OBJFile.cpp */,
+				78B0CB7D174244B200CBECC5 /* OBJFile.h */,
 				786F681917423ED700E359E4 /* CMSpline.hpp */,
 				786F6803174232C800E359E4 /* Screen.cpp */,
 				786F6804174232C800E359E4 /* Screen.h */,
@@ -114,8 +127,6 @@
 				786F67F31742262300E359E4 /* Texture.h */,
 				786F67EF1742259B00E359E4 /* Program.cpp */,
 				786F67F01742259B00E359E4 /* Program.h */,
-				7819B94517324825001475C6 /* Buffer.cpp */,
-				7819B94617324825001475C6 /* Buffer.h */,
 			);
 			path = Utilities;
 			sourceTree = "<group>";
@@ -125,6 +136,8 @@
 			children = (
 				786F68091742358200E359E4 /* quad.frag */,
 				786F68081742350100E359E4 /* quad.vert */,
+				78B0CB821742454B00CBECC5 /* wirefragment.frag */,
+				78B0CB831742454B00CBECC5 /* wirevertex.vert */,
 			);
 			path = Shaders;
 			sourceTree = SOURCE_ROOT;
@@ -190,10 +203,11 @@
 				786F6806174233F400E359E4 /* Program.cpp in Sources */,
 				786F680217422BB700E359E4 /* Texture.cpp in Sources */,
 				8DD76F650486A84900D96B5E /* main.cpp in Sources */,
-				7819B94717324825001475C6 /* Buffer.cpp in Sources */,
 				786F67FE17422A5E00E359E4 /* RenderBuffer.cpp in Sources */,
 				786F680117422A6F00E359E4 /* FBO.cpp in Sources */,
 				786F6805174232C800E359E4 /* Screen.cpp in Sources */,
+				78B0CB7F174244B200CBECC5 /* Model.cpp in Sources */,
+				78B0CB80174244B200CBECC5 /* OBJFile.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

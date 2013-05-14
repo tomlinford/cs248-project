@@ -2,6 +2,7 @@
 
 #include <glm/glm.hpp>
 
+#include "Program.h"
 #include "Buffer.h"
 #include "Material.h"
 

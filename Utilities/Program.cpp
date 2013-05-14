@@ -94,25 +94,25 @@ bool Program::AttachShader(const Shader& shader)
 
 /* Setters for transformation matrices */
 
-void Program::SetModel(const glm::mat4& model)
+void Program::SetModel(const glm::mat4& model) const
 {
     GLint id = GetUniformLocation("model");
     glUniformMatrix4fv(id, 1, false, &model[0][0]);
 }
 
-void Program::SetView(const glm::mat4& view)
+void Program::SetView(const glm::mat4& view) const
 {
     GLint id = GetUniformLocation("view");
     glUniformMatrix4fv(id, 1, false, &view[0][0]);
 }
 
-void Program::SetProjection(const glm::mat4& projection)
+void Program::SetProjection(const glm::mat4& projection) const
 {
     GLint id = GetUniformLocation("projection");
     glUniformMatrix4fv(id, 1, false, &projection[0][0]);
 }
 
-void Program::SetMVP(const glm::mat4& mvp)
+void Program::SetMVP(const glm::mat4& mvp) const
 {
     GLint id = GetUniformLocation("MVP");
     glUniformMatrix4fv(id, 1, false, &mvp[0][0]);
@@ -120,7 +120,7 @@ void Program::SetMVP(const glm::mat4& mvp)
 
 /* Generic setters for uniforms */
 
-void Program::SetUniform(const char *name, GLint value)
+void Program::SetUniform(const char *name, GLint value) const
 {
     GLint id = GetUniformLocation(name);
     if (id < 0)
@@ -128,7 +128,7 @@ void Program::SetUniform(const char *name, GLint value)
     glUniform1i(id, value);
 }
 
-void Program::SetUniform(const char *name, GLfloat value)
+void Program::SetUniform(const char *name, GLfloat value) const
 {
     GLint id = GetUniformLocation(name);
     if (id < 0)
@@ -136,7 +136,7 @@ void Program::SetUniform(const char *name, GLfloat value)
     glUniform1f(id, value);
 }
 
-void Program::SetUniform(const char *name, vec2 value)
+void Program::SetUniform(const char *name, const vec2& value) const
 {
     GLint id = GetUniformLocation(name);
     if (id < 0)
@@ -144,7 +144,7 @@ void Program::SetUniform(const char *name, vec2 value)
     glUniform2f(id, value.x, value.y);
 }
 
-void Program::SetUniform(const char *name, vec3 value)
+void Program::SetUniform(const char *name, const vec3& value) const
 {
     GLint id = GetUniformLocation(name);
     if (id < 0)
@@ -152,7 +152,7 @@ void Program::SetUniform(const char *name, vec3 value)
     glUniform3f(id, value.x, value.y, value.z);
 }
 
-void Program::SetUniform(const char *name, vec4 value)
+void Program::SetUniform(const char *name, const vec4& value) const
 {
     GLint id = GetUniformLocation(name);
     if (id < 0)
@@ -160,7 +160,7 @@ void Program::SetUniform(const char *name, vec4 value)
     glUniform4f(id, value.x, value.y, value.z, value.w);
 }
 
-void Program::SetUniform(const char *name, mat4 value)
+void Program::SetUniform(const char *name, const mat4& value) const
 {
     GLint id = GetUniformLocation(name);
     if (id < 0)
@@ -172,7 +172,7 @@ void Program::SetUniform(const char *name, mat4 value)
    which texture unit to bind our texture to. If we are
    using multiple textures, they must be bound to
    distinct units. */
-void Program::SetUniform(const char *name, Texture *texture, GLenum unit)
+void Program::SetUniform(const char *name, Texture *texture, GLenum unit) const
 {
     GLint id = GetUniformLocation(name);
     if (id < 0)
@@ -186,7 +186,7 @@ void Program::SetUniform(const char *name, Texture *texture, GLenum unit)
 /* Getters for attribute/uniform locations, for
  users who may want more direct control */
 
-GLint Program::GetAttribLocation(const char *name) {
+GLint Program::GetAttribLocation(const char *name) const {
     GLint location = glGetAttribLocation(id, name);
     if (location < 0) {
         cout << "Attribute " << name << " not found." << endl;
@@ -194,7 +194,7 @@ GLint Program::GetAttribLocation(const char *name) {
     return location;
 }
 
-GLint Program::GetUniformLocation(const char *name)
+GLint Program::GetUniformLocation(const char *name) const
 {
     GLint location = glGetUniformLocation(id, name);
     if (location < 0) {

@@ -7,7 +7,7 @@
 
 // ignore me
 struct VertexIndex {
-    GLuint v, t, n;
+    size_t v, t, n;
 };
 
 /** Represents a parsed OBJ file. All members a easily accessible to
@@ -20,13 +20,9 @@ public:
     std::vector<glm::vec3> vertices;
     std::vector<glm::vec2> textures;
     std::vector<glm::vec3> normals;
-    std::vector<GLuint> indices;
+    std::vector<size_t> indices;
 
 private:
-	
-
-    
-
     void readFile(std::vector<glm::vec3>& vertCoords, std::vector<glm::vec2>& texCoords,
                   std::vector<glm::vec3>& normals, std::vector<VertexIndex>&
                   vertexIndices, float& max, const char *filename);
