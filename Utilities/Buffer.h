@@ -95,5 +95,3 @@ private:
 	ArrayBuffer<glm::vec3> normalBuffer;
 	ElementArrayBuffer elementBuffer;
 };
-
-#include "Buffer.inl"

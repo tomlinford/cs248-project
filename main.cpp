@@ -6,6 +6,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 
 #include "Utilities/Buffer.h"
+#include "Utilities/Buffer.cpp"
 #include "Utilities/Model.h"
 
 using namespace std;

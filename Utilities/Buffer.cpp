@@ -1,12 +1,10 @@
-#pragma once
-
+#include "Buffer.h"
 #include <climits>
 #include <iostream>
 #include <glm/glm.hpp>
 
 using namespace std;
 using namespace glm;
-
 
 #ifndef __APPLE__
 Buffer::Buffer(GLenum target, PFNGLGENBUFFERSPROC genFunc)
@@ -173,5 +171,3 @@ void ModelBuffer::Draw(const Program& p, GLenum mode) const {
 	elementBuffer.Draw(mode);
 
 }
-
-

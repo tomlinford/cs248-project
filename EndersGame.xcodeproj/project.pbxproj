@@ -18,6 +18,7 @@
 		786F681A17423EE400E359E4 /* CMSpline.hpp in Sources */ = {isa = PBXBuildFile; fileRef = 786F681917423ED700E359E4 /* CMSpline.hpp */; };
 		78B0CB7F174244B200CBECC5 /* Model.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 78B0CB7A174244B200CBECC5 /* Model.cpp */; };
 		78B0CB80174244B200CBECC5 /* OBJFile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 78B0CB7C174244B200CBECC5 /* OBJFile.cpp */; };
+		78B0CB8417424B6B00CBECC5 /* Buffer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 78B0CB78174244B200CBECC5 /* Buffer.cpp */; };
 		8DD76F650486A84900D96B5E /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 08FB7796FE84155DC02AAC07 /* main.cpp */; settings = {ATTRIBUTES = (); }; };
 /* End PBXBuildFile section */
 
@@ -51,7 +52,7 @@
 		786F68081742350100E359E4 /* quad.vert */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; path = quad.vert; sourceTree = "<group>"; };
 		786F68091742358200E359E4 /* quad.frag */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; path = quad.frag; sourceTree = "<group>"; };
 		786F681917423ED700E359E4 /* CMSpline.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = CMSpline.hpp; sourceTree = "<group>"; };
-		78B0CB78174244B200CBECC5 /* Buffer.inl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Buffer.inl; sourceTree = "<group>"; };
+		78B0CB78174244B200CBECC5 /* Buffer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Buffer.cpp; sourceTree = "<group>"; };
 		78B0CB79174244B200CBECC5 /* Buffer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Buffer.h; sourceTree = "<group>"; };
 		78B0CB7A174244B200CBECC5 /* Model.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Model.cpp; sourceTree = "<group>"; };
 		78B0CB7B174244B200CBECC5 /* Model.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Model.h; sourceTree = "<group>"; };
@@ -110,7 +111,7 @@
 		782BEAC117221FCD007668C8 /* Utilities */ = {
 			isa = PBXGroup;
 			children = (
-				78B0CB78174244B200CBECC5 /* Buffer.inl */,
+				78B0CB78174244B200CBECC5 /* Buffer.cpp */,
 				78B0CB79174244B200CBECC5 /* Buffer.h */,
 				78B0CB7A174244B200CBECC5 /* Model.cpp */,
 				78B0CB7B174244B200CBECC5 /* Model.h */,
@@ -199,6 +200,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				78B0CB8417424B6B00CBECC5 /* Buffer.cpp in Sources */,
 				786F681A17423EE400E359E4 /* CMSpline.hpp in Sources */,
 				786F6806174233F400E359E4 /* Program.cpp in Sources */,
 				786F680217422BB700E359E4 /* Texture.cpp in Sources */,
