@@ -60,6 +60,7 @@
 		78B0CB7D174244B200CBECC5 /* OBJFile.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OBJFile.h; sourceTree = "<group>"; };
 		78B0CB821742454B00CBECC5 /* wirefragment.frag */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; path = wirefragment.frag; sourceTree = "<group>"; };
 		78B0CB831742454B00CBECC5 /* wirevertex.vert */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; path = wirevertex.vert; sourceTree = "<group>"; };
+		78B0CB8517424E0C00CBECC5 /* Material.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Material.h; sourceTree = "<group>"; };
 		8DD76F6C0486A84900D96B5E /* EndersGame */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = EndersGame; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -111,6 +112,7 @@
 		782BEAC117221FCD007668C8 /* Utilities */ = {
 			isa = PBXGroup;
 			children = (
+				78B0CB8517424E0C00CBECC5 /* Material.h */,
 				78B0CB78174244B200CBECC5 /* Buffer.cpp */,
 				78B0CB79174244B200CBECC5 /* Buffer.h */,
 				78B0CB7A174244B200CBECC5 /* Model.cpp */,

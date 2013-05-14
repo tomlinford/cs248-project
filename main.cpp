@@ -1,16 +1,19 @@
 #include "gl.h"
 
+#include <ApplicationServices/ApplicationServices.h>
 #include <iostream>
 #include <vector>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
 #include "Utilities/Buffer.h"
-#include "Utilities/Buffer.cpp"
 #include "Utilities/Model.h"
 
 using namespace std;
 using namespace glm;
+
+static Program *flat;
+static Model *triangle;
 
 void GLFWCALL KeyCallback(int key, int action) {
 	switch(key) {
@@ -20,11 +23,27 @@ void GLFWCALL KeyCallback(int key, int action) {
 	}
 }
 
+void Render() {
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    
+    mat4 projection = perspective((float)45 - 1 * glfwGetMouseWheel(),
+                                  (float)4 / 3, (float)0.1, (float)100);
+    mat4 view = lookAt(vec3(0, 0, 5), vec3(0), vec3(0, 1, 0));
+    
+    triangle->Draw(*flat, projection * view, vec3(0));
+}
+
 void Init() {
 	if (!glfwInit()) {
 		cerr << "Failed to initialize glfw" << endl;
 		exit(-1);
 	}
+    
+#ifndef __APPLE__
+	glewInit();
+#else
+    CGSetLocalEventsSuppressionInterval(0.0);
+#endif
 
 	// using opengl version 2.1
 	glfwOpenWindowHint(GLFW_OPENGL_VERSION_MAJOR, 2);
@@ -38,13 +57,11 @@ void Init() {
 
 	glfwSetWindowTitle("CS248 Project");
 	glfwSetKeyCallback(KeyCallback);
-	
-#ifndef __APPLE__
-	glewInit();
-#endif
 
 	glEnable(GL_DEPTH_TEST | GL_DEPTH_BUFFER_BIT);
 	glDepthFunc(GL_LEQUAL);
+    
+    flat = new Program("Shaders/wirevertex.vert", "Shaders/wirefragment.frag");
 }
 
 int main(int argc, char *argv[]) {
@@ -57,20 +74,11 @@ int main(int argc, char *argv[]) {
 	ArrayBuffer<vec3> ab(vertices);
 	ElementArrayBuffer eab(indices);
 	ModelBuffer mb(ab, eab);
-	Model triangle(mb, Material());
-
-	Program p("Shaders/wirevertex.glsl", "Shaders/wirefragment.glsl");
-	
+    triangle = new Model(mb, Material());
 
 	// main render loop
 	while(glfwGetWindowParam(GLFW_OPENED)) {
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        
-        mat4 projection = perspective((float)45 - 1 * glfwGetMouseWheel(),
-                                      (float)4 / 3, (float)0.1, (float)100);
-        mat4 view = lookAt(vec3(0, 0, 5), vec3(0), vec3(0, 1, 0));
-        
-        triangle.Draw(p, projection * view, vec3(0));
+        Render();
 		glfwSwapBuffers();
 	}
 	return 0;

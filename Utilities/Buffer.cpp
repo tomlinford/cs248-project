@@ -1,4 +1,5 @@
 #include "Buffer.h"
+
 #include <climits>
 #include <iostream>
 #include <glm/glm.hpp>
@@ -104,7 +105,7 @@ ArrayBuffer<T>::ArrayBuffer(const std::vector<T>& data)
 
 template <typename T>
 void ArrayBuffer<T>::Use(Program program) const {
-	GLuint loc = program.GetAttribLocation("modelspaceVertex");
+	GLuint loc = program.GetAttribLocation("vertexCoordinates");
 	glEnableVertexAttribArray(loc);
 	DataBuffer<T>::Bind();
 	glVertexAttribPointer(loc, vertexSize, DataBuffer<T>::dataType, GL_FALSE, 0, 0);
@@ -112,7 +113,7 @@ void ArrayBuffer<T>::Use(Program program) const {
 
 template <typename T>
 void ArrayBuffer<T>::Unuse(Program program) const {
-	GLuint loc = program.GetAttribLocation("modelspaceVertex");
+	GLuint loc = program.GetAttribLocation("vertexCoordinates");
 	glDisableVertexAttribArray(loc);
 }
 
@@ -169,5 +170,8 @@ void ModelBuffer::Draw(const Program& p, GLenum mode) const {
 		normalBuffer.Use(p);
 
 	elementBuffer.Draw(mode);
-
 }
+
+template class ArrayBuffer<float>;
+template class ArrayBuffer<vec2>;
+template class ArrayBuffer<vec3>;

@@ -44,7 +44,7 @@
       selectedLauncherIdentifier = "Xcode.DebuggerFoundation.Launcher.LLDB"
       launchStyle = "0"
       useCustomWorkingDirectory = "YES"
-      customWorkingDirectory = "/Users/bhnascar/Documents/School/Sophomore/CS248/EndersGame"
+      customWorkingDirectory = "/Users/bhnascar/Documents/School/Sophomore/CS248/FinalProject"
       buildConfiguration = "Debug"
       ignoresPersistentStateOnLaunch = "NO"
       debugDocumentVersioning = "YES"

@@ -1,5 +1,7 @@
 #pragma once
 
+#include "../gl.h"
+
 #include <glm/glm.hpp>
 
 #include "Program.h"
@@ -16,9 +18,9 @@ public:
 private:
 	ModelBuffer modelBuffer;
 
-	// model matrix
+	// Model matrix
 	glm::mat4 model;
 
-	// material of model
+	// Material of model
 	Material mat;
 };
