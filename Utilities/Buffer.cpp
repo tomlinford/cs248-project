@@ -1,4 +1,4 @@
-#pragma once
+#include "Buffer.h"
 
 #include <climits>
 #include <iostream>
@@ -174,4 +174,7 @@ void ModelBuffer::Draw(const Program& p, GLenum mode) const {
 
 }
 
+template class ArrayBuffer<float>;
+template class ArrayBuffer<vec2>;
+template class ArrayBuffer<vec3>;
 
