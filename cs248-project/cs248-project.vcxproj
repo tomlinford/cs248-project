@@ -13,12 +13,16 @@
   <ItemGroup>
     <ClCompile Include="..\main.cpp" />
     <ClCompile Include="..\Utilities\Buffer.cpp" />
+    <ClCompile Include="..\Utilities\Model.cpp" />
+    <ClCompile Include="..\Utilities\OBJFile.cpp" />
     <ClCompile Include="..\Utilities\Program.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\gl.h" />
     <ClInclude Include="..\Utilities\Buffer.h" />
     <ClInclude Include="..\Utilities\Material.h" />
+    <ClInclude Include="..\Utilities\Model.h" />
+    <ClInclude Include="..\Utilities\OBJFile.h" />
     <ClInclude Include="..\Utilities\Program.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">

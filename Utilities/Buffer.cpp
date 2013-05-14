@@ -57,43 +57,67 @@ DataBuffer<T>::DataBuffer(const std::vector<T>& data, GLenum target)
 	} else if (is_same_type<T, vec3>::value) {
 		dataType = GL_FLOAT;
 		glBufferData(target, data.size() * sizeof(vec3), &data[0], GL_STATIC_DRAW);
-	} else if (is_same_type<T, size_t>::value) {
-		if (data.size() <= UCHAR_MAX) {
-			dataType = GL_UNSIGNED_BYTE;
-			GLubyte *arr = toArr<T, GLubyte>(data);
-			glBufferData(target, data.size(), arr, GL_STATIC_DRAW);
-			delete[] arr;
-		} else if (data.size() <= USHRT_MAX) {
-			dataType = GL_UNSIGNED_SHORT;
-			GLushort *arr = toArr<T, GLushort>(data);
-			glBufferData(target, data.size() * 2, arr, GL_STATIC_DRAW);
-			delete[] arr;
-		} else {
-			dataType = GL_UNSIGNED_INT;
-			GLuint *arr = toArr<T, GLuint>(data);
-			glBufferData(target, data.size() * 4, arr, GL_STATIC_DRAW);
-			delete[] arr;
-		}
 	} else {
 		cerr << "unknown data type passed to DataBuffer" << endl;
 	}
 }
 
-template <typename T>
-void DataBuffer<T>::Bind() const {
-	glBindBuffer(target, id);
+DataBuffer<size_t>::DataBuffer(const std::vector<size_t>& data, GLenum target)
+	: Buffer(target, glGenBuffers)
+{
+	if (data.empty()) {
+		glDeleteBuffers(1, &target);
+		cerr << "Warning: empty data passed to DataBuffer constructor" << endl;
+		return;
+	}
+	Bind();
+	if (data.size() <= UCHAR_MAX) {
+		dataType = GL_UNSIGNED_BYTE;
+		GLubyte *arr = toArr<size_t, GLubyte>(data);
+		glBufferData(target, data.size(), arr, GL_STATIC_DRAW);
+		delete[] arr;
+	} else if (data.size() <= USHRT_MAX) {
+		dataType = GL_UNSIGNED_SHORT;
+		GLushort *arr = toArr<size_t, GLushort>(data);
+		glBufferData(target, data.size() * 2, arr, GL_STATIC_DRAW);
+		delete[] arr;
+	} else {
+		dataType = GL_UNSIGNED_INT;
+		GLuint *arr = toArr<size_t, GLuint>(data);
+		glBufferData(target, data.size() * 4, arr, GL_STATIC_DRAW);
+		delete[] arr;
+	}
 }
 
 template <typename T>
-ArrayBuffer<T>::ArrayBuffer(const std::vector<T>& data, GLsizei vertexSize)
-	: DataBuffer<T>(data, GL_ARRAY_BUFFER), vertexSize(vertexSize)
+ArrayBuffer<T>::ArrayBuffer(const std::vector<T>& data)
+	: DataBuffer<T>(data, GL_ARRAY_BUFFER)
 {
+	if(is_same_type<T, float>::value) {
+		vertexSize = 1;
+	} else if (is_same_type<T, vec2>::value) {
+		vertexSize = 2;
+	} else if (is_same_type<T, vec3>::value) {
+		vertexSize = 3;
+	} else {
+		cerr << "unknown data type passed to ArrayBuffer" << endl;
+	}
 }
 
 template <typename T>
 void ArrayBuffer<T>::Use(Program program) const {
 	cerr << "void ArrayBuffer<T>::Use not implemented" << endl;
 }
+
+template <typename T>
+void ArrayBuffer<T>::Unuse(Program program) const {
+	cerr << "void ArrayBuffer<T>::Unuse not implemented" << endl;
+}
+
+// generate templates
+template ArrayBuffer<float>;
+template ArrayBuffer<vec2>;
+template ArrayBuffer<vec3>;
 
 ElementArrayBuffer::ElementArrayBuffer(const std::vector<size_t>& data)
 	: DataBuffer<size_t>(data, GL_ELEMENT_ARRAY_BUFFER), size(data.size())
@@ -103,6 +127,52 @@ ElementArrayBuffer::ElementArrayBuffer(const std::vector<size_t>& data)
 void ElementArrayBuffer::Draw(GLenum mode) const {
 	DataBuffer<size_t>::Bind();
 	glDrawElements(mode, size, dataType, 0);
+}
+
+ModelBuffer::ModelBuffer(const ArrayBuffer<glm::vec3>& vertexBuffer,
+	const ArrayBuffer<glm::vec2>& textureBuffer,
+	const ArrayBuffer<glm::vec3>& normalBuffer,
+	const ElementArrayBuffer& elementBuffer)
+	: vertexBuffer(vertexBuffer), textureBuffer(textureBuffer)
+	, normalBuffer(normalBuffer), elementBuffer(elementBuffer)
+	, hasTextureBuffer(true), hasNormalBuffer(true)
+{
+}
+
+ModelBuffer::ModelBuffer(const ArrayBuffer<glm::vec3>& vertexBuffer,
+	const ArrayBuffer<glm::vec3>& normalBuffer,
+	const ElementArrayBuffer& elementBuffer)
+	: vertexBuffer(vertexBuffer)
+	, normalBuffer(normalBuffer), elementBuffer(elementBuffer)
+	, hasTextureBuffer(false), hasNormalBuffer(true)
+{
+}
+
+ModelBuffer::ModelBuffer(const ArrayBuffer<glm::vec3>& vertexBuffer,
+	const ArrayBuffer<glm::vec2>& textureBuffer,
+	const ElementArrayBuffer& elementBuffer)
+	: vertexBuffer(vertexBuffer), textureBuffer(textureBuffer)
+	, elementBuffer(elementBuffer)
+	, hasTextureBuffer(true), hasNormalBuffer(false)
+{
+}
+
+ModelBuffer::ModelBuffer(const ArrayBuffer<glm::vec3>& vertexBuffer,
+	const ElementArrayBuffer& elementBuffer)
+	: vertexBuffer(vertexBuffer), elementBuffer(elementBuffer)
+	, hasTextureBuffer(false), hasNormalBuffer(false)
+{
+}
+
+void ModelBuffer::Draw(const Program& p, GLenum mode) const {
+	vertexBuffer.Use(p);
+	if (hasTextureBuffer)
+		textureBuffer.Use(p);
+	if (hasNormalBuffer)
+		normalBuffer.Use(p);
+
+	elementBuffer.Draw(mode);
+
 }
 
 

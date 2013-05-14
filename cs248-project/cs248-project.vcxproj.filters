@@ -27,6 +27,12 @@
     <ClCompile Include="..\Utilities\Program.cpp">
       <Filter>Utilities</Filter>
     </ClCompile>
+    <ClCompile Include="..\Utilities\Model.cpp">
+      <Filter>Utilities</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Utilities\OBJFile.cpp">
+      <Filter>Utilities</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\gl.h">
@@ -39,6 +45,12 @@
       <Filter>Utilities</Filter>
     </ClInclude>
     <ClInclude Include="..\Utilities\Program.h">
+      <Filter>Utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Utilities\Model.h">
+      <Filter>Utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Utilities\OBJFile.h">
       <Filter>Utilities</Filter>
     </ClInclude>
   </ItemGroup>
