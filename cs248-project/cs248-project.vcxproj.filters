@@ -24,12 +24,21 @@
     <ClCompile Include="..\Utilities\Buffer.cpp">
       <Filter>Utilities</Filter>
     </ClCompile>
+    <ClCompile Include="..\Utilities\Program.cpp">
+      <Filter>Utilities</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\gl.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\Utilities\Buffer.h">
+      <Filter>Utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Utilities\Material.h">
+      <Filter>Utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Utilities\Program.h">
       <Filter>Utilities</Filter>
     </ClInclude>
   </ItemGroup>

@@ -4,11 +4,13 @@
 
 #include <vector>
 
+#include "Program.h"
+
 
 class Buffer
 {
 public:
-	Buffer(GLenum target, void (*genFunc)(GLsizei, GLuint *));
+	Buffer(GLenum target, PFNGLGENBUFFERSPROC genFunc);
 	~Buffer(void);
 	virtual void Bind() const = 0;
 
@@ -24,13 +26,27 @@ public:
 	
 	void Bind() const;
 
-protected:
+protected: 
 	GLenum dataType;
 
 };
 
-class ArrayBuffer : public DataBuffer<float> {
+template <typename T>
+class ArrayBuffer : public DataBuffer<T> {
 public:
-	ArrayBuffer(std::vector<float>& data, GLsizei vertexSize);
+	ArrayBuffer(const std::vector<T>& data, GLsizei vertexSize);
+	void Use(Program program) const;
+
+protected:
+	GLenum vertexSize;
+};
+
+class ElementArrayBuffer : public DataBuffer<size_t> {
+public:
+	ElementArrayBuffer(const std::vector<size_t>& data);
+	void Draw(GLenum mode) const;
+
+protected:
+	GLsizei size;
 };
 

@@ -13,10 +13,13 @@
   <ItemGroup>
     <ClCompile Include="..\main.cpp" />
     <ClCompile Include="..\Utilities\Buffer.cpp" />
+    <ClCompile Include="..\Utilities\Program.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\gl.h" />
     <ClInclude Include="..\Utilities\Buffer.h" />
+    <ClInclude Include="..\Utilities\Material.h" />
+    <ClInclude Include="..\Utilities\Program.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{F47A4C34-D485-4FF8-9C6A-DEC0647A15E9}</ProjectGuid>

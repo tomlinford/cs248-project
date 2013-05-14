@@ -2,11 +2,13 @@
 
 #include <climits>
 #include <iostream>
+#include <glm/glm.hpp>
 
 using namespace std;
+using namespace glm;
 
 
-Buffer::Buffer(GLenum target, void (*genFunc)(GLsizei, GLuint *))
+Buffer::Buffer(GLenum target, PFNGLGENBUFFERSPROC genFunc)
 	: target(target)
 {
 	genFunc(1, &id);
@@ -45,20 +47,26 @@ DataBuffer<T>::DataBuffer(const std::vector<T>& data, GLenum target)
 	if(is_same_type<T, float>::value) {
 		dataType = GL_FLOAT;
 		glBufferData(target, data.size() * 4, &data[0], GL_STATIC_DRAW);
+	} else if (is_same_type<T, vec2>::value) {
+		dataType = GL_FLOAT;
+		glBufferData(target, data.size() * sizeof(vec2), &data[0], GL_STATIC_DRAW);
+	} else if (is_same_type<T, vec3>::value) {
+		dataType = GL_FLOAT;
+		glBufferData(target, data.size() * sizeof(vec3), &data[0], GL_STATIC_DRAW);
 	} else if (is_same_type<T, size_t>::value) {
-		if (size <= UCHAR_MAX) {
+		if (data.size() <= UCHAR_MAX) {
 			dataType = GL_UNSIGNED_BYTE;
-			GLubyte *arr = toArr<T, GLubyte>(v);
+			GLubyte *arr = toArr<T, GLubyte>(data);
 			glBufferData(target, data.size(), arr, GL_STATIC_DRAW);
 			delete[] arr;
-		} else if (size <= USHRT_MAX) {
+		} else if (data.size() <= USHRT_MAX) {
 			dataType = GL_UNSIGNED_SHORT;
-			GLushort *arr = toArr<T, GLushort>(v);
+			GLushort *arr = toArr<T, GLushort>(data);
 			glBufferData(target, data.size() * 2, arr, GL_STATIC_DRAW);
 			delete[] arr;
 		} else {
 			dataType = GL_UNSIGNED_INT;
-			GLuint *arr = toArr<T, GLuint>(v);
+			GLuint *arr = toArr<T, GLuint>(data);
 			glBufferData(target, data.size() * 4, arr, GL_STATIC_DRAW);
 			delete[] arr;
 		}
@@ -71,4 +79,26 @@ template <typename T>
 void DataBuffer<T>::Bind() const {
 	glBindBuffer(target, id);
 }
+
+template <typename T>
+ArrayBuffer<T>::ArrayBuffer(const std::vector<T>& data, GLsizei vertexSize)
+	: DataBuffer<T>(data, GL_ARRAY_BUFFER), vertexSize(vertexSize)
+{
+}
+
+template <typename T>
+void ArrayBuffer<T>::Use(Program program) const {
+	cerr << "void ArrayBuffer<T>::Use not implemented" << endl;
+}
+
+ElementArrayBuffer::ElementArrayBuffer(const std::vector<size_t>& data)
+	: DataBuffer<size_t>(data, GL_ELEMENT_ARRAY_BUFFER), size(data.size())
+{
+}
+
+void ElementArrayBuffer::Draw(GLenum mode) const {
+	DataBuffer<size_t>::Bind();
+	glDrawElements(mode, size, dataType, 0);
+}
+
 
