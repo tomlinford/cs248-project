@@ -8,11 +8,12 @@ Model::Model(const ModelBuffer& mb, Material mat)
 }
 
 void Model::Draw(const Program& p, const glm::mat4& viewProjection,
-				 const glm::vec3& cameraPos, GLenum mode) const {
-	p.Use();
+				 const glm::vec3& cameraPos, GLenum mode) const
+{
 	mat4 mvp = viewProjection * model;
 
+    p.Use();
 	p.SetMVP(mvp);
-
 	modelBuffer.Draw(p, mode);
+    p.Unuse();
 }

@@ -18,9 +18,9 @@ public:
 private:
 	ModelBuffer modelBuffer;
 
-	// model matrix
+	// Model matrix
 	glm::mat4 model;
 
-	// material of model
+	// Material of model
 	Material mat;
 };

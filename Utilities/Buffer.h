@@ -6,7 +6,6 @@
 
 #include "Program.h"
 
-
 class Buffer
 {
 public:
