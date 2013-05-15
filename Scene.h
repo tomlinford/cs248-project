@@ -4,7 +4,7 @@
 
 #include <glm/glm.hpp>
 
-#include "FBO.h"
+#include "Utilities/FBO.h"
 
 typedef enum
 {
