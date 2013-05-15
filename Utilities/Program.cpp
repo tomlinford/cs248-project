@@ -97,25 +97,25 @@ bool Program::AttachShader(const Shader& shader)
 void Program::SetModel(const glm::mat4& model) const
 {
     GLint id = GetUniformLocation("model");
-    glUniformMatrix4fv(id, 1, false, &model[0][0]);
+    glUniformMatrix4fv(id, 1, GL_FALSE, &model[0][0]);
 }
 
 void Program::SetView(const glm::mat4& view) const
 {
     GLint id = GetUniformLocation("view");
-    glUniformMatrix4fv(id, 1, false, &view[0][0]);
+    glUniformMatrix4fv(id, 1, GL_FALSE, &view[0][0]);
 }
 
 void Program::SetProjection(const glm::mat4& projection) const
 {
     GLint id = GetUniformLocation("projection");
-    glUniformMatrix4fv(id, 1, false, &projection[0][0]);
+    glUniformMatrix4fv(id, 1, GL_FALSE, &projection[0][0]);
 }
 
 void Program::SetMVP(const glm::mat4& mvp) const
 {
     GLint id = GetUniformLocation("MVP");
-    glUniformMatrix4fv(id, 1, false, &mvp[0][0]);
+    glUniformMatrix4fv(id, 1, GL_FALSE, &mvp[0][0]);
 }
 
 /* Generic setters for uniforms */

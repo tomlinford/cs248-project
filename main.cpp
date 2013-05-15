@@ -40,7 +40,7 @@ void Render() {
                        vec3(0, 0, 0),   // Apple
                        vec3(0, 1, 0));  // Up
     
-    ship->Draw(*flat, projection * view, vec3(0));
+    ship->Draw(*flat, projection * view, vec3(0, 0, 5));
 }
 
 
@@ -53,9 +53,6 @@ void GLFWCALL WindowResizeCallback(int w, int h)
                                   ratio,        // Aspect ratio
                                   0.1f,         // Near clipping plane
                                   100.0f);      // Far clipping plane
-    
-    //perspective((float)45 - 1 * glfwGetMouseWheel(),
-    //                              (float)4 / 3, (float)0.1, (float)100);
 }
 
 #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
@@ -101,8 +98,8 @@ void ObjectsInit()
 {
     flat = new Program("Shaders/wirevertex.vert", "Shaders/wirefragment.frag");
     
-    OBJFile *shipOBJ = new OBJFile("Models/ship.obj");
-    ship = shipOBJ->GenModel();
+    OBJFile shipOBJ("Models/ship.obj");
+    ship = shipOBJ.GenModel();
 }
 
 int main(int argc, char *argv[]) {

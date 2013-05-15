@@ -49,6 +49,10 @@
     <None Include="..\Shaders\wirefragment.frag" />
     <None Include="..\Shaders\wirevertex.vert" />
   </ItemGroup>
+  <ItemGroup>
+    <Object Include="..\Models\cube.obj" />
+    <Object Include="..\Models\ship.obj" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{F47A4C34-D485-4FF8-9C6A-DEC0647A15E9}</ProjectGuid>
     <RootNamespace>cs248project</RootNamespace>

@@ -104,16 +104,18 @@ ArrayBuffer<T>::ArrayBuffer(const std::vector<T>& data)
 }
 
 template <typename T>
-void ArrayBuffer<T>::Use(Program program) const {
-	GLuint loc = program.GetAttribLocation("vertexCoordinates");
+void ArrayBuffer<T>::Use(Program program, const std::string& name) const {
+	GLint loc = program.GetAttribLocation(name.c_str());
+	if (loc < 0) return;
 	glEnableVertexAttribArray(loc);
 	DataBuffer<T>::Bind();
 	glVertexAttribPointer(loc, vertexSize, DataBuffer<T>::dataType, GL_FALSE, 0, 0);
 }
 
 template <typename T>
-void ArrayBuffer<T>::Unuse(Program program) const {
-	GLuint loc = program.GetAttribLocation("vertexCoordinates");
+void ArrayBuffer<T>::Unuse(Program program, const std::string& name) const {
+	GLint loc = program.GetAttribLocation(name.c_str());
+	if (loc < 0) return;
 	glDisableVertexAttribArray(loc);
 }
 
@@ -163,11 +165,11 @@ ModelBuffer::ModelBuffer(const ArrayBuffer<glm::vec3>& vertexBuffer,
 }
 
 void ModelBuffer::Draw(const Program& p, GLenum mode) const {
-	vertexBuffer.Use(p);
+	vertexBuffer.Use(p, "vertexCoordinates");
 	if (hasTextureBuffer)
-		textureBuffer.Use(p);
+		textureBuffer.Use(p, "textureCoordinates");
 	if (hasNormalBuffer)
-		normalBuffer.Use(p);
+		normalBuffer.Use(p, "normalCoordinates");
 
 	elementBuffer.Draw(mode);
 }

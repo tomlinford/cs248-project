@@ -12,7 +12,10 @@ void Model::Draw(const Program& p, const glm::mat4& viewProjection,
 {
 	mat4 mvp = viewProjection * model;
 
+	vec4 pos = mvp * vec4(1);
+
     p.Use();
+	GLenum err = glGetError();
 	p.SetMVP(mvp);
 	modelBuffer.Draw(p, mode);
     p.Unuse();

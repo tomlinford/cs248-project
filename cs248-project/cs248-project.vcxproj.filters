@@ -19,6 +19,9 @@
     <Filter Include="Shaders">
       <UniqueIdentifier>{a156cc86-26cb-4c41-aac0-95f6f7a94850}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Models">
+      <UniqueIdentifier>{999f1bfc-af6d-44cd-843b-98a08c9adb9c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\main.cpp">
@@ -112,5 +115,13 @@
     <None Include="..\Shaders\wirefragment.frag">
       <Filter>Shaders</Filter>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Object Include="..\Models\cube.obj">
+      <Filter>Models</Filter>
+    </Object>
+    <Object Include="..\Models\ship.obj">
+      <Filter>Models</Filter>
+    </Object>
   </ItemGroup>
 </Project>

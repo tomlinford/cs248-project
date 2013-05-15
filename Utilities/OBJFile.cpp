@@ -140,9 +140,26 @@ OBJFile::OBJFile(const char *filename)
 Model *OBJFile::GenModel()
 {
     ArrayBuffer<vec3> abv(vertices);
-    ArrayBuffer<vec2> abt(textures);
-    ArrayBuffer<vec3> abn(normals);
 	ElementArrayBuffer eab(indices);
-	ModelBuffer mb(abv, abt, abn, eab);
-    return new Model(mb, Material());
+	if (textures.empty()) {
+		if (normals.empty()) {
+			ModelBuffer mb(abv, eab);
+			return new Model(mb, Material());
+		} else {
+			ArrayBuffer<vec3> abn(normals);
+			ModelBuffer mb(abv, abn, eab);
+			return new Model(mb, Material());
+		}
+	} else {
+		if (normals.empty()) {
+			ArrayBuffer<vec2> abt(textures);
+			ModelBuffer mb(abv, abt, eab);
+			return new Model(mb, Material());
+		} else {
+			ArrayBuffer<vec2> abt(textures);
+			ArrayBuffer<vec3> abn(normals);
+			ModelBuffer mb(abv, abt, abn, eab);
+			return new Model(mb, Material());
+		}
+	}
 }

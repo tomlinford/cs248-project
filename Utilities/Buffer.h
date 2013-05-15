@@ -53,8 +53,8 @@ class ArrayBuffer : public DataBuffer<T> {
 public:
 	ArrayBuffer(const std::vector<T>& data);
 	ArrayBuffer() {}
-	void Use(Program program) const;
-	void Unuse(Program program) const;
+	void Use(Program program, const std::string& name) const;
+	void Unuse(Program program, const std::string& name) const;
 
 protected:
 	GLsizei vertexSize;
