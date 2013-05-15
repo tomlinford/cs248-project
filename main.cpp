@@ -58,7 +58,7 @@ int main(int argc, char *argv[]) {
 	ModelBuffer mb(ab, eab);
 	Model triangle(mb, Material());
 
-	Program p("Shaders/wirevertex.glsl", "Shaders/wirefragment.glsl");
+	Program p("Shaders/wirevertex.vert", "Shaders/wirefragment.frag");
 	
 
 	// main render loop
