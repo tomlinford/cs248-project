@@ -27,7 +27,7 @@ public:
 class ParticleCluster
 {
 public:
-    ParticleCluster(glm::vec3 location);
+    ParticleCluster(glm::vec3 location, glm::vec3 color);
     //~ParticleCluster();
     
     void AddParticle(glm::vec3 location, glm::vec3 velocity, float scale);
@@ -48,7 +48,7 @@ class ParticleSystem
 {
 public:
     void Update();
-    void AddCluster(glm::vec3 location);
+    void AddCluster(glm::vec3 location, glm::vec3 color);
     void Draw(const Program& p, const glm::mat4& viewProjection,
               const glm::vec3& cameraPos, GLenum mode = GL_TRIANGLES);
     
