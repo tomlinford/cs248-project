@@ -48,6 +48,12 @@
     <ClCompile Include="..\Utilities\FBO.cpp">
       <Filter>Utilities</Filter>
     </ClCompile>
+    <ClCompile Include="..\Utilities\ParticleSystem.cpp">
+      <Filter>Utilities</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Scene.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\gl.h">
@@ -83,12 +89,27 @@
     <ClInclude Include="..\Utilities\FBO.h">
       <Filter>Utilities</Filter>
     </ClInclude>
+    <ClInclude Include="..\Utilities\gl.h">
+      <Filter>Utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Utilities\ParticleSystem.h">
+      <Filter>Utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Scene.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\Shaders\wirefragment.glsl">
+    <None Include="..\Shaders\wirevertex.vert">
       <Filter>Shaders</Filter>
     </None>
-    <None Include="..\Shaders\wirevertex.glsl">
+    <None Include="..\Shaders\quad.frag">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\Shaders\quad.vert">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\Shaders\wirefragment.frag">
       <Filter>Shaders</Filter>
     </None>
   </ItemGroup>

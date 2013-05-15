@@ -11,10 +11,10 @@ const static GLfloat QUAD_COORDS[] = {
 };
 
 const static GLuint QUAD_TEX[] = {
-    0.0, 0.0,
-    0.0, 1.0,
-    1.0, 1.0,
-    1.0, 0.0
+    0, 0,
+    0, 1,
+    1, 1,
+    1, 0
 };
 
 const static GLubyte QUAD_INDICES[] = {

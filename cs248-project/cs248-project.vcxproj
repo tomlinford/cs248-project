@@ -12,9 +12,11 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\main.cpp" />
+    <ClCompile Include="..\Scene.cpp" />
     <ClCompile Include="..\Utilities\FBO.cpp" />
     <ClCompile Include="..\Utilities\Model.cpp" />
     <ClCompile Include="..\Utilities\OBJFile.cpp" />
+    <ClCompile Include="..\Utilities\ParticleSystem.cpp" />
     <ClCompile Include="..\Utilities\Program.cpp" />
     <ClCompile Include="..\Utilities\RenderBuffer.cpp" />
     <ClCompile Include="..\Utilities\Screen.cpp" />
@@ -22,23 +24,30 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\gl.h" />
+    <ClInclude Include="..\Scene.h" />
     <ClInclude Include="..\Utilities\Buffer.h" />
     <ClInclude Include="..\Utilities\CMSpline.hpp" />
     <ClInclude Include="..\Utilities\FBO.h" />
+    <ClInclude Include="..\Utilities\gl.h" />
     <ClInclude Include="..\Utilities\Material.h" />
     <ClInclude Include="..\Utilities\Model.h" />
     <ClInclude Include="..\Utilities\OBJFile.h" />
+    <ClInclude Include="..\Utilities\ParticleSystem.h" />
     <ClInclude Include="..\Utilities\Program.h" />
     <ClInclude Include="..\Utilities\RenderBuffer.h" />
     <ClInclude Include="..\Utilities\Screen.h" />
     <ClInclude Include="..\Utilities\Texture.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\Shaders\wirefragment.glsl" />
-    <None Include="..\Shaders\wirevertex.glsl" />
     <ClCompile Include="..\Utilities\Buffer.cpp">
       <FileType>Document</FileType>
     </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\Shaders\quad.frag" />
+    <None Include="..\Shaders\quad.vert" />
+    <None Include="..\Shaders\wirefragment.frag" />
+    <None Include="..\Shaders\wirevertex.vert" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{F47A4C34-D485-4FF8-9C6A-DEC0647A15E9}</ProjectGuid>
@@ -74,6 +83,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;_MBCS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>

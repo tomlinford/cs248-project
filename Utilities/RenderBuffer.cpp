@@ -12,7 +12,7 @@ RenderBuffer::RenderBuffer(float width, float height)
 {
     glGenRenderbuffers(1, &id);
     glBindRenderbuffer(GL_RENDERBUFFER, id);
-    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, width, height);
+	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, (GLsizei) width, (GLsizei) height);
     glBindRenderbuffer(GL_RENDERBUFFER, 0);
 }
 

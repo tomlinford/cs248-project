@@ -120,7 +120,7 @@ OBJFile::OBJFile(const char *filename)
 
     map<VertexIndex, size_t> indexMap;
 
-    for (int i = 0; i < vertexIndices.size(); i++) {
+    for (size_t i = 0; i < vertexIndices.size(); i++) {
         VertexIndex vi = vertexIndices[i];
         if (indexMap.count(vi) > 0) {
             indices.push_back(indexMap[vi]);
