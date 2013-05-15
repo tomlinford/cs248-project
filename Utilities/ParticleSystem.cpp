@@ -23,8 +23,10 @@ void Particle::Update()
     age++;
 }
 
-ParticleCluster::ParticleCluster(glm::vec3 location)
+ParticleCluster::ParticleCluster(glm::vec3 location, glm::vec3 c)
 {
+    color = c;
+    
     srand(time(NULL));
     for (int i = 0; i < PARTICLES_PER_CLUSTER; i++)
     {
@@ -86,9 +88,9 @@ void ParticleSystem::Update()
     }
 }
 
-void ParticleSystem::AddCluster(glm::vec3 location)
+void ParticleSystem::AddCluster(glm::vec3 location, glm::vec3 color)
 {
-    ParticleCluster cluster(location);
+    ParticleCluster cluster(location, color);
     clusters.push_back(cluster);
 }
 
