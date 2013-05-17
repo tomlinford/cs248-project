@@ -3,8 +3,13 @@
 #include "gl.h"
 
 #include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
 
 #include "Utilities/FBO.h"
+#include "Utilities/Program.h"
+#include "Utilities/Buffer.h"
+#include "Utilities/Model.h"
+#include "Utilities/OBJFile.h"
 
 typedef enum
 {
@@ -30,8 +35,11 @@ private:
     glm::mat4 projection;
     glm::vec3 cameraPos;
     
+    Model *ship;
+    
     Player player;
     
     FBO *fbo;
+    Program *main;
 };
 

@@ -5,15 +5,39 @@ using namespace::glm;
 Scene::Scene(Player p)
 {
     player = p;
+    main = new Program("Shaders/phong.vert", "Shaders/phong.frag");
+    
+    OBJFile shipOBJ("Models/ship.obj");
+    ship = shipOBJ.GenModel();
+    
+    SetView(lookAt(vec3(0, 1, 2),   // Eye
+                   vec3(0, 0, 0),   // Apple
+                   vec3(0, 1, 0))); // Up
 }
 
 Scene::~Scene()
 {
+    delete main;
+    delete ship;
 }
 
 void Scene::Render()
 {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    
+    main->Use();
+    main->SetUniform("illum", 1);
+    main->SetUniform("baseColor", vec3(0, 0.9, 0));
+    main->SetUniform("lightPosition", vec3(0, 3, 0));
+    main->SetUniform("cameraPosition", vec3(0, 1, 2));
+    
+    // Not currently needed
+    // main->SetView(view);
+    // main->SetProjection(projection);
+    
+    ship->Draw(*main, projection * view, vec3(0, 0, 5));
+    
+    main->Unuse();
 }
 
 void Scene::SetView(mat4 v)
