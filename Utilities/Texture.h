@@ -1,6 +1,6 @@
 #pragma once
 
-#include <GLUT/GLUT.h>
+#include "gl.h"
 
 #include <iostream>
 #include <stdlib.h>

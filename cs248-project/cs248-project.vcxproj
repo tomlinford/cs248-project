@@ -12,7 +12,11 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\main.cpp" />
+    <ClCompile Include="..\Objects\Flyable.cpp" />
+    <ClCompile Include="..\Objects\Map.cpp" />
+    <ClCompile Include="..\Objects\Object.cpp" />
     <ClCompile Include="..\Scene.cpp" />
+    <ClCompile Include="..\Utilities\Bitmap.cpp" />
     <ClCompile Include="..\Utilities\FBO.cpp" />
     <ClCompile Include="..\Utilities\Model.cpp" />
     <ClCompile Include="..\Utilities\OBJFile.cpp" />
@@ -24,7 +28,11 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\gl.h" />
+    <ClInclude Include="..\Objects\Flyable.h" />
+    <ClInclude Include="..\Objects\Map.h" />
+    <ClInclude Include="..\Objects\Object.h" />
     <ClInclude Include="..\Scene.h" />
+    <ClInclude Include="..\Utilities\Bitmap.h" />
     <ClInclude Include="..\Utilities\Buffer.h" />
     <ClInclude Include="..\Utilities\CMSpline.hpp" />
     <ClInclude Include="..\Utilities\FBO.h" />
@@ -44,14 +52,26 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\Shaders\quad.frag" />
-    <None Include="..\Shaders\quad.vert" />
-    <None Include="..\Shaders\wirefragment.frag" />
-    <None Include="..\Shaders\wirevertex.vert" />
+    <Object Include="..\Models\cube.obj">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </Object>
+    <Object Include="..\Models\ship.obj">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </Object>
   </ItemGroup>
   <ItemGroup>
-    <Object Include="..\Models\cube.obj" />
-    <Object Include="..\Models\ship.obj" />
+    <None Include="..\Shaders\blur.frag" />
+    <None Include="..\Shaders\hblur.vert" />
+    <None Include="..\Shaders\main.frag" />
+    <None Include="..\Shaders\main.vert" />
+    <None Include="..\Shaders\plain.frag" />
+    <None Include="..\Shaders\plain.vert" />
+    <None Include="..\Shaders\quad.frag" />
+    <None Include="..\Shaders\quad.vert" />
+    <None Include="..\Shaders\rblur.vert" />
+    <None Include="..\Shaders\vblur.vert" />
+    <None Include="..\Shaders\velocity.frag" />
+    <None Include="..\Shaders\velocity.vert" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{F47A4C34-D485-4FF8-9C6A-DEC0647A15E9}</ProjectGuid>
@@ -81,7 +101,9 @@
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
-  <PropertyGroup />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <IncludePath>C:\Users\Tom\Source\Repos\cs248-project\Utilities;C:\Users\Tom\Source\Repos\cs248-project\Objects;$(IncludePath)</IncludePath>
+  </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>

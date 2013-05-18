@@ -33,8 +33,8 @@ void main()
         
         // Camera position
         vec3 V = normalize(vertexPosition - cameraPosition);
-        vec3 L = normalize(lightPosition - vertexPosition);
-        vec3 H = normalize(L - V);
+        vec3 L = normalize(vertexPosition - lightPosition);
+        vec3 H = normalize(L + V);
         vec3 N = normalize(-cross(dFdx(vertexPosition), dFdy(vertexPosition)));
         
         // Calculate ambient
@@ -46,8 +46,7 @@ void main()
         
         // Calculate final color
         final_color = ambient + diffuse;
-    }
-    else {
+    } else {
         final_color = baseColor;
     }
     
