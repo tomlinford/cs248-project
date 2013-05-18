@@ -45,7 +45,8 @@ Screen::Screen()
     ArrayBuffer<vec2> abt(tex);
 	ElementArrayBuffer eab(indices);
 	ModelBuffer mb(abv, abt, eab);
-    quad = new Model(mb, Material());
+    Bounds b(vec3(-1, -1, 0), vec3(1, 1, 0));
+    quad = new Model(mb, Material(), b);
 }
 
 Screen::~Screen()

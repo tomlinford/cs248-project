@@ -139,27 +139,53 @@ OBJFile::OBJFile(const char *filename)
 /** Generates a Model from a parsed obj file */
 Model *OBJFile::GenModel()
 {
+    vec3 min, max;
+    for (int i = 0; i < vertices.size(); i++) {
+        vec3 vertex = vertices[i];
+        if (i == 0) {
+            min.x = max.x = vertex.x;
+            min.y = max.y = vertex.y;
+            min.z = max.z = vertex.z;
+        }
+        else {
+            if (vertex.x < min.x)
+                min.x = vertex.x;
+            else if (vertex.x > max.x)
+                max.x = vertex.x;
+            if (vertex.y < min.y)
+                min.y = vertex.y;
+            else if (vertex.y > max.y)
+                max.y = vertex.y;
+            if (vertex.z < min.z)
+                min.z = vertex.z;
+            else if (vertex.z > max.z)
+                max.z = vertex.z;
+        }
+    }
+    
     ArrayBuffer<vec3> abv(vertices);
 	ElementArrayBuffer eab(indices);
+    Bounds b(min, max);
+    
 	if (textures.empty()) {
 		if (normals.empty()) {
 			ModelBuffer mb(abv, eab);
-			return new Model(mb, Material());
+			return new Model(mb, Material(), b);
 		} else {
 			ArrayBuffer<vec3> abn(normals);
 			ModelBuffer mb(abv, abn, eab);
-			return new Model(mb, Material());
+			return new Model(mb, Material(), b);
 		}
 	} else {
 		if (normals.empty()) {
 			ArrayBuffer<vec2> abt(textures);
 			ModelBuffer mb(abv, abt, eab);
-			return new Model(mb, Material());
+			return new Model(mb, Material(), b);
 		} else {
 			ArrayBuffer<vec2> abt(textures);
 			ArrayBuffer<vec3> abn(normals);
 			ModelBuffer mb(abv, abt, abn, eab);
-			return new Model(mb, Material());
+			return new Model(mb, Material(), b);
 		}
 	}
 }

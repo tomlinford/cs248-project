@@ -28,26 +28,38 @@ public:
     /** Setup functions */
     void LoadLevel(Level *level);
     
-    /** Move objects, test collision, etc. */
+    /** Move objects, test collision, etc. 
+     Also forward information to server. Perhaps
+     invoke a separate networking class. */
     void Update();
     
     /** Draws the scene to the window */
     void Render();
     
-    /** View matrices */
+    /** Accessors for view matrices */
     void SetView(glm::mat4 v);
     void SetProjection(glm::mat4 p);
     
 private:
+    /** View matrices. These should be
+     player-specific. The camera for player 1
+     follows the ship movement and the camera
+     for player follows the mouse aiming
+     movement. */
     glm::mat4 view;
     glm::mat4 projection;
     glm::vec3 cameraPos;
     
+    /** The current level */
     Level *level;
     
+    /** The current player view */
     Player player;
     
+    /** For post-processing effects */
     FBO *fbo;
+    
+    /** Main shader */
     Program *main;
 };
 

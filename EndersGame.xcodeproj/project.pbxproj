@@ -56,8 +56,8 @@
 		786F68081742350100E359E4 /* quad.vert */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; path = quad.vert; sourceTree = "<group>"; };
 		786F68091742358200E359E4 /* quad.frag */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; path = quad.frag; sourceTree = "<group>"; };
 		786F681917423ED700E359E4 /* CMSpline.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = CMSpline.hpp; sourceTree = "<group>"; };
-		789B1999174638B400C90C56 /* phong.frag */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; path = phong.frag; sourceTree = "<group>"; };
-		789B199A174638B400C90C56 /* phong.vert */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; path = phong.vert; sourceTree = "<group>"; };
+		789B1999174638B400C90C56 /* main.frag */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; path = main.frag; sourceTree = "<group>"; };
+		789B199A174638B400C90C56 /* main.vert */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; path = main.vert; sourceTree = "<group>"; };
 		789B19A117463C8800C90C56 /* Object.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Object.cpp; sourceTree = "<group>"; };
 		789B19A217463C8800C90C56 /* Object.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Object.h; sourceTree = "<group>"; };
 		789B19A417463D1B00C90C56 /* Flyable.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Flyable.cpp; sourceTree = "<group>"; };
@@ -182,8 +182,8 @@
 				789B19BA1746417F00C90C56 /* velocity.vert */,
 				786F68091742358200E359E4 /* quad.frag */,
 				786F68081742350100E359E4 /* quad.vert */,
-				789B1999174638B400C90C56 /* phong.frag */,
-				789B199A174638B400C90C56 /* phong.vert */,
+				789B1999174638B400C90C56 /* main.frag */,
+				789B199A174638B400C90C56 /* main.vert */,
 				78B0CB821742454B00CBECC5 /* plain.frag */,
 				78B0CB831742454B00CBECC5 /* plain.vert */,
 			);
@@ -291,6 +291,7 @@
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_MODEL_TUNING = G5;
 				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = "";
 				HEADER_SEARCH_PATHS = /usr/include;
 				INSTALL_PATH = "$(HOME)/bin";
 				LIBRARY_SEARCH_PATHS = /usr/lib;
@@ -308,6 +309,7 @@
 				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
 				GCC_MODEL_TUNING = G5;
 				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = "";
 				HEADER_SEARCH_PATHS = /usr/include;
 				INSTALL_PATH = "$(HOME)/bin";
 				LIBRARY_SEARCH_PATHS = /usr/lib;
@@ -320,6 +322,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
+				GCC_PREPROCESSOR_DEFINITIONS = "";
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				OTHER_CFLAGS = "";
@@ -331,6 +334,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
+				GCC_PREPROCESSOR_DEFINITIONS = "";
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				OTHER_CFLAGS = "";

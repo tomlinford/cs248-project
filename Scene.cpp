@@ -5,16 +5,19 @@ using namespace::glm;
 Scene::Scene(Player p)
 {
     player = p;
-    main = new Program("Shaders/phong.vert", "Shaders/phong.frag");
+    main = new Program("Shaders/main.vert", "Shaders/main.frag");
     
-    SetView(lookAt(vec3(0, 1, 2),   // Eye
+    SetView(lookAt(vec3(0, 1, -2),   // Eye
                    vec3(0, 0, 0),   // Apple
-                   vec3(0, 1, 0))); // Up
+                   vec3(0, 0, 1))); // Up
 }
 
 Scene::~Scene()
 {
-    delete main;
+    if (main)
+        delete main;
+    if (level)
+        delete level;
 }
 
 void Scene::LoadLevel(Level *l)

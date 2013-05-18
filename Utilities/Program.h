@@ -59,7 +59,7 @@ public:
 
     /** Use, unuse the program. */
     void Use() const { glUseProgram(id); }
-    void Unuse() const { glBindTexture(GL_TEXTURE_2D, 0); }
+    void Unuse() const { glBindTexture(GL_TEXTURE_2D, 0); glUseProgram(0); }
 
     /** Get the GLint associated with the program. */
     GLint GetID() const { return id; }
