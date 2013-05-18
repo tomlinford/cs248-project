@@ -53,7 +53,14 @@ Screen::~Screen()
     delete quad;
 }
 
-void Screen::Draw(Program& program, glm::mat4& viewProjection)
+void Screen::Draw(Program& p, glm::mat4& viewProjection)
 {
-    quad->Draw(program, viewProjection, vec3(0), GL_TRIANGLES);
+    mat4 mvp = viewProjection * mat4(1);
+    
+    p.Use();
+	p.SetMVP(mvp);
+    
+    quad->Draw(p, GL_TRIANGLES);
+    
+    p.Unuse();
 }

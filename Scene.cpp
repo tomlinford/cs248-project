@@ -7,9 +7,6 @@ Scene::Scene(Player p)
     player = p;
     main = new Program("Shaders/phong.vert", "Shaders/phong.frag");
     
-    OBJFile shipOBJ("Models/ship.obj");
-    ship = shipOBJ.GenModel();
-    
     SetView(lookAt(vec3(0, 1, 2),   // Eye
                    vec3(0, 0, 0),   // Apple
                    vec3(0, 1, 0))); // Up
@@ -18,7 +15,15 @@ Scene::Scene(Player p)
 Scene::~Scene()
 {
     delete main;
-    delete ship;
+}
+
+void Scene::LoadLevel(Level *l)
+{
+    level = l;
+}
+
+void Scene::Update()
+{
 }
 
 void Scene::Render()
@@ -35,7 +40,22 @@ void Scene::Render()
     // main->SetView(view);
     // main->SetProjection(projection);
     
-    ship->Draw(*main, projection * view, vec3(0, 0, 5));
+    // Some levels may be in space and not have a terrain map
+    if (level->map)
+        level->map->Draw(*main, projection * view, vec3(0, 0, 5));
+    
+    // Draw ship
+    if (level->ship)
+        level->ship->Draw(*main, projection * view, vec3(0, 0, 5));
+    
+    // Draw objects in scene
+    for (std::vector<Object>::iterator it = level->objects.begin();
+         it != level->objects.end();
+         it++)
+    {
+        Object obj = *it;
+        obj.Draw(*main, projection * view, vec3(0, 0, 5));
+    }
     
     main->Unuse();
 }

@@ -5,6 +5,8 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
+#include "Level.h"
+
 #include "Utilities/FBO.h"
 #include "Utilities/Program.h"
 #include "Utilities/Buffer.h"
@@ -23,7 +25,13 @@ public:
     Scene(Player player);
     ~Scene();
     
-    /** Draw functions */
+    /** Setup functions */
+    void LoadLevel(Level *level);
+    
+    /** Move objects, test collision, etc. */
+    void Update();
+    
+    /** Draws the scene to the window */
     void Render();
     
     /** View matrices */
@@ -35,7 +43,7 @@ private:
     glm::mat4 projection;
     glm::vec3 cameraPos;
     
-    Model *ship;
+    Level *level;
     
     Player player;
     

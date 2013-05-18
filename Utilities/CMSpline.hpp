@@ -35,6 +35,18 @@ public:
         return c1 + c2 * u + c3 * pow(u, 2) + c4 * pow(u, 3);
     }
     
+    float tangent(float u) {
+        return c2 + 2 * c3 * u + 3 * c4 * pow(u, 2);
+    }
+    
+    /** Will be useful for aligning the camera */
+    float tangent3D(float u) {
+        vec3 tangent = glm::vec3(v2.x + 2 * v3.x * u + 3 * v4.x * pow(u, 2),
+                                 v2.y + 2 * v3.y * u + 3 * v4.y * pow(u, 2),
+                                 v2.z + 2 * v3.z * u + 3 * v4.z * pow(u, 2));
+        return glm:normalize(tangent);
+    }
+    
     glm::vec3 evaluate3D(float u) {
         return glm::vec3(v1.x + v2.x * u + v3.x * pow(u, 2) + v4.x * pow(u, 3),
                          v1.y + v2.y * u + v3.y * pow(u, 2) + v4.y * pow(u, 3),

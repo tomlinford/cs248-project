@@ -23,6 +23,8 @@
 		78B0CB8417424B6B00CBECC5 /* Buffer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 78B0CB78174244B200CBECC5 /* Buffer.cpp */; };
 		78B1AA001742DF2E003E5C24 /* Scene.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 78B1A9FE1742DF2E003E5C24 /* Scene.cpp */; };
 		78B1AA041742EFAE003E5C24 /* ParticleSystem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 78B1AA021742EFAE003E5C24 /* ParticleSystem.cpp */; };
+		78E54B141746F0ED00BFC6B3 /* Level.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 78E54B121746F0ED00BFC6B3 /* Level.cpp */; };
+		78E54B181746F85800BFC6B3 /* Map.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 78E54B161746F85800BFC6B3 /* Map.cpp */; };
 		8DD76F650486A84900D96B5E /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 08FB7796FE84155DC02AAC07 /* main.cpp */; settings = {ATTRIBUTES = (); }; };
 /* End PBXBuildFile section */
 
@@ -83,6 +85,10 @@
 		78B1A9FF1742DF2E003E5C24 /* Scene.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Scene.h; sourceTree = "<group>"; };
 		78B1AA021742EFAE003E5C24 /* ParticleSystem.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ParticleSystem.cpp; sourceTree = "<group>"; };
 		78B1AA031742EFAE003E5C24 /* ParticleSystem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ParticleSystem.h; sourceTree = "<group>"; };
+		78E54B121746F0ED00BFC6B3 /* Level.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Level.cpp; sourceTree = "<group>"; };
+		78E54B131746F0ED00BFC6B3 /* Level.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Level.h; sourceTree = "<group>"; };
+		78E54B161746F85800BFC6B3 /* Map.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Map.cpp; sourceTree = "<group>"; };
+		78E54B171746F85800BFC6B3 /* Map.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Map.h; sourceTree = "<group>"; };
 		8DD76F6C0486A84900D96B5E /* EndersGame */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = EndersGame; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -122,6 +128,8 @@
 				08FB7796FE84155DC02AAC07 /* main.cpp */,
 				78B1A9FE1742DF2E003E5C24 /* Scene.cpp */,
 				78B1A9FF1742DF2E003E5C24 /* Scene.h */,
+				78E54B121746F0ED00BFC6B3 /* Level.cpp */,
+				78E54B131746F0ED00BFC6B3 /* Level.h */,
 			);
 			name = Source;
 			sourceTree = "<group>";
@@ -189,6 +197,8 @@
 				789B19A217463C8800C90C56 /* Object.h */,
 				789B19A417463D1B00C90C56 /* Flyable.cpp */,
 				789B19A517463D1B00C90C56 /* Flyable.h */,
+				78E54B161746F85800BFC6B3 /* Map.cpp */,
+				78E54B171746F85800BFC6B3 /* Map.h */,
 			);
 			path = Objects;
 			sourceTree = "<group>";
@@ -264,6 +274,8 @@
 				789B19A617463D1B00C90C56 /* Flyable.cpp in Sources */,
 				789B19B31746412600C90C56 /* Bitmap.cpp in Sources */,
 				789B19B41746412600C90C56 /* Texture.cpp in Sources */,
+				78E54B141746F0ED00BFC6B3 /* Level.cpp in Sources */,
+				78E54B181746F85800BFC6B3 /* Map.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

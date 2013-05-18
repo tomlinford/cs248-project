@@ -6,6 +6,7 @@
 #include <glm/glm.hpp>
 
 #include "Scene.h"
+#include "Level.h"
 
 using namespace std;
 using namespace glm;
@@ -62,7 +63,14 @@ int main(int argc, char *argv[])
 	glewInit();
 #endif
     
+    OBJFile shipOBJ("Models/ship.obj");
+    
+    Level *level = new Level();
+    level->map = NULL;
+    level->ship = new Ship(shipOBJ.GenModel());
+    
     scene = new Scene(PLAYER1);
+    scene->LoadLevel(level);
     
 	glfwSetWindowTitle("CS248 Project");
 	glfwSetKeyCallback(KeyCallback);
