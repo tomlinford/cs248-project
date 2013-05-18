@@ -22,6 +22,9 @@
     <Filter Include="Models">
       <UniqueIdentifier>{999f1bfc-af6d-44cd-843b-98a08c9adb9c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Objects">
+      <UniqueIdentifier>{18dbd575-cfc8-46a8-9d77-529b8b3790c3}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\main.cpp">
@@ -56,6 +59,18 @@
     </ClCompile>
     <ClCompile Include="..\Scene.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Objects\Flyable.cpp">
+      <Filter>Objects</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Objects\Map.cpp">
+      <Filter>Objects</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Objects\Object.cpp">
+      <Filter>Objects</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Utilities\Bitmap.cpp">
+      <Filter>Utilities</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -101,20 +116,18 @@
     <ClInclude Include="..\Scene.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="..\Shaders\wirevertex.vert">
-      <Filter>Shaders</Filter>
-    </None>
-    <None Include="..\Shaders\quad.frag">
-      <Filter>Shaders</Filter>
-    </None>
-    <None Include="..\Shaders\quad.vert">
-      <Filter>Shaders</Filter>
-    </None>
-    <None Include="..\Shaders\wirefragment.frag">
-      <Filter>Shaders</Filter>
-    </None>
+    <ClInclude Include="..\Objects\Flyable.h">
+      <Filter>Objects</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Objects\Map.h">
+      <Filter>Objects</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Objects\Object.h">
+      <Filter>Objects</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Utilities\Bitmap.h">
+      <Filter>Utilities</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Object Include="..\Models\cube.obj">
@@ -123,5 +136,43 @@
     <Object Include="..\Models\ship.obj">
       <Filter>Models</Filter>
     </Object>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\Shaders\hblur.vert">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\Shaders\main.frag">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\Shaders\main.vert">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\Shaders\plain.frag">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\Shaders\plain.vert">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\Shaders\quad.frag">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\Shaders\quad.vert">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\Shaders\rblur.vert">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\Shaders\vblur.vert">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\Shaders\velocity.frag">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\Shaders\velocity.vert">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\Shaders\blur.frag">
+      <Filter>Shaders</Filter>
+    </None>
   </ItemGroup>
 </Project>

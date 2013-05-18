@@ -28,5 +28,5 @@ void main()
     normalPosition = (model * vec4(normalCoordinates, 1)).xyz;
     
     // Vertex's output color - no change
-    gl_FrontColor = gl_Color;
+    //gl_FrontColor = gl_Color;
 }
