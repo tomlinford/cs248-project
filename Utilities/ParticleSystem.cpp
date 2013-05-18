@@ -12,7 +12,7 @@ Particle::Particle(glm::vec3 l, glm::vec3 v, float s)
     velocity = v;
     scale = s;
     age = 0;
-    lifetime = DEFAULT_LIFETIME;
+    lifetime = (float)rand() / RAND_MAX * DEFAULT_LIFETIME;
 }
 
 

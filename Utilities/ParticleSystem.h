@@ -9,6 +9,7 @@
 
 #include "Program.h"
 
+/* A single particle */
 class Particle
 {
 public:
@@ -24,6 +25,8 @@ public:
     bool Valid() { return (age / lifetime) < 1.0; }
 };
 
+/** A particle cluster represents an individual group of particles
+ forming a related effect. */
 class ParticleCluster
 {
 public:
@@ -44,6 +47,8 @@ private:
     glm::vec3 color;
 };
 
+/** A particle system is made up of a bunch of particle clusters, each
+ of which represent a single effect in the scene. */
 class ParticleSystem
 {
 public:

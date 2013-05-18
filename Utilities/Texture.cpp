@@ -2,17 +2,20 @@
 
 using namespace::std;
 
+#define DEFAULT_HEIGHT 512
+#define DEFAULT_WIDTH 512
+
 Texture::Texture(GLenum format)
 {
-    Texture(0, 0, format);
+    Texture(DEFAULT_WIDTH, DEFAULT_HEIGHT, format);
 }
 
-Texture::Texture(GLfloat width, GLfloat height, GLenum format)
+Texture::Texture(GLuint width, GLuint height, GLenum format)
 {
-    Texture(0, 0, format, NULL);
+    Texture(width, height, format, NULL);
 }
 
-Texture::Texture(GLfloat width, GLfloat height, GLenum format, GLfloat data[])
+Texture::Texture(GLuint width, GLuint height, GLenum format, GLfloat data[])
 {
     Texture::width = width;
     Texture::height = height;
@@ -44,11 +47,6 @@ void Texture::LoadTexFile(char *filename)
 {
     if (!bitmap->loadBMP(filename))
         cout << "Texture " << filename << " failed to load" << endl;
-}
-
-GLuint Texture::GetID()
-{
-    return id;
 }
 
 void Texture::Bind()

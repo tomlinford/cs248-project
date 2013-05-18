@@ -79,6 +79,9 @@ int main(int argc, char *argv[])
     glEnable(GL_LINE_SMOOTH);   // Smooth lines
     glEnable(GL_MULTISAMPLE);   // Multisampling
     glEnable(GL_TEXTURE_2D);    // Texturing
+    
+    // Seed random
+    srand(time(NULL));
 
 	// Main render loop
 	while(glfwGetWindowParam(GLFW_OPENED)) {
