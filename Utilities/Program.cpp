@@ -59,8 +59,9 @@ Program::Program(const Shader& vertexShader, const Shader& fragmentShader)
 
 Program::Program(const std::string& vertexShaderFilename,
 	const std::string& fragmentShaderFilename)
-    : id(glCreateProgram())
+    //: id(glCreateProgram())
 {
+	id = glCreateProgram();
 	Shader vertexShader(GL_VERTEX_SHADER, vertexShaderFilename);
 	Shader fragmentShader(GL_FRAGMENT_SHADER, fragmentShaderFilename);
     if (!vertexShader.Valid() || !fragmentShader.Valid()

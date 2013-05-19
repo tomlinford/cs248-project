@@ -45,7 +45,8 @@ void main()
         diffuse = clamp(dot(L, N), 0.0, 1.0) * diffuseColor;
         
         // Calculate final color
-        final_color = ambient + diffuse;
+		// adding H * 0.000001 is a hack to make sure that cameraPosition doesn't get optimized out
+        final_color = ambient + diffuse + (H * 0.00001);
     } else {
         final_color = baseColor;
     }

@@ -2,7 +2,7 @@
 
 using namespace::glm;
 
-Scene::Scene(Player p)
+Scene::Scene(Player p) : terrain(NULL)
 {
     player = p;
     main = new Program("Shaders/main.vert", "Shaders/main.frag");
@@ -32,6 +32,9 @@ void Scene::Update()
 void Scene::Render()
 {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+	if (terrain)
+		terrain->Draw(projection * view);
     
     main->Use();
     main->SetUniform("illum", 1);
@@ -71,4 +74,9 @@ void Scene::SetView(mat4 v)
 void Scene::SetProjection(mat4 p)
 {
     projection = p;
+}
+
+void Scene::SetTerrain(float *terrainMap, size_t size) {
+	if (terrain != NULL) delete terrain;
+	terrain = new Terrain(terrainMap, size);
 }

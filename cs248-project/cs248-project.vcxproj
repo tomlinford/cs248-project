@@ -11,7 +11,9 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\Level.cpp" />
     <ClCompile Include="..\main.cpp" />
+    <ClCompile Include="..\Networking.cpp" />
     <ClCompile Include="..\Objects\Flyable.cpp" />
     <ClCompile Include="..\Objects\Map.cpp" />
     <ClCompile Include="..\Objects\Object.cpp" />
@@ -24,10 +26,13 @@
     <ClCompile Include="..\Utilities\Program.cpp" />
     <ClCompile Include="..\Utilities\RenderBuffer.cpp" />
     <ClCompile Include="..\Utilities\Screen.cpp" />
+    <ClCompile Include="..\Utilities\Terrain.cpp" />
     <ClCompile Include="..\Utilities\Texture.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\gl.h" />
+    <ClInclude Include="..\Level.h" />
+    <ClInclude Include="..\Networking.h" />
     <ClInclude Include="..\Objects\Flyable.h" />
     <ClInclude Include="..\Objects\Map.h" />
     <ClInclude Include="..\Objects\Object.h" />
@@ -44,6 +49,7 @@
     <ClInclude Include="..\Utilities\Program.h" />
     <ClInclude Include="..\Utilities\RenderBuffer.h" />
     <ClInclude Include="..\Utilities\Screen.h" />
+    <ClInclude Include="..\Utilities\Terrain.h" />
     <ClInclude Include="..\Utilities\Texture.h" />
   </ItemGroup>
   <ItemGroup>
@@ -60,6 +66,7 @@
     </Object>
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\Server\server.go" />
     <None Include="..\Shaders\blur.frag" />
     <None Include="..\Shaders\hblur.vert" />
     <None Include="..\Shaders\main.frag" />
@@ -69,6 +76,8 @@
     <None Include="..\Shaders\quad.frag" />
     <None Include="..\Shaders\quad.vert" />
     <None Include="..\Shaders\rblur.vert" />
+    <None Include="..\Shaders\terrain.frag" />
+    <None Include="..\Shaders\terrain.vert" />
     <None Include="..\Shaders\vblur.vert" />
     <None Include="..\Shaders\velocity.frag" />
     <None Include="..\Shaders\velocity.vert" />
