@@ -21,7 +21,7 @@ static inline void addToVectors(int i, int j, size_t size, float increment, vect
 	indices.push_back(indexing[i + j * size]);
 }
 
-Terrain::Terrain(GLfloat *terrainMap, size_t size) : p(VERT_FILENAME, FRAG_FILENAME){
+Terrain::Terrain(GLfloat *terrainMap, size_t size) : p(VERT_FILENAME, FRAG_FILENAME) {
 	heightField = new Texture(size, size, GL_LUMINANCE, terrainMap);
 
 	vector<vec3> vertices;

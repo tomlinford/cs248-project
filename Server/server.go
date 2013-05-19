@@ -13,6 +13,10 @@ import (
 	"time"
 )
 
+const (
+	kSize = 32
+)
+
 func init() {
 	rand.Seed(int64(time.Now().Nanosecond()))
 }
@@ -41,38 +45,38 @@ func main() {
 }
 
 func sendCommands(conn net.Conn) {
-	rd := bufio.NewReader(os.Stdin)
+	// rd := bufio.NewReader(os.Stdin)
 	wr := bufio.NewWriter(conn)
 
 	// automatically write terrain map
-	tm := genTerrainMap(512)
+	tm := genTerrainMap(kSize)
 	wr.WriteString("terrain\n")
-	fmt.Fprintln(wr, 512)
+	fmt.Fprintln(wr, kSize)
 	buf := new(bytes.Buffer)
 	_ = binary.Write(buf, binary.LittleEndian, tm)
 	io.Copy(wr, buf)
 	wr.Flush()
 
-	for {
-		fmt.Print("Enter command: ")
-		command, _ := rd.ReadString('\n')
-		command = strings.TrimSpace(command)
-		if command == "animate" {
-			command = animateCommand(rd)
-		} else if command == "animate preset" {
-			command = "animate 0 0 0 0 0 0 0 0 0 1 0 0 1 0 0 2 0 0 3 0 0 3 1 0 2 1 0 2 1 1 1 1 1 0 1 1 0 1 0 0 0 0 0 0 0"
-		}
-		_, err := wr.WriteString(command + "\n")
-		if err != nil {
-			fmt.Println("connection closed")
-			return
-		}
-		err = wr.Flush()
-		if err != nil {
-			fmt.Println("connection closed")
-			return
-		}
-	}
+	// for {
+	// 	fmt.Print("Enter command: ")
+	// 	command, _ := rd.ReadString('\n')
+	// 	command = strings.TrimSpace(command)
+	// 	if command == "animate" {
+	// 		command = animateCommand(rd)
+	// 	} else if command == "animate preset" {
+	// 		command = "animate 0 0 0 0 0 0 0 0 0 1 0 0 1 0 0 2 0 0 3 0 0 3 1 0 2 1 0 2 1 1 1 1 1 0 1 1 0 1 0 0 0 0 0 0 0"
+	// 	}
+	// 	_, err := wr.WriteString(command + "\n")
+	// 	if err != nil {
+	// 		fmt.Println("connection closed")
+	// 		return
+	// 	}
+	// 	err = wr.Flush()
+	// 	if err != nil {
+	// 		fmt.Println("connection closed")
+	// 		return
+	// 	}
+	// }
 }
 
 func animateCommand(rd *bufio.Reader) string {

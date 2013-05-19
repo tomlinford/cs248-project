@@ -1,0 +1,17 @@
+{
+	"folders":
+	[
+		{
+			"path": "."
+		}
+	],
+
+	"settings":
+	{
+		"sublimeclang_options":
+		[
+			"-I${folder:${project_path:cs248-project.sublime-project}}",
+			"-I${folder:${project_path:cs248-project.sublime-project}}/*"
+		]
+	}
+}

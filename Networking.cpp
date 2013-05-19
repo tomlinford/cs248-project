@@ -9,7 +9,7 @@ using namespace std;
 namespace Networking {
 
 // these two need to be identified during init
-static Scene *scene;
+static Level *level;
 static string ip = ""; // boss, you probably will want to set this to be "localhost"
 
 // constant port number
@@ -21,8 +21,8 @@ const static string TERRAIN = "terrain";
 // function template
 static void listenFunc();
 
-extern void Init(Scene *currentScene, std::string ip_addr) {
-	scene = currentScene;
+extern void Init(Level *currentLevel, std::string ip_addr) {
+	level = currentLevel;
 	ip = ip_addr;
 
 	// starts listening thread
@@ -45,7 +45,7 @@ static void listenFunc() {
 			// now we read in the appropriate bytes into an array
 			float *terrainMap = new float[size * size];
 			ns.read((char *)terrainMap, size * size * sizeof(float));
-			scene->SetTerrain(terrainMap, size);
+			level->SetLevel(terrainMap, size);
 		}
 	}
 }

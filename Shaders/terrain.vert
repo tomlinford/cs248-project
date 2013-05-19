@@ -14,7 +14,7 @@ void main() {
     vec4 height = texture2D(heightField, textureCoordinates.xy);
     float displacement = 0.3 * height.x;
 
-    vec3 position = gl_Vertex.xyz;
+    vec3 position = vertexCoordinates;
     position += displacement * normal;
     
     if (abs(textureCoordinates.x - 0.5) < 0.1)

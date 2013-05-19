@@ -3,7 +3,7 @@
 varying vec3 pos;
 varying vec3 normal;
 
-uniform bool illum;
+uniform int illum;
 
 void main() {
     vec3 cameraPosition = vec3(0.0, 0.0, 1.0);
@@ -37,4 +37,5 @@ void main() {
     }
     
     gl_FragColor = vec4(final_color, 1.0);
+    // gl_FragColor = vec4(1, 0, 0, 1);
 }

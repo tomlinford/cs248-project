@@ -31,6 +31,10 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\gl.h" />
+    <ClInclude Include="..\Grid\foreach.h" />
+    <ClInclude Include="..\Grid\grid.h" />
+    <ClInclude Include="..\Grid\strlib.h" />
+    <ClInclude Include="..\Grid\vector.h" />
     <ClInclude Include="..\Level.h" />
     <ClInclude Include="..\Networking.h" />
     <ClInclude Include="..\Objects\Flyable.h" />
@@ -66,6 +70,11 @@
     </Object>
   </ItemGroup>
   <ItemGroup>
+    <Text Include="..\cs248-project.sublime-project">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
+      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</DeploymentContent>
+      <FileType>Document</FileType>
+    </Text>
     <None Include="..\Server\server.go" />
     <None Include="..\Shaders\blur.frag" />
     <None Include="..\Shaders\hblur.vert" />

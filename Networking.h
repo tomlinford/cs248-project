@@ -3,5 +3,5 @@
 #include "../Scene.h"
 
 namespace Networking {
-	void Init(Scene *currentScene, std::string ip_addr);
+	void Init(Level *currentLevel, std::string ip_addr);
 };
