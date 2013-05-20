@@ -2,6 +2,7 @@
 package twodtree
 
 import (
+	// "fmt"
 	"math"
 )
 
@@ -11,7 +12,7 @@ type TwoDTree struct {
 
 func (tree *TwoDTree) NearestNeighbor(test [2]float32) [2]float32 {
 	g := guess{nil, test, float32(math.Inf(1))}
-	g.procedure(tree.root, 0)
+	g.procedure(tree.root, 0, false)
 	return g.test
 }
 
@@ -66,32 +67,28 @@ type guess struct {
 }
 
 // nearest neighbor lookup procedure
-func (g *guess) procedure(curr *node, count int) {
+func (g *guess) procedure(curr *node, count int, visitedOtherSide bool) {
 	if curr == nil {
 		return
 	}
-	if g.guess == nil {
+	dist := distance(curr.elem, g.test)
+	if dist < g.bestDist {
 		g.guess = curr
-	} else {
-		dist := distance(curr.elem, g.guess.elem)
-		if dist < g.bestDist {
-			g.bestDist = dist
-			g.guess = curr
-		}
+		g.bestDist = dist
 	}
 	index := count % 2
 	if g.test[index] < curr.elem[index] {
-		g.procedure(curr.left, count+1)
+		g.procedure(curr.left, count+1, false)
 	} else {
-		g.procedure(curr.right, count+1)
+		g.procedure(curr.right, count+1, false)
 	}
-
-	if math.Abs(float64(curr.elem[index]-g.test[index])) < float64(g.bestDist) &&
-		curr.parent != nil {
+	if !visitedOtherSide &&
+		curr.parent != nil &&
+		math.Abs(float64(curr.elem[index]-g.test[index])) < float64(g.bestDist) {
 		if curr.parent.left == curr {
-			g.procedure(curr.parent.right, count)
+			g.procedure(curr.parent.right, count, true)
 		} else {
-			g.procedure(curr.parent.left, count)
+			g.procedure(curr.parent.left, count, true)
 		}
 	}
 }
