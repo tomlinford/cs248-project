@@ -26,11 +26,10 @@ func init() {
 }
 
 func main() {
-	go func() {
-		fmt.Println("generating terrain map of size", 1024)
-		_ = genTerrainMap(1024)
-		fmt.Println("terrain generation completed")
-	}()
+	// fmt.Println("generating terrain map of size", 32)
+	// _ = genTerrainMap(32)
+	// fmt.Println("terrain generation completed")
+	// return
 	ln, err := net.Listen("tcp", ":1338")
 	if err != nil {
 		panic(err)
@@ -126,8 +125,10 @@ func genTerrainMap(size int) []float32 {
 			// x := float32(i) * increment
 			// y := float32(j) * increment
 			dist := float64(p.distanceTo(float32(i), float32(j)))
+			// fmt.Println("dist:", dist)
 			if dist < 3.0 {
 				tm.set(i, j, tm.get(i, j)-float32(math.Sqrt(4.0-dist)))
+				// fmt.Println("depressed terrain")
 			}
 		}
 	}

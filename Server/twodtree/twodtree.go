@@ -13,7 +13,8 @@ type TwoDTree struct {
 func (tree *TwoDTree) NearestNeighbor(test [2]float32) [2]float32 {
 	g := guess{nil, test, float32(math.Inf(1))}
 	g.procedure(tree.root, 0, false)
-	return g.test
+	// fmt.Println(g, test)
+	return g.guess.elem
 }
 
 // func (tree *TwoDTree) AddFromSlice(data [][2]float32) {
