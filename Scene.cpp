@@ -8,7 +8,7 @@ Scene::Scene(Player p) : terrain(NULL)
     player = p;
     main = new Program("Shaders/main.vert", "Shaders/main.frag");
     
-    SetView(lookAt(vec3(2, 0, 2),   // Eye
+    SetView(lookAt(vec3(.7, .7, .7),   // Eye
                    vec3(0, 0, 0),   // Apple
                    vec3(0, 0, 1))); // Up
 }

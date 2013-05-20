@@ -2,7 +2,8 @@
 
 #include <vector>
 #include <glm/glm.hpp>
-#include <boost/thread.hpp>
+#include <thread>
+#include <mutex>
 
 #include "Object.h"
 #include "Flyable.h"
@@ -28,6 +29,6 @@ private:
 		bool needsToLoad;
 		float *terrainMap; // will need to be freed
 		size_t size;
-		boost::mutex mutex;
+		std::mutex mutex;
 	} mapLoader;
 };

@@ -9,18 +9,20 @@ void main() {
     vec3 cameraPosition = vec3(0.0, 0.0, 1.0);
     vec3 lightPosition = vec3(0.0, 1.0, 1.0);
 
-    vec3 final_color;
+    vec4 final_color;
     vec3 base_color = vec3(0.0, 0.4, 0.5);
     
-    if (illum) {
+    if (illum > 0) {
         // Calculate colors
         vec3 ambientColor = 0.3 * base_color;
+        // ambientColor = 0.3 * vec3(1, 0, 0);
         vec3 diffuseColor = base_color;
+        // diffuseColor = vec3(0, 1, 0);
         
         // Camera position
         vec3 V = normalize(pos - cameraPosition);
-        vec3 L = normalize(lightPosition - pos);
-        vec3 H = normalize(L - V);
+        vec3 L = normalize(pos - lightPosition);
+        vec3 H = normalize(L + V);
         vec3 N = normalize(-cross(dFdx(pos), dFdy(pos)));
 
         // Calculate ambient
@@ -31,11 +33,13 @@ void main() {
         diffuse = clamp(dot(L, N), 0.0, 1.0) * diffuseColor;
         
         // Calculate final color
-        final_color = ambient + diffuse;
+        final_color = vec4(ambient + diffuse, 1);
+        // final_color = vec4(base_color, 1);
     } else {
-        final_color = vec3(0.0, 0.7, 0.9);
+        final_color = vec4(0.0, 0.7, 0.9, 0.6);
     }
     
-    gl_FragColor = vec4(final_color, 1.0);
-    // gl_FragColor = vec4(1, 0, 0, 1);
+    gl_FragColor = final_color;
+    // if (pos.z < -0.05)
+    //     gl_FragColor = vec4(1, 0, 0, 1);
 }

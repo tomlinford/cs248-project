@@ -33,8 +33,8 @@ Map::Map(float *heightMap, size_t size) : p(VERT_FILENAME, FRAG_FILENAME)
 
 	float halfsize = size / 2;
 	float increment = 1.f / size;
-	for (int i = 0; i < size; i++) {
-		for (int j = 0; j < size; j++) {
+	for (int i = 0; i < size - 1; i++) {
+		for (int j = 0; j < size - 1; j++) {
 			// add everything for the triangles
 			addToVectors(i, j, size, increment, vertices, textures, triangleIndices, indexing);
 			addToVectors(i + 1, j, size, increment, vertices, textures, triangleIndices, indexing);
@@ -52,6 +52,8 @@ Map::Map(float *heightMap, size_t size) : p(VERT_FILENAME, FRAG_FILENAME)
 			addToVectors(i, j + 1, size, increment, vertices, textures, lineIndices, indexing);
 			addToVectors(i, j + 1, size, increment, vertices, textures, lineIndices, indexing);
 			addToVectors(i, j, size, increment, vertices, textures, lineIndices, indexing);
+			//addToVectors(i + 1, j, size, increment, vertices, textures, lineIndices, indexing);
+			//addToVectors(i, j + 1, size, increment, vertices, textures, lineIndices, indexing);
 		}
 	}
 
@@ -59,6 +61,8 @@ Map::Map(float *heightMap, size_t size) : p(VERT_FILENAME, FRAG_FILENAME)
 	ArrayBuffer<vec2> texBuf(textures);
 	ElementArrayBuffer triangleElements(triangleIndices);
 	ElementArrayBuffer lineElements(lineIndices);
+
+	glLineWidth(1.);
 
 	model = new Model(ModelBuffer(vertexBuf, texBuf, triangleElements), Material(), Bounds());
 	lineMB = new ModelBuffer(vertexBuf, texBuf, lineElements);
@@ -71,7 +75,7 @@ void Map::Draw(const glm::mat4& viewProjection, const glm::vec3& cameraPos) cons
 	p.SetUniform("illum", 0);
 	lineMB->Draw(p, GL_LINES);
 	p.SetUniform("illum", 1);
-	//Object::Draw(p, viewProjection, cameraPos);
+	Object::Draw(p, viewProjection, cameraPos);
 	p.Unuse();
 }
 

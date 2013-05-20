@@ -34,6 +34,9 @@
     <Filter Include="Extra">
       <UniqueIdentifier>{169bd7bf-0c5d-479f-bdcb-108a476a409f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Server\twodtree">
+      <UniqueIdentifier>{f241e6bf-8b28-4ccc-b4ea-08487bd96db7}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\main.cpp">
@@ -221,6 +224,9 @@
     </None>
     <None Include="..\Server\server.go">
       <Filter>Server</Filter>
+    </None>
+    <None Include="..\Server\twodtree\twodtree.go">
+      <Filter>Server\twodtree</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>

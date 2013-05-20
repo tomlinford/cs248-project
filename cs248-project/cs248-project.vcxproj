@@ -76,6 +76,7 @@
       <FileType>Document</FileType>
     </Text>
     <None Include="..\Server\server.go" />
+    <None Include="..\Server\twodtree\twodtree.go" />
     <None Include="..\Shaders\blur.frag" />
     <None Include="..\Shaders\hblur.vert" />
     <None Include="..\Shaders\main.frag" />
