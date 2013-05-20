@@ -22,12 +22,12 @@ const (
 
 func init() {
 	rand.Seed(int64(time.Now().Nanosecond()))
-    runtime.GOMAXPROCS(4)
+	runtime.GOMAXPROCS(runtime.NumCPU())
 }
 
 func main() {
-	// fmt.Println("generating terrain map of size", 1024)
-	// _ = genTerrainMap(1024)
+	// fmt.Println("generating terrain map of size", 32)
+	// _ = genTerrainMap(32)
 	// fmt.Println("terrain generation completed")
 	// return
 	ln, err := net.Listen("tcp", ":1338")
@@ -128,8 +128,10 @@ func genTerrainMap(size int) []float32 {
 			// x := float32(i) * increment
 			// y := float32(j) * increment
 			dist := float64(p.distanceTo(float32(i), float32(j)))
+			// fmt.Println("dist:", dist)
 			if dist < 3.0 {
 				tm.set(i, j, tm.get(i, j)-float32(math.Sqrt(4.0-dist)))
+				// fmt.Println("depressed terrain")
 			}
 		}
 	}
@@ -253,18 +255,19 @@ func genPath(size int) path {
 	for _, i := range arr {
 		p.tree.Add([2]float32{p.arr[i].x, p.arr[i].y})
 	}
+	fmt.Println("added all elements")
 	return p
 }
 
 func (p *path) distanceTo(x, y float32) float32 {
-	o := vec2{x, y}
-	minDist := o.distanceTo(p.arr[0])
-	for _, v := range p.arr {
-		if v.distanceTo(o) < minDist {
-			minDist = v.distanceTo(o)
-		}
-	}
-	return minDist
-	// closest := p.tree.NearestNeighbor([2]float32{x, y})
-	// return (vec2{x, y}).distanceTo(vec2{closest[0], closest[1]})
+	// o := vec2{x, y}
+	// minDist := o.distanceTo(p.arr[0])
+	// for _, v := range p.arr {
+	// 	if v.distanceTo(o) < minDist {
+	// 		minDist = v.distanceTo(o)
+	// 	}
+	// }
+	// return minDist
+	closest := p.tree.NearestNeighbor([2]float32{x, y})
+	return (vec2{x, y}).distanceTo(vec2{closest[0], closest[1]})
 }
