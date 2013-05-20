@@ -1,4 +1,5 @@
 #include "Scene.h"
+#include <boost/timer.hpp>
 
 using namespace::glm;
 
@@ -25,6 +26,7 @@ void Scene::LoadLevel(Level *l)
     level = l;
 }
 
+// TODO: Animation & player-specific camera updates
 void Scene::Update()
 {
 }

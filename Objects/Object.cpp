@@ -61,7 +61,7 @@ void updateMinMax(vec3& min, vec3& max, vec4 test)
         max.z = test.z;
 }
 
-/** TODO: Optimize so this recomputes bounds
+/** OPTIMIZE: Optimize so this recomputes bounds
   * only when orientation has changed */
 #pragma mark -
 Bounds Object::GetBounds() const

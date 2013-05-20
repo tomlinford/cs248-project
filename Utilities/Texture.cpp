@@ -46,7 +46,7 @@ Texture::~Texture()
 void Texture::LoadTexFile(char *filename)
 {
     if (!bitmap->loadBMP(filename))
-        cout << "Texture " << filename << " failed to load" << endl;
+        cerr << "Texture " << filename << " failed to load" << endl;
 }
 
 void Texture::Bind()
