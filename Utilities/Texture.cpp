@@ -43,13 +43,13 @@ Texture::~Texture()
 }
 
 /* Loads a texture file into the shader */
-void Texture::LoadTexFile(char *filename)
+void Texture::LoadTexFile(char *filename) const
 {
     if (!bitmap->loadBMP(filename))
         cerr << "Texture " << filename << " failed to load" << endl;
 }
 
-void Texture::Bind()
+void Texture::Bind() const
 {
     glBindTexture(GL_TEXTURE_2D, id);
     if (bitmap) {

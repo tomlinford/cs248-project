@@ -1,6 +1,8 @@
-#include "Map.h"
+#include "Terrain.h"
 
+#include <vector>
 #include <unordered_map>
+#include <glm/glm.hpp>
 
 using namespace glm;
 
@@ -19,12 +21,9 @@ static inline void addToVectors(int i, int j, size_t size, float increment, vect
 	indices.push_back(indexing[i + j * size]);
 }
 
-// TODO: Implement
-#pragma mark -
-Map::Map(float *heightMap, size_t size) : p(VERT_FILENAME, FRAG_FILENAME)
-	, heightField(size, size, GL_LUMINANCE, heightMap)
-{
-	p.PrintActiveUniforms();
+Terrain::Terrain(GLfloat *terrainMap, size_t size) : p(VERT_FILENAME, FRAG_FILENAME) {
+	heightField = new Texture(size, size, GL_LUMINANCE, terrainMap);
+
 	vector<vec3> vertices;
 	vector<vec2> textures;
 	vector<size_t> triangleIndices;
@@ -60,43 +59,23 @@ Map::Map(float *heightMap, size_t size) : p(VERT_FILENAME, FRAG_FILENAME)
 	ElementArrayBuffer triangleElements(triangleIndices);
 	ElementArrayBuffer lineElements(lineIndices);
 
-	model = new Model(ModelBuffer(vertexBuf, texBuf, triangleElements), Material(), Bounds());
+	triangleMB = new ModelBuffer(vertexBuf, texBuf, triangleElements);
 	lineMB = new ModelBuffer(vertexBuf, texBuf, lineElements);
 }
 
-void Map::Draw(const glm::mat4& viewProjection, const glm::vec3& cameraPos) const {
+Terrain::~Terrain() {
+	delete triangleMB;
+	delete lineMB;
+	delete heightField;
+}
+
+void Terrain::Draw(const glm::mat4& viewProjection) {
 	p.Use();
 	p.SetMVP(viewProjection);
-	p.SetUniform("heightField", &heightField, GL_TEXTURE0);
+	p.SetUniform("heightField", heightField, GL_TEXTURE0);
 	p.SetUniform("illum", 0);
 	lineMB->Draw(p, GL_LINES);
 	p.SetUniform("illum", 1);
-	//Object::Draw(p, viewProjection, cameraPos);
+	triangleMB->Draw(p, GL_TRIANGLES);
 	p.Unuse();
-}
-
-GLfloat Map::Sample(GLfloat *map, GLuint width, GLuint height, int x, int y)
-{
-    return map[((y & (height - 1)) * height) + (x & (width - 1))];
-}
-
-bool Map::Intersects(Object other)
-{
-    GLenum format = heightField.GetFormat();
-    assert(format == GL_LUMINANCE); // Single component
-    
-    int width = heightField.GetWidth();
-    int height = heightField.GetHeight();
-    GLfloat *data = heightField.GetData();
-    
-    Bounds bounds = other.GetBounds();
-    
-    for (int y = bounds.b1.z; y < bounds.f3.z; y++) {
-        for (int x = bounds.b1.x; x < bounds.f3.x; x++) {
-            if (Sample(data, width, height, x, y) > bounds.b1.z)
-                return true;
-        }
-    }
-    
-    return false;
 }

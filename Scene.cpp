@@ -3,12 +3,12 @@
 
 using namespace::glm;
 
-Scene::Scene(Player p)
+Scene::Scene(Player p) : terrain(NULL)
 {
     player = p;
     main = new Program("Shaders/main.vert", "Shaders/main.frag");
     
-    SetView(lookAt(vec3(0, 1, -2),   // Eye
+    SetView(lookAt(vec3(2, 0, 2),   // Eye
                    vec3(0, 0, 0),   // Apple
                    vec3(0, 0, 1))); // Up
 }
@@ -34,6 +34,9 @@ void Scene::Update()
 void Scene::Render()
 {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+	if (terrain)
+		terrain->Draw(projection * view);
     
     main->Use();
     main->SetUniform("illum", 1);
@@ -46,12 +49,11 @@ void Scene::Render()
     // main->SetProjection(projection);
     
     // Some levels may be in space and not have a terrain map
-    if (level->map)
-        level->map->Draw(*main, projection * view, vec3(0, 0, 5));
+	level->DrawMap(projection * view, vec3(0.f, 0.f, 5.f));
     
     // Draw ship
-    if (level->ship)
-        level->ship->Draw(*main, projection * view, vec3(0, 0, 5));
+    //if (level->ship)
+        //level->ship->Draw(*main, projection * view, vec3(0, 0, 5));
     
     // Draw objects in scene
     for (std::vector<Object>::iterator it = level->objects.begin();
@@ -73,4 +75,9 @@ void Scene::SetView(mat4 v)
 void Scene::SetProjection(mat4 p)
 {
     projection = p;
+}
+
+void Scene::SetTerrain(float *terrainMap, size_t size) {
+	if (terrain != NULL) delete terrain;
+	terrain = new Terrain(terrainMap, size);
 }

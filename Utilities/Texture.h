@@ -28,14 +28,14 @@ public:
     ~Texture();
     
     /** Loads this texture onto the GPU */
-    virtual void Bind();
+    virtual void Bind() const;
     
     /** Accessors the texture's id */
-    GLuint GetID() { return id; }
-    GLuint GetWidth() { return width; }
-    GLuint GetHeight() { return height; }
-    GLenum GetFormat() { return format; }
-    GLfloat *GetData() { return data; }
+    GLuint GetID() const { return id; }
+    GLuint GetWidth() const { return width; }
+    GLuint GetHeight() const { return height; }
+    GLenum GetFormat() const { return format; }
+    GLfloat *GetData() const { return data; }
     
 protected:
     GLuint width, height;
@@ -45,5 +45,5 @@ protected:
     
     Bitmap *bitmap;
     
-    void LoadTexFile(char *filename);
+    void LoadTexFile(char *filename) const;
 };

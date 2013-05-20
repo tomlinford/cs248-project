@@ -1,6 +1,8 @@
 #pragma once
 
 #include "Object.h"
+// #include "../Grid/grid.h" // Stanford's CS106B grid class
+// WARNING: you won't be able to make a variable called "in" if this file is included
 
 #include <assert.h>
 
@@ -24,7 +26,7 @@ public:
      64 x 64, and one 32 x 32. We should select the
      object to use based on how much detail we need
      in the map. */
-    Map(TessLevel level);
+    Map(float *heightMap, size_t size);
     
     /** Determine if an object and Map intersects by
      testing the z-value of the object's bounding box's
@@ -33,9 +35,14 @@ public:
      terrain does not support overhangs or concave
      geometry. */
     virtual bool Intersects(Object other);
+
+	void Draw(const glm::mat4& viewProjection, const glm::vec3& cameraPos) const;
     
 private:
-    Texture *heightField;
+    Texture heightField;
+	ModelBuffer *lineMB;
+	Program p;
+	//Grid<float> heightMapGrid;
     
     /** Helper method for sampling the height field. 
      x and y are wrapped around so that they will always

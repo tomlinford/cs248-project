@@ -25,6 +25,15 @@
     <Filter Include="Objects">
       <UniqueIdentifier>{18dbd575-cfc8-46a8-9d77-529b8b3790c3}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Server">
+      <UniqueIdentifier>{d90ee15d-4d46-4b8a-9297-d9050e5dde01}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Grid">
+      <UniqueIdentifier>{0cc86364-948e-489a-8a18-f28b5b327101}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Extra">
+      <UniqueIdentifier>{169bd7bf-0c5d-479f-bdcb-108a476a409f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\main.cpp">
@@ -70,6 +79,15 @@
       <Filter>Objects</Filter>
     </ClCompile>
     <ClCompile Include="..\Utilities\Bitmap.cpp">
+      <Filter>Utilities</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Level.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Networking.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Utilities\Terrain.cpp">
       <Filter>Utilities</Filter>
     </ClCompile>
   </ItemGroup>
@@ -128,6 +146,27 @@
     <ClInclude Include="..\Utilities\Bitmap.h">
       <Filter>Utilities</Filter>
     </ClInclude>
+    <ClInclude Include="..\Level.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Networking.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Utilities\Terrain.h">
+      <Filter>Utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Grid\foreach.h">
+      <Filter>Grid</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Grid\grid.h">
+      <Filter>Grid</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Grid\strlib.h">
+      <Filter>Grid</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Grid\vector.h">
+      <Filter>Grid</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Object Include="..\Models\cube.obj">
@@ -174,5 +213,19 @@
     <None Include="..\Shaders\blur.frag">
       <Filter>Shaders</Filter>
     </None>
+    <None Include="..\Shaders\terrain.frag">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\Shaders\terrain.vert">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\Server\server.go">
+      <Filter>Server</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="..\cs248-project.sublime-project">
+      <Filter>Extra</Filter>
+    </Text>
   </ItemGroup>
 </Project>

@@ -77,12 +77,15 @@ public:
     void SetUniform(const char *name, const glm::vec3& value) const;
     void SetUniform(const char *name, const glm::vec4& value) const;
     void SetUniform(const char *name, const glm::mat4& value) const;
-    void SetUniform(const char *name, Texture *texture, GLenum unit) const;
+    void SetUniform(const char *name, const Texture *texture, GLenum unit) const;
     
     /** Getters for attribute/uniform locations, for
      users who may want more direct control */
     GLint GetAttribLocation(const char *name) const;
     GLint GetUniformLocation(const char *name) const;
+
+	/* Prints all active uniforms for debugging */
+	void PrintActiveUniforms() const;
 
     static Program Wire;
 

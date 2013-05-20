@@ -4,9 +4,11 @@
 #include <ApplicationServices/ApplicationServices.h>
 #endif
 #include <glm/glm.hpp>
+#include <time.h>
 
 #include "Scene.h"
 #include "Level.h"
+#include "Networking.h"
 
 using namespace std;
 using namespace glm;
@@ -39,6 +41,12 @@ void GLFWCALL WindowResizeCallback(int w, int h)
 #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
 int main(int argc, char *argv[])
 {
+	if (argc < 2) {
+		cout << "usage: EndersGame [server ip address]" << endl;
+		cout << "boss: you'll probably want yours to be localhost" << endl;
+		exit(-1);
+	}
+
     if (!glfwInit()) {
 		cerr << "Failed to initialize glfw" << endl;
 		exit(-1);
@@ -69,6 +77,7 @@ int main(int argc, char *argv[])
     level->ship = new Ship("Models/ship.obj");
     
     scene = new Scene(PLAYER1);
+	Networking::Init(level, argv[1]);
     scene->LoadLevel(level);
     
 	glfwSetWindowTitle("CS248 Project");

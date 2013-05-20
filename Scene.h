@@ -12,6 +12,7 @@
 #include "Utilities/Buffer.h"
 #include "Utilities/Model.h"
 #include "Utilities/OBJFile.h"
+#include "Utilities/Terrain.h"
 
 typedef enum
 {
@@ -39,6 +40,8 @@ public:
     /** Accessors for view matrices */
     void SetView(glm::mat4 v);
     void SetProjection(glm::mat4 p);
+
+	void SetTerrain(float *terrainMap, size_t size);
     
 private:
     /** View matrices. These should be
@@ -61,5 +64,7 @@ private:
     
     /** Main shader */
     Program *main;
+
+	Terrain *terrain;
 };
 

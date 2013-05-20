@@ -154,4 +154,7 @@ $RECYCLE.BIN/
 .DS_Store
 
 # Visual Studio thing
-cs248-project*
+cs248-project/*
+
+# Sublime
+*.sublime-workspace

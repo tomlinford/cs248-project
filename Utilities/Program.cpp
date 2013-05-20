@@ -59,8 +59,9 @@ Program::Program(const Shader& vertexShader, const Shader& fragmentShader)
 
 Program::Program(const std::string& vertexShaderFilename,
 	const std::string& fragmentShaderFilename)
-    : id(glCreateProgram())
+    //: id(glCreateProgram())
 {
+	id = glCreateProgram();
 	Shader vertexShader(GL_VERTEX_SHADER, vertexShaderFilename);
 	Shader fragmentShader(GL_FRAGMENT_SHADER, fragmentShaderFilename);
     if (!vertexShader.Valid() || !fragmentShader.Valid()
@@ -172,7 +173,7 @@ void Program::SetUniform(const char *name, const mat4& value) const
    which texture unit to bind our texture to. If we are
    using multiple textures, they must be bound to
    distinct units. */
-void Program::SetUniform(const char *name, Texture *texture, GLenum unit) const
+void Program::SetUniform(const char *name, const Texture *texture, GLenum unit) const
 {
     GLint id = GetUniformLocation(name);
     if (id < 0)
@@ -201,4 +202,21 @@ GLint Program::GetUniformLocation(const char *name) const
         cerr << "Uniform " << name << " not found." << endl;
     }
     return location;
+}
+
+// see http://stackoverflow.com/a/4970703
+void Program::PrintActiveUniforms() const {
+	cout << "Printing uniforms for program of id " << id << ":" << endl;
+	int total = -1;
+	glGetProgramiv(id, GL_ACTIVE_UNIFORMS, &total ); 
+	for(int i=0; i<total; ++i)  {
+	    int name_len=-1, num=-1;
+	    GLenum type = GL_ZERO;
+	    char name[100];
+	    glGetActiveUniform(id, GLuint(i), sizeof(name)-1,
+	        &name_len, &num, &type, name );
+	    name[name_len] = 0;
+	    GLuint location = glGetUniformLocation(id, name );
+		cout << "name: " << name << ", location: " << location << endl;
+	}
 }

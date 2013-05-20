@@ -6,7 +6,7 @@
 /* Defined in model space */
 attribute vec3 vertexCoordinates;
 attribute vec3 normalCoordinates;
-attribute vec3 textureCoordinates;
+attribute vec2 textureCoordinates;
 
 /* MVP information */
 uniform mat4 model;
