@@ -1,8 +1,9 @@
 #version 110
 
-varying vec3 pos;
+varying vec3 vertexPosition;
 varying vec3 normal;
 
+uniform vec3 baseColor;
 uniform int illum;
 
 void main() {
@@ -10,20 +11,19 @@ void main() {
     vec3 lightPosition = vec3(0.0, 1.0, 1.0);
 
     vec4 final_color;
-    vec3 base_color = vec3(0.0, 0.4, 0.5);
     
     if (illum > 0) {
         // Calculate colors
-        vec3 ambientColor = 0.3 * base_color;
+        vec3 ambientColor = 0.3 * baseColor;
         // ambientColor = 0.3 * vec3(1, 0, 0);
-        vec3 diffuseColor = base_color;
+        vec3 diffuseColor = baseColor;
         // diffuseColor = vec3(0, 1, 0);
         
         // Camera position
-        vec3 V = normalize(pos - cameraPosition);
-        vec3 L = normalize(pos - lightPosition);
+        vec3 V = normalize(vertexPosition - cameraPosition);
+        vec3 L = normalize(vertexPosition - lightPosition);
         vec3 H = normalize(L + V);
-        vec3 N = normalize(-cross(dFdx(pos), dFdy(pos)));
+        vec3 N = normalize(-cross(dFdx(vertexPosition), dFdy(vertexPosition)));
 
         // Calculate ambient
         vec3 ambient = ambientColor;
@@ -40,6 +40,6 @@ void main() {
     }
     
     gl_FragColor = final_color;
-    // if (pos.z < -0.05)
+    // if (vertexPosition.z < -0.05)
     //     gl_FragColor = vec4(1, 0, 0, 1);
 }

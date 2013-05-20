@@ -1,19 +1,25 @@
 #version 110
 
-uniform sampler2D heightField;
+/* MVP information */
+uniform mat4 model;
+uniform mat4 view;
+uniform mat4 projection;
 uniform mat4 MVP;
+
+/* Height map information */
+uniform sampler2D heightField;
 uniform int illum;
 
 attribute vec3 vertexCoordinates;
 attribute vec2 textureCoordinates;
 
-varying vec3 normal;
-varying vec3 pos;
+/* Interpolated vertex position from vertex shader */
+varying vec3 vertexPosition;
 
 void main() {
     vec3 normal = vec3(0, 0, 1);
     vec4 height = texture2D(heightField, textureCoordinates);
-    float displacement = 0.3 * (height.x - 0.5);
+    float displacement = (height.x - 0.5);
 
     vec3 position = vertexCoordinates;
     position += displacement * normal;
@@ -21,11 +27,10 @@ void main() {
     if (illum == 0) {
     	position.z += 0.001;
     }
-    
-    // if (abs(textureCoordinates.x - 0.5) < 0.1)
-    // 	position -= .5 * normal;
-        // position -= displacement * 3.0 * normal;
 
+    // Transform vertex coordinates by MVP
     gl_Position = MVP * vec4(position, 1);
-    pos = position;
+    
+    // Pass interpolated vertex position and normals to shader
+    vertexPosition = (model * vec4(position, 1)).xyz;
 }

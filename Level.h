@@ -2,6 +2,7 @@
 
 #include <vector>
 #include <glm/glm.hpp>
+#include <glm/gtc/quaternion.hpp>
 #include <thread>
 #include <mutex>
 
@@ -9,26 +10,48 @@
 #include "Flyable.h"
 #include "Map.h"
 
+/** Defines a control point along a route */
+struct ControlPoint
+{
+    glm::vec3 position;     // In world space
+    glm::quat orientation;  // Multiplier against previous orientation
+    float time;             // In elapsed seconds since start
+};
+
+/** Loads map information; used in conjunction with
+ Networking class */
+struct MapLoader
+{
+    bool needsToLoad;       // Has the map been loaded yet?
+    float *terrainMap;      // Will need to be freed
+    size_t size;            // size of the map (32, 64, 128...)
+    std::mutex mutex;
+};
+
+/** Defines a game level */
 class Level
 {
 public:
-	Level() { mapLoader.needsToLoad = false; }
+	Level();
+
+    /** Gets a flyable object's position as a function of time */
+    glm::vec3 GetPosition(Flyable *flyable, float time);
+    
+    /** Gets a flyable object's direction as a function of time 
+     (Assuming orientation is aligned along path axis */
+    glm::vec3 GetDirection(Flyable *flyable, float time);
+    
+	/** This will be called from another thread, so Level will have to hold onto this */
+	void SetLevel(float *terrainMap, size_t size);
+
+	/** This will be called from the main thread, so the Level will load the map if necessary */
+	void DrawMap(const glm::mat4& viewProjection, const glm::vec3& cameraPos);
+    
     Map *map;
     Ship *ship;
     std::vector<Object> objects;
-    std::vector<glm::vec3> path;
-
-	/* This will be called from another thread, so Level will have to hold onto this */
-	void SetLevel(float *terrainMap, size_t size);
-
-	/* This will be called from the main thread, so the Level will load the map if necessary */
-	void DrawMap(const glm::mat4& viewProjection, const glm::vec3& cameraPos);
+    std::vector<ControlPoint> path;
 
 private:
-	struct {
-		bool needsToLoad;
-		float *terrainMap; // will need to be freed
-		size_t size;
-		std::mutex mutex;
-	} mapLoader;
+	MapLoader mapLoader;
 };

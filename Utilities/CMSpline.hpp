@@ -1,7 +1,7 @@
 #pragma once
 
-#include <glm.hpp>
-#include <type_ptr.hpp>
+#include <glm/glm.hpp>
+#include <glm/gtc/type_ptr.hpp>
 
 #define TOLERANCE 0.000001
 
@@ -40,11 +40,11 @@ public:
     }
     
     /** Will be useful for aligning the camera */
-    float tangent3D(float u) {
-        vec3 tangent = glm::vec3(v2.x + 2 * v3.x * u + 3 * v4.x * pow(u, 2),
+    glm::vec3 tangent3D(float u) {
+        glm::vec3 tangent = glm::vec3(v2.x + 2 * v3.x * u + 3 * v4.x * pow(u, 2),
                                  v2.y + 2 * v3.y * u + 3 * v4.y * pow(u, 2),
                                  v2.z + 2 * v3.z * u + 3 * v4.z * pow(u, 2));
-        return glm:normalize(tangent);
+        return glm::normalize(tangent);
     }
     
     glm::vec3 evaluate3D(float u) {

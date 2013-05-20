@@ -20,6 +20,18 @@ void GLFWCALL KeyCallback(int key, int action) {
         case GLFW_KEY_ESC:
             glfwCloseWindow();
             break;
+        case GLFW_KEY_LEFT:
+            scene->keyLeft = (action == GLFW_PRESS);
+            break;
+        case GLFW_KEY_RIGHT:
+            scene->keyRight = (action == GLFW_PRESS);
+            break;
+        case GLFW_KEY_UP:
+            scene->keyUp = (action == GLFW_PRESS);
+            break;
+        case GLFW_KEY_DOWN:
+            scene->keyDown = (action == GLFW_PRESS);
+            break;
 	}
 }
 

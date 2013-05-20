@@ -71,9 +71,9 @@ void OBJFile::readFile(vector<vec3>& vertCoords, vector<vec2>& texCoords,
         if (header == VERTEX) {
             float x, y, z;
             ss >> x >> y >> z;
-            if (abs(x) > max) max = abs(x);
-            if (abs(y) > max) max = abs(y);
-            if (abs(z) > max) max = abs(z);
+            if (fabs(x) > max) max = fabs(x);
+            if (fabs(y) > max) max = fabs(y);
+            if (fabs(z) > max) max = fabs(z);
             vertCoords.push_back(vec3(x, y, z));
         } else if (header == TEXTURE) {
             float u, v;

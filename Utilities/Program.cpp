@@ -207,15 +207,18 @@ GLint Program::GetUniformLocation(const char *name) const
 // see http://stackoverflow.com/a/4970703
 void Program::PrintActiveUniforms() const {
 	cout << "Printing uniforms for program of id " << id << ":" << endl;
-	int total = -1;
-	glGetProgramiv(id, GL_ACTIVE_UNIFORMS, &total ); 
-	for(int i=0; i<total; ++i)  {
-	    int name_len=-1, num=-1;
+	
+    int total = -1;
+	glGetProgramiv(id, GL_ACTIVE_UNIFORMS, &total); 
+	
+    for(int i = 0; i < total; ++i)  {
+	    int name_len = -1, num = -1;
 	    GLenum type = GL_ZERO;
 	    char name[100];
-	    glGetActiveUniform(id, GLuint(i), sizeof(name)-1,
+	    glGetActiveUniform(id, GLuint(i), sizeof(name) - 1,
 	        &name_len, &num, &type, name );
 	    name[name_len] = 0;
+        
 	    GLuint location = glGetUniformLocation(id, name );
 		cout << "name: " << name << ", location: " << location << endl;
 	}

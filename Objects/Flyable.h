@@ -15,12 +15,19 @@ public:
     
     /** Set speed. This should be in voxels per
      animation interval. */
-    float GetSpeed() { return speed; }
-    void SetSpeed(float s) { speed = s; }
+    virtual float GetSpeed() { return speed; }
+    virtual void SetSpeed(float s) { speed = s; }
     
     /** Set direction */
-    glm::vec3 GetDirection() { return direction; }
-    void SetDirection(glm::vec3 dir) { direction = dir; }
+    virtual glm::vec3 GetDirection() { return direction; }
+    virtual void SetDirection(glm::vec3 dir) { direction = dir; }
+    
+    /* Conversion - Euler angles to quaternion */
+    glm::quat EulerAnglesToQuat(glm::vec3 angles) const;
+    
+    /** Draws the object */
+    virtual void Draw(const Program& p, const glm::mat4& viewProjection,
+                      const glm::vec3& cameraPos, GLenum mode = GL_TRIANGLES) const;
     
 protected:
     float speed;

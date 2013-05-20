@@ -13,8 +13,8 @@ static inline void addToVectors(int i, int j, size_t size, float increment, vect
 	if (indexing.count(i + j * size) == 0) {
 		indexing[i + j * size] = vertices.size();
 		textures.push_back(vec2(i * increment, j * increment));
-		vertices.push_back(vec3((i - (int) size / 2) * increment,
-								(j - (int) size / 2) * increment, 0));
+		vertices.push_back(vec3((i - (int) size / 2) * increment, 0,
+                                (j - (int) size / 2) * increment) * 10.0f);
 	}
 	indices.push_back(indexing[i + j * size]);
 }
@@ -31,8 +31,8 @@ Map::Map(float *heightMap, size_t size) : p(VERT_FILENAME, FRAG_FILENAME)
 	vector<size_t> lineIndices;
 	unordered_map<size_t, size_t> indexing;
 
-	float halfsize = size / 2;
 	float increment = 1.f / size;
+    increment *= 1;
 	for (int i = 0; i < size - 1; i++) {
 		for (int j = 0; j < size - 1; j++) {
 			// add everything for the triangles
@@ -71,6 +71,7 @@ Map::Map(float *heightMap, size_t size) : p(VERT_FILENAME, FRAG_FILENAME)
 void Map::Draw(const glm::mat4& viewProjection, const glm::vec3& cameraPos) const {
 	p.Use();
 	p.SetMVP(viewProjection);
+    p.SetUniform("baseColor", vec3(0.0, 0.4, 0.5));
 	p.SetUniform("heightField", &heightField, GL_TEXTURE0);
 	p.SetUniform("illum", 0);
 	lineMB->Draw(p, GL_LINES);

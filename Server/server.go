@@ -11,6 +11,7 @@ import (
 	"math/rand"
 	"net"
 	"os"
+    "runtime"
 	"strings"
 	"time"
 )
@@ -21,6 +22,7 @@ const (
 
 func init() {
 	rand.Seed(int64(time.Now().Nanosecond()))
+    runtime.GOMAXPROCS(4)
 }
 
 func main() {
@@ -47,6 +49,7 @@ func main() {
 		go func() {
 			sendCommands(conn)
 		}()
+        fmt.Println("after starting go routines")
 	}
 }
 
@@ -65,6 +68,8 @@ func sendCommands(conn net.Conn) {
 	}
 	io.Copy(wr, buf)
 	wr.Flush()
+    conn.Close()
+    fmt.Println("flushed output")
 
 	// for {
 	// 	fmt.Print("Enter command: ")

@@ -4,6 +4,7 @@
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
+#include <boost/timer/timer.hpp>
 
 #include "Level.h"
 
@@ -12,7 +13,6 @@
 #include "Utilities/Buffer.h"
 #include "Utilities/Model.h"
 #include "Utilities/OBJFile.h"
-#include "Utilities/Terrain.h"
 
 typedef enum
 {
@@ -40,8 +40,9 @@ public:
     /** Accessors for view matrices */
     void SetView(glm::mat4 v);
     void SetProjection(glm::mat4 p);
-
-	void SetTerrain(float *terrainMap, size_t size);
+    
+    /** Key events */
+    bool keyLeft, keyRight, keyUp, keyDown;
     
 private:
     /** View matrices. These should be
@@ -62,9 +63,11 @@ private:
     /** For post-processing effects */
     FBO *fbo;
     
+    /** Global timer */
+    boost::timer::cpu_timer timer;
+    boost::timer::cpu_times times;
+    
     /** Main shader */
     Program *main;
-
-	Terrain *terrain;
 };
 

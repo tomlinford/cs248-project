@@ -26,12 +26,12 @@ public:
     virtual bool Intersects(Object other);
     
     /** Position in world space */
-    glm::vec3 GetPosition() { return position; };
-    void SetPosition(glm::vec3 p) { position = p; };
+    virtual glm::vec3 GetPosition() { return position; };
+    virtual void SetPosition(glm::vec3 p) { position = p; };
     
     /** Orientation (rotation) in model space */
-    glm::quat GetOrientation() { return orientation; };
-    void SetOrientation(glm::quat o) { orientation = o; };
+    virtual glm::quat GetOrientation() { return orientation; };
+    virtual void SetOrientation(glm::quat o) { orientation = o; };
     
     /** Returns axis-aligned world-space bounding box
      by finding the min/max of the transformed
@@ -51,8 +51,8 @@ public:
     };
     
     /** Draws the object */
-    void Draw(const Program& p, const glm::mat4& viewProjection,
-              const glm::vec3& cameraPos, GLenum mode = GL_TRIANGLES) const;
+    virtual void Draw(const Program& p, const glm::mat4& viewProjection,
+                      const glm::vec3& cameraPos, GLenum mode = GL_TRIANGLES) const;
     
 protected:
     Model *model;
