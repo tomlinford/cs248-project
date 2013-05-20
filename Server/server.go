@@ -1,11 +1,13 @@
 package main
 
 import (
+	"./twodtree"
 	"bufio"
 	"bytes"
 	"encoding/binary"
 	"fmt"
 	"io"
+	"math"
 	"math/rand"
 	"net"
 	"os"
@@ -22,6 +24,10 @@ func init() {
 }
 
 func main() {
+	// fmt.Println("generating terrain map of size", 1024)
+	// _ = genTerrainMap(1024)
+	// fmt.Println("terrain generation completed")
+	// return
 	ln, err := net.Listen("tcp", ":1338")
 	if err != nil {
 		panic(err)
@@ -53,7 +59,10 @@ func sendCommands(conn net.Conn) {
 	wr.WriteString("terrain\n")
 	fmt.Fprintln(wr, kSize)
 	buf := new(bytes.Buffer)
-	_ = binary.Write(buf, binary.LittleEndian, tm)
+	err := binary.Write(buf, binary.LittleEndian, tm)
+	if err != nil {
+		fmt.Println(err)
+	}
 	io.Copy(wr, buf)
 	wr.Flush()
 
@@ -94,14 +103,37 @@ func animateCommand(rd *bufio.Reader) string {
 
 // terrain map generation
 func genTerrainMap(size int) []float32 {
+	t0 := time.Now()
 	tm := terrainMap{make([]float32, size*size, size*size), size}
 	tm.initialize()
-	var scale float32 = 1.0
+	var scale float32 = 1
+	initSize := size
+	size /= 2
 	for size > 1 {
 		tm.diamondSquare(size, scale)
 		size /= 2
 		scale /= 2.0
 	}
+	size = initSize
+	t1 := time.Now()
+	p := genPath(size)
+	// increment := float32(1) / float32(size)
+	for i := 0; i < size; i++ {
+		for j := 0; j < size; j++ {
+			// x := float32(i) * increment
+			// y := float32(j) * increment
+			dist := float64(p.distanceTo(float32(i), float32(j)))
+			if dist < 3.0 {
+				tm.set(i, j, tm.get(i, j)-float32(math.Sqrt(4.0-dist)))
+			}
+		}
+	}
+	t2 := time.Now()
+	tm.normalize()
+	t3 := time.Now()
+	fmt.Println("Initial algorithm took", t1.Sub(t0))
+	fmt.Println("Path calculations took", t2.Sub(t1))
+	fmt.Println("tm normalizations took", t3.Sub(t2))
 	return tm.arr
 }
 
@@ -110,12 +142,24 @@ type terrainMap struct {
 	size int
 }
 
+func (tm *terrainMap) index(x, y int) int {
+	return (x & (tm.size - 1)) + (y&(tm.size-1))*tm.size
+}
+
 func (tm *terrainMap) get(x, y int) float32 {
-	return tm.arr[(x&(tm.size-1))+(y&(tm.size-1))*tm.size]
+	return tm.arr[tm.index(x, y)]
 }
 
 func (tm *terrainMap) set(x, y int, value float32) {
-	tm.arr[(x&(tm.size-1))+(y&(tm.size-1))*tm.size] = value
+	tm.arr[tm.index(x, y)] = value
+}
+
+func (tm *terrainMap) initialize() {
+	for i := 0; i < tm.size; i += tm.size / 2 {
+		for j := 0; j < tm.size; j += tm.size / 2 {
+			tm.set(i, j, randFloat32())
+		}
+	}
 }
 
 func (tm *terrainMap) sampleSquare(x, y, size int, value float32) {
@@ -124,7 +168,7 @@ func (tm *terrainMap) sampleSquare(x, y, size int, value float32) {
 	b := tm.get(x+hs, y-hs)
 	c := tm.get(x-hs, y+hs)
 	d := tm.get(x+hs, y+hs)
-	tm.set(x, y, (a+b+c+d)/4.+value)
+	tm.set(x, y, (a+b+c+d)/4.0+value)
 }
 
 func (tm *terrainMap) sampleDiamond(x, y, size int, value float32) {
@@ -136,18 +180,10 @@ func (tm *terrainMap) sampleDiamond(x, y, size int, value float32) {
 	tm.set(x, y, (a+b+c+d)/4.0+value)
 }
 
-func (tm *terrainMap) initialize() {
-	for i := 0; i < tm.size; i += tm.size / 2 {
-		for j := 0; j < tm.size; j += tm.size / 2 {
-			tm.set(i, j, randFloat32())
-		}
-	}
-}
-
 func (tm *terrainMap) diamondSquare(stepsize int, scale float32) {
 	halfstep := stepsize / 2
-	for y := halfstep; y < tm.size+halfstep; y += stepsize {
-		for x := halfstep; x < tm.size+halfstep; x += stepsize {
+	for y := halfstep; y < tm.size; y += stepsize {
+		for x := halfstep; x < tm.size; x += stepsize {
 			tm.sampleSquare(x, y, stepsize, randFloat32()*scale)
 		}
 	}
@@ -159,6 +195,71 @@ func (tm *terrainMap) diamondSquare(stepsize int, scale float32) {
 	}
 }
 
+func (tm *terrainMap) normalize() {
+	min := tm.arr[0]
+	max := min
+	for i := 1; i < len(tm.arr); i++ {
+		if tm.arr[i] < min {
+			min = tm.arr[i]
+		}
+		if tm.arr[i] > max {
+			max = tm.arr[i]
+		}
+	}
+	diff := max - min
+	for i := 0; i < len(tm.arr); i++ {
+		tm.arr[i] -= min
+		tm.arr[i] /= diff
+	}
+}
+
 func randFloat32() float32 {
 	return rand.Float32()*2.0 - 1.0
+}
+
+type vec2 struct {
+	x, y float32
+}
+
+func (v vec2) distanceTo(o vec2) float32 {
+	return float32(math.Sqrt(float64((v.x-o.x)*(v.x-o.x) + (v.y-o.y)*(v.y-o.y))))
+}
+
+type path struct {
+	arr  []vec2
+	tree twodtree.TwoDTree
+}
+
+func genPath(size int) path {
+	p := path{make([]vec2, size-1, size-1), twodtree.TwoDTree{}}
+	for i := 0; i < len(p.arr); i++ {
+		p.arr[i].x = float32(i) + 0.5
+		p.arr[i].y = float32(i) + 0.5
+	}
+	arr := make([]int, len(p.arr), len(p.arr))
+	for i := range arr {
+		arr[i] = i
+	}
+	for i := 0; i < len(arr)*4; i++ {
+		idx := i % len(arr)
+		other := rand.Intn(len(arr))
+		arr[idx], arr[other] = arr[other], arr[idx]
+	}
+	for _, i := range arr {
+		p.tree.Add([2]float32{p.arr[i].x, p.arr[i].y})
+	}
+	return p
+}
+
+func (p *path) distanceTo(x, y float32) float32 {
+	o := vec2{x, y}
+	minDist := o.distanceTo(p.arr[0])
+	for _, v := range p.arr {
+		if v.distanceTo(o) < minDist {
+			minDist = v.distanceTo(o)
+		}
+	}
+	return minDist
+	// closest := p.tree.NearestNeighbor([2]float32{x, y})
+	// return (vec2{x, y}).distanceTo(vec2{closest[0], closest[1]})
 }

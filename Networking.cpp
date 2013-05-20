@@ -1,7 +1,7 @@
 #include "Networking.h"
 
 #include <sstream>
-#include <boost/thread.hpp>
+#include <thread>
 #include <boost/asio.hpp>
 
 using namespace std;
@@ -26,7 +26,8 @@ extern void Init(Level *currentLevel, std::string ip_addr) {
 	ip = ip_addr;
 
 	// starts listening thread
-	boost::thread listenThread(listenFunc);
+	thread listenThread(listenFunc);
+	listenThread.detach();
 }
 
 static void listenFunc() {
