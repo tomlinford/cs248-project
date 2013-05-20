@@ -24,10 +24,10 @@ func init() {
 }
 
 func main() {
-	// fmt.Println("generating terrain map of size", 1024)
-	// _ = genTerrainMap(1024)
-	// fmt.Println("terrain generation completed")
-	// return
+	fmt.Println("generating terrain map of size", 1024)
+	_ = genTerrainMap(1024)
+	fmt.Println("terrain generation completed")
+	return
 	ln, err := net.Listen("tcp", ":1338")
 	if err != nil {
 		panic(err)
