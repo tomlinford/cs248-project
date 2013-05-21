@@ -9,9 +9,9 @@ Scene::Scene(Player p)
     player = p;
     main = new Program("Shaders/main.vert", "Shaders/main.frag");
     
-    SetView(lookAt(vec3(-3, 2, -3),   // Eye
+    SetView(lookAt(vec3(0, 1, 0),   // Eye
                    vec3(0, 0, 0),   // Apple
-                   vec3(0, 1, 0))); // Up
+                   vec3(0, 0, 1))); // Up
 }
 
 Scene::~Scene()
@@ -58,7 +58,7 @@ void Scene::Render()
     main->Use();
     main->SetUniform("illum", 1);
     main->SetUniform("baseColor", vec3(0, 0.9, 0));
-    main->SetUniform("lightPosition", vec3(0, 3, 0));
+    main->SetUniform("lightPosition", vec3(0, 5, 0));
     main->SetUniform("cameraPosition", vec3(0, 1, 2));
     
     // Not currently needed

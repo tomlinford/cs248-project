@@ -27,7 +27,7 @@ public:
     
     /** Draws the object */
     virtual void Draw(const Program& p, const glm::mat4& viewProjection,
-                      const glm::vec3& cameraPos, GLenum mode = GL_TRIANGLES) const;
+                      const glm::vec3& cameraPos, GLenum mode = GL_TRIANGLES);
     
 protected:
     float speed;

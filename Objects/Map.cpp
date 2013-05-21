@@ -14,7 +14,7 @@ static inline void addToVectors(int i, int j, size_t size, float increment, vect
 		indexing[i + j * size] = vertices.size();
 		textures.push_back(vec2(i * increment, j * increment));
 		vertices.push_back(vec3((i - (int) size / 2) * increment, 0,
-                                (j - (int) size / 2) * increment) * 10.0f);
+                                (j - (int) size / 2) * increment) * 20.0f);
 	}
 	indices.push_back(indexing[i + j * size]);
 }
