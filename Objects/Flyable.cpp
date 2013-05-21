@@ -16,11 +16,17 @@ Flyable::Flyable(const string& filename) : Object(filename)
 void Flyable::Draw(const Program& p, const glm::mat4& viewProjection,
                    const glm::vec3& cameraPos, GLenum mode)
 {
-    // What am I missing here ARGH
-    mat4 x = glm::rotate(mat4(1), direction.x, vec3(0, 0, 1));
-    mat4 y = glm::rotate(mat4(1), direction.y, vec3(1, 0, 0));
-    mat4 z = glm::rotate(mat4(1), direction.z, vec3(0, 0, 1));
-    mat4 model = x * y * z * glm::translate(mat4(1), position);
+    // What is wrong with this argh:
+    // Trying to form a orientation quaternion that points the ship
+    // in the direction vector.
+    // 1. Find axis of rotation from default (0, 0, 1) to direction
+    // 2. Find angle of rotation along that axis
+    // 3. Build quaternion
+    vec3 axis = normalize(cross(vec3(0, 0, -1), direction));
+    float angle = acos(dot(vec3(0, 0, 1), normalize(direction)));
+    orientation = normalize(fquat(angle, axis));
+    
+    mat4 model = glm::translate(mat4(1), position) * mat4_cast(orientation);
     mat4 mvp = viewProjection * model;
     
     cout << "Direction is " << direction.x << ", " << direction.y << ", " << direction.z << ")" << endl;
