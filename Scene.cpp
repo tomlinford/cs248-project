@@ -13,7 +13,7 @@ Scene::Scene(Player p)
     player = p;
     theta = phi = 0.0f;
     main = new Program("Shaders/main.vert", "Shaders/main.frag");
-	SetView(lookAt(vec3(.7, .7, .7), vec3(0, 0, 0), vec3(0, 0, 1)));
+	SetView(lookAt(vec3(0.0, 1.0, 0.0), vec3(1, 0, 1), vec3(0, 1, 0)));
 }
 
 Scene::~Scene()

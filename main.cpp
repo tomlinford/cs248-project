@@ -13,6 +13,10 @@
 using namespace std;
 using namespace glm;
 
+#ifndef M_PI
+#define M_PI 3.14159265359
+#endif
+
 static Scene *scene;
 static float win_width, win_height;
 
