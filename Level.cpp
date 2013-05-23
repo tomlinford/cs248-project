@@ -1,6 +1,10 @@
 #include "Level.h"
 #include "CMSpline.hpp"
 
+#ifndef M_PI
+#define M_PI 3.14159265359
+#endif
+
 using namespace glm;
 using namespace std;
 
@@ -86,24 +90,26 @@ glm::vec3 Level::GetDirection(Flyable *flyable, float time)
     return vec3(0.0);
 }
 
-void Level::SetLevel(float *terrainMap, size_t size) {
+void Level::SetLevel(float *terrainMap, size_t size, int x, int y) {
 	lock_guard<mutex> lock(mapLoader.mutex);
 	mapLoader.needsToLoad = true;
 	mapLoader.terrainMap = terrainMap;
 	mapLoader.size = size;
+	mapLoader.x = x;
+	mapLoader.y = y;
 }
 
 void Level::DrawMap(const glm::mat4& viewProjection, const glm::vec3& cameraPos) {
-	if (!map) {
-        lock_guard<mutex> lock(mapLoader.mutex);
-        if (!mapLoader.needsToLoad)
-            return;
-        
-        map = new Map(mapLoader.terrainMap, mapLoader.size);
-        map->SetColor(vec3(0.0, 0.4, 0.5));
-        mapLoader.needsToLoad = false;
-        delete[] mapLoader.terrainMap;
+	lock_guard<mutex> lock(mapLoader.mutex);
+	if (maps.size() > 0 && !mapLoader.needsToLoad) {
+		for (Map *map : maps) map->Draw(viewProjection, cameraPos);
+		return;
 	}
-
-	map->Draw(viewProjection, cameraPos);
+	if (!mapLoader.needsToLoad) return;
+	Map *newMap = new Map(mapLoader.terrainMap, mapLoader.size, mapLoader.x, mapLoader.y);
+	newMap->SetColor(vec3(0.0, 0.4, 0.5));
+	maps.push_back(newMap);
+	mapLoader.needsToLoad = false;
+	for (Map *map : maps) map->Draw(viewProjection, cameraPos);
+	delete[] mapLoader.terrainMap;
 }

@@ -12,6 +12,7 @@ Scene::Scene(Player p)
 {
     player = p;
     main = new Program("Shaders/main.vert", "Shaders/main.frag");
+	SetView(lookAt(vec3(.7, .7, .7), vec3(0, 0, 0), vec3(0, 0, 1)));
 }
 
 Scene::~Scene()
@@ -80,9 +81,9 @@ void Scene::UpdateView(float elapsedSeconds)
     // View for player 1 (chase cam)
     if (player == PLAYER1) {
         vec3 up = vec3(0, 1, 0);
-        SetView(lookAt(position - 3.0f * direction,
+        /*SetView(lookAt(position - 3.0f * direction,
                        position + direction,
-                       up));
+                       up));*/
     }
     // View for player 2 (on board cam)
     else {
@@ -96,7 +97,7 @@ void Scene::UpdateView(float elapsedSeconds)
 void Scene::Update()
 {
     times = timer.elapsed();
-    float elapsedSeconds = (float)times.wall / pow(10, 9);
+    float elapsedSeconds = (float)times.wall / pow(10.f, 9.f);
     
     HandleKeys();
     UpdateObjects(elapsedSeconds);
@@ -109,7 +110,7 @@ void Scene::Update()
 void Scene::Render()
 {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    
+
     main->Use();
     main->SetUniform("illum", 1);
     main->SetUniform("lightPosition", vec3(0, 5, 0));

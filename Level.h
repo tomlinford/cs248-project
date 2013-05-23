@@ -29,6 +29,7 @@ struct MapLoader
     float *terrainMap;      // Will need to be freed
     size_t size;            // size of the map (32, 64, 128...)
     std::mutex mutex;
+	int x, y; // x and y positions
 };
 
 /** Defines a game level */
@@ -44,14 +45,14 @@ public:
     /** Gets a flyable object's direction as a function of time 
      (Assuming orientation is aligned along path axis */
     glm::vec3 GetDirection(Flyable *flyable, float time);
-    
-	/** This will be called from another thread, so Level will have to hold onto this */
-	void SetLevel(float *terrainMap, size_t size);
+
+	/* This will be called from another thread, so Level will have to hold onto this */
+	void SetLevel(float *terrainMap, size_t size, int x, int y);
 
 	/** This will be called from the main thread, so the Level will load the map if necessary */
 	void DrawMap(const glm::mat4& viewProjection, const glm::vec3& cameraPos);
-    
-    Map *map;
+
+    std::vector<Map *> maps;
     Ship *ship;
     std::vector<Object> objects;
     std::vector<ControlPoint> path;
