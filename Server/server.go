@@ -17,7 +17,13 @@ import (
 )
 
 const (
-	kSize = 32
+	kSize = 256
+	kDeg  = 2
+)
+
+// TODO: fix this shamefulness
+var (
+	maps []terrainMap
 )
 
 func init() {
@@ -53,20 +59,29 @@ func main() {
 }
 
 func sendCommands(conn net.Conn) {
+	defer conn.Close()
 	// rd := bufio.NewReader(os.Stdin)
 	wr := bufio.NewWriter(conn)
 
 	// automatically write terrain map
-	tm := genTerrainMap(kSize)
-	wr.WriteString("terrain\n")
-	fmt.Fprintln(wr, kSize)
-	buf := new(bytes.Buffer)
-	err := binary.Write(buf, binary.LittleEndian, tm)
-	if err != nil {
-		fmt.Println(err)
+	_ = genTerrainMap(kSize)
+	for x := 0; x < kDeg; x++ {
+		for y := 0; y < kDeg; y++ {
+			// fmt.Println("sending terrain")
+			wr.WriteString("terrain\n")
+			fmt.Fprintln(wr, kSize/2)
+			fmt.Fprintln(wr, x, y)
+			buf := new(bytes.Buffer)
+			tm := maps[x+y*2].arr
+			err := binary.Write(buf, binary.LittleEndian, tm)
+			if err != nil {
+				fmt.Println(err)
+			}
+			io.Copy(wr, buf)
+			wr.Flush()
+			time.Sleep(time.Second)
+		}
 	}
-	io.Copy(wr, buf)
-	wr.Flush()
 
 	// for {
 	// 	fmt.Print("Enter command: ")
@@ -138,12 +153,36 @@ func genTerrainMap(size int) []float32 {
 	fmt.Println("Initial algorithm took", t1.Sub(t0))
 	fmt.Println("Path calculations took", t2.Sub(t1))
 	fmt.Println("tm normalizations took", t3.Sub(t2))
+	maps = tm.subdivide(kDeg)
 	return tm.arr
 }
 
 type terrainMap struct {
 	arr  []float32
 	size int
+}
+
+func (tm *terrainMap) subdivide(deg int) []terrainMap {
+	arr := make([]terrainMap, deg*deg, deg*deg)
+	halfsize := tm.size / deg
+	for i := range arr {
+		arr[i].size = halfsize
+		arr[i].arr = make([]float32, halfsize*halfsize, halfsize*halfsize)
+	}
+	for x := 0; x < tm.size; x++ {
+		for y := 0; y < tm.size; y++ {
+			tmX := x - x/halfsize
+			tmY := y - y/halfsize
+			val := tm.get(tmX, tmY)
+			i := x / halfsize
+			j := y / halfsize
+			t := &arr[i+j*deg]
+			// fmt.Println("tmX", tmX, "tmY", tmY, "i", i, "j", j,
+			// 	"x", x%halfsize, "y", y%halfsize)
+			t.set(x%halfsize, y%halfsize, val)
+		}
+	}
+	return arr
 }
 
 func (tm *terrainMap) index(x, y int) int {
@@ -239,6 +278,7 @@ func genPath(size int) path {
 	for i := 0; i < len(p.arr); i++ {
 		p.arr[i].x = float32(i) + 0.5
 		p.arr[i].y = float32(i) + 0.5
+		// p.arr[i].y = float32(size / 2)
 	}
 	arr := make([]int, len(p.arr), len(p.arr))
 	for i := range arr {

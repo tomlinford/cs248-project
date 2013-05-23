@@ -7,21 +7,23 @@ using namespace glm;
 const static string VERT_FILENAME = "Shaders/terrain.vert";
 const static string FRAG_FILENAME = "Shaders/terrain.frag";
 
-static inline void addToVectors(int i, int j, size_t size, float increment, vector<vec3>& vertices,
+static inline void addToVectors(int i, int j, int x, int y, size_t size, float increment, vector<vec3>& vertices,
 								vector<vec2>& textures, vector<size_t>& indices,
 								unordered_map<size_t, size_t>& indexing) {
+	//if (i == size) i = 0;
+	//if (j == size) j = 0;
 	if (indexing.count(i + j * size) == 0) {
 		indexing[i + j * size] = vertices.size();
-		textures.push_back(vec2(i * increment, j * increment));
-		vertices.push_back(vec3((i - (int) size / 2) * increment,
-								(j - (int) size / 2) * increment, 0));
+		vertices.push_back(vec3((i - (int) size / 2) * increment / (1 - increment) + x,
+								(j - (int) size / 2) * increment / (1 - increment) + y, 0));
+		textures.push_back(vec2((i + .5f) * increment, (j + .5f) * increment));
 	}
 	indices.push_back(indexing[i + j * size]);
 }
 
 // TODO: Implement
 #pragma mark -
-Map::Map(float *heightMap, size_t size) : p(VERT_FILENAME, FRAG_FILENAME)
+Map::Map(float *heightMap, size_t size, int x, int y) : p(VERT_FILENAME, FRAG_FILENAME)
 	, heightField(size, size, GL_LUMINANCE, heightMap)
 {
 	p.PrintActiveUniforms();
@@ -36,24 +38,24 @@ Map::Map(float *heightMap, size_t size) : p(VERT_FILENAME, FRAG_FILENAME)
 	for (int i = 0; i < size - 1; i++) {
 		for (int j = 0; j < size - 1; j++) {
 			// add everything for the triangles
-			addToVectors(i, j, size, increment, vertices, textures, triangleIndices, indexing);
-			addToVectors(i + 1, j, size, increment, vertices, textures, triangleIndices, indexing);
-			addToVectors(i, j + 1, size, increment, vertices, textures, triangleIndices, indexing);
-			addToVectors(i + 1, j, size, increment, vertices, textures, triangleIndices, indexing);
-			addToVectors(i, j + 1, size, increment, vertices, textures, triangleIndices, indexing);
-			addToVectors(i + 1, j + 1, size, increment, vertices, textures, triangleIndices, indexing);
+			addToVectors(i, j, x, y, size, increment, vertices, textures, triangleIndices, indexing);
+			addToVectors(i + 1, j, x, y, size, increment, vertices, textures, triangleIndices, indexing);
+			addToVectors(i, j + 1, x, y, size, increment, vertices, textures, triangleIndices, indexing);
+			addToVectors(i + 1, j, x, y, size, increment, vertices, textures, triangleIndices, indexing);
+			addToVectors(i, j + 1, x, y, size, increment, vertices, textures, triangleIndices, indexing);
+			addToVectors(i + 1, j + 1, x, y, size, increment, vertices, textures, triangleIndices, indexing);
 			
 			// add everything for the lines such that we can use GL_LINES
-			addToVectors(i, j, size, increment, vertices, textures, lineIndices, indexing);
-			addToVectors(i + 1, j, size, increment, vertices, textures, lineIndices, indexing);
-			addToVectors(i + 1, j, size, increment, vertices, textures, lineIndices, indexing);
-			addToVectors(i + 1, j + 1, size, increment, vertices, textures, lineIndices, indexing);
-			addToVectors(i + 1, j + 1, size, increment, vertices, textures, lineIndices, indexing);
-			addToVectors(i, j + 1, size, increment, vertices, textures, lineIndices, indexing);
-			addToVectors(i, j + 1, size, increment, vertices, textures, lineIndices, indexing);
-			addToVectors(i, j, size, increment, vertices, textures, lineIndices, indexing);
-			//addToVectors(i + 1, j, size, increment, vertices, textures, lineIndices, indexing);
-			//addToVectors(i, j + 1, size, increment, vertices, textures, lineIndices, indexing);
+			addToVectors(i, j, x, y, size, increment, vertices, textures, lineIndices, indexing);
+			addToVectors(i + 1, j, x, y, size, increment, vertices, textures, lineIndices, indexing);
+			addToVectors(i + 1, j, x, y, size, increment, vertices, textures, lineIndices, indexing);
+			addToVectors(i + 1, j + 1, x, y, size, increment, vertices, textures, lineIndices, indexing);
+			addToVectors(i + 1, j + 1, x, y, size, increment, vertices, textures, lineIndices, indexing);
+			addToVectors(i, j + 1, x, y, size, increment, vertices, textures, lineIndices, indexing);
+			addToVectors(i, j + 1, x, y, size, increment, vertices, textures, lineIndices, indexing);
+			addToVectors(i, j, x, y, size, increment, vertices, textures, lineIndices, indexing);
+			//addToVectors(i + 1, j, x, y, size, increment, vertices, textures, lineIndices, indexing);
+			//addToVectors(i, j + 1, x, y, size, increment, vertices, textures, lineIndices, indexing);
 		}
 	}
 
@@ -103,4 +105,7 @@ bool Map::Intersects(Object other)
     }
     
     return false;
+}
+
+void Map::AddTerrain(float *heightMap, size_t size, int x, int y) {
 }

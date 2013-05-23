@@ -73,7 +73,6 @@ int main(int argc, char *argv[])
     
     // TODO: Stream levels from server
     Level *level = new Level();
-    level->map = NULL;
     level->ship = new Ship("Models/ship.obj");
     
     scene = new Scene(PLAYER1);
