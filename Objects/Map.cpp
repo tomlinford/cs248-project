@@ -83,6 +83,7 @@ void Map::Draw(const glm::mat4& viewProjection, const glm::vec3& cameraPos) cons
 	p.Use();
     
 	p.SetMVP(viewProjection * modelMat);
+	p.SetModel(modelMat);
     p.SetUniform("baseColor", color);
 	p.SetUniform("heightField", &heightField, GL_TEXTURE0);
     

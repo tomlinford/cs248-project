@@ -13,7 +13,7 @@ Scene::Scene(Player p)
     player = p;
     theta = phi = 0.0f;
     main = new Program("Shaders/main.vert", "Shaders/main.frag");
-	SetView(lookAt(vec3(0.0, 1.0, 0.0), vec3(1, 0, 1), vec3(0, 1, 0)));
+	//SetView(lookAt(vec3(0.0, 1.0, 0.0), vec3(1, 0, 1), vec3(0, 1, 0)));
 }
 
 Scene::~Scene()
@@ -84,9 +84,9 @@ void Scene::UpdateView(float elapsedSeconds)
         vec3 direction = orientation * vec3(0, 0, -1);
         vec3 up = orientation * vec3(0, 1, 0);
     
-        /*SetView(lookAt(position - 3.0f * direction,
+        SetView(lookAt(position - 3.0f * direction,
                        position + direction,
-                       up));*/
+                       up));
     }
     // View for player 2 (on board cam)
     else
