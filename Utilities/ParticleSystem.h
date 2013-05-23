@@ -8,6 +8,8 @@
 #include <time.h>
 
 #include "Program.h"
+#include "Buffer.h"
+#include "Model.h"
 
 /* A single particle */
 class Particle

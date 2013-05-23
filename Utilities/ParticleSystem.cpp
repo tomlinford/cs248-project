@@ -65,10 +65,50 @@ void ParticleCluster::Update()
     }
 }
 
+// TODO: Generate particle buffer
 void ParticleCluster::Draw(const Program& p, const glm::mat4& viewProjection,
                           const glm::vec3& cameraPos, GLenum mode)
 {
-    // TODO
+    vector<vec3> vertices;
+	vector<size_t> indices;
+    
+    // Add triangle for each particle
+    int index = 0;
+	for (std::vector<Particle>::iterator it = particles.begin();
+         it != particles.end();
+         it++)
+    {
+        Particle particle = *it;
+        vec3 v1 = particle.location + vec3(0.1, 0, 0);
+        vec3 v2 = particle.location + vec3(0.0, sqrt(0.3), 0.0);
+        vec3 v3 = particle.location + vec3(-0.1, 0, 0);
+        vertices.push_back(v1);
+        vertices.push_back(v2);
+        vertices.push_back(v3);
+        indices.push_back(index++);
+        indices.push_back(index++);
+        indices.push_back(index++);
+    }
+    
+    // Create model
+	ArrayBuffer<vec3> vertexBuf(vertices);
+	ElementArrayBuffer elements(indices);
+	Model *model = new Model(ModelBuffer(vertexBuf, elements), Material(), Bounds());
+    
+    mat4 M = mat4(1);
+    mat4 MVP = viewProjection * M;
+    
+    p.SetUniform("baseColor", vec3(1.0f, 0.0f, 1.0f));
+    p.SetModel(M); // Needed for Phong shading
+	p.SetMVP(MVP);
+    
+    p.SetUniform("illum", 0);
+	model->Draw(p, GL_LINE_LOOP);
+    
+	p.SetUniform("illum", 1);
+	model->Draw(p, GL_TRIANGLES);
+    
+    delete model;
 }
 
 void ParticleSystem::Update()

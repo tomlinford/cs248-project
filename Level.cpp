@@ -13,7 +13,7 @@ Level::Level()
         ControlPoint point;
         point.time = i * 2;
         point.position = glm::vec3(5 * std::cos(i),
-                                   (float)rand() / RAND_MAX * 3,
+                                   3,//(float)rand() / RAND_MAX * 3,
                                    5 * std::sin(i));
         path.push_back(point);
         
