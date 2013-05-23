@@ -14,6 +14,7 @@ using namespace std;
 using namespace glm;
 
 static Scene *scene;
+static float win_width, win_height;
 
 void GLFWCALL KeyCallback(int key, int action) {
 	switch(key) {
@@ -35,19 +36,43 @@ void GLFWCALL KeyCallback(int key, int action) {
 	}
 }
 
+void GLFWCALL MouseCallback(int x, int y) {
+    // This gets called once before the window has been
+    // initialized; the if block makes sure we don't
+    // preset theta and phi to junk when that happens
+    if (win_width > 0 && win_height > 0)
+    {
+        glfwSetMousePos(win_width / 2, win_height / 2);
+        
+        // Compute new orientation
+        scene->theta += 0.005 * (win_width / 2 - x);
+        scene->phi   += 0.005 * (win_height / 2 - y);
+
+        // Clamp up-down
+        if (scene->phi > M_PI / 2)
+            scene->phi = M_PI / 2;
+        else if (scene->phi < -M_PI / 2)
+            scene->phi = -M_PI / 2;
+    }
+}
+
 void GLFWCALL WindowResizeCallback(int w, int h)
 {
-    float ratio = (float)w / h;
-    
     // Update viewable area
     glViewport(0, 0, w, h);
     
     // Update projection matrix
+    float ratio = (float)w / h;
     if (scene)
         scene->SetProjection(glm::perspective(75.0f,        // Field of view
                                               ratio,        // Aspect ratio
                                               0.1f,         // Near clipping plane
                                               100.0f));     // Far clipping plane
+    
+    // Update global
+    win_width = w;
+    win_height = h;
+    glfwSetMousePos(win_width / 2, win_height / 2);
 }
 
 #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
@@ -89,15 +114,18 @@ int main(int argc, char *argv[])
     level->ship->SetColor(vec3(0.0, 0.9, 0.0));
     
     // Choose player
-    if (argv[2][0] == '1')
+    if (argv[2][0] == '1') {
         scene = new Scene(PLAYER1);
-    else
+        glfwSetKeyCallback(KeyCallback);
+    }
+    else {
         scene = new Scene(PLAYER2);
+        glfwSetMousePosCallback(MouseCallback);
+    }
 	Networking::Init(level, argv[1]);
     scene->LoadLevel(level);
     
 	glfwSetWindowTitle("CS248 Project");
-	glfwSetKeyCallback(KeyCallback);
     glfwSetWindowSizeCallback(WindowResizeCallback);
     
     glEnable(GL_DEPTH_TEST);    // Depth testing

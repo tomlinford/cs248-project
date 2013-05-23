@@ -20,17 +20,18 @@ void Flyable::SetDirection(vec3 dir) {
     // 2. Find angle of rotation along that axis
     // 3. Build quaternion
     vec3 z(0, 0, -1);
-    vec3 axis = normalize(cross(direction, z));
-    float angle = acos(dot(direction, z)) * 180 / M_PI;
+    vec3 axis = normalize(-cross(direction, z));;
+    float cos_angle = dot(direction, z);
+    float angle = acos(cos_angle) * 180 / M_PI;
     
-    cout << "Angle is " << angle << endl;
-    cout << "Axis is (" << axis.x << ", " << axis.y << ", " << axis.z << ")" << endl;
+    //cerr << "Angle is " << angle << endl;
+    //cerr << "Axis is (" << axis.x << ", " << axis.y << ", " << axis.z << ")" << endl;
     
-    orientation = normalize(angleAxis(-angle, axis));
+    orientation = angleAxis(angle, axis);
     M = translate(glm::mat4(1), position) *
         mat4_cast(orientation);
     
-    cout << "Orientation is (" << orientation.x << ", " << orientation.y << ", " << orientation.z << ", " << orientation.w << ")" << endl;
+    //cerr << "Orientation is (" << orientation.x << ", " << orientation.y << ", " << orientation.z << ", " << orientation.w << ")" << endl;
 }
 
 void Flyable::SetPosition(vec3 p)
