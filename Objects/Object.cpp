@@ -66,26 +66,22 @@ void updateMinMax(vec3& min, vec3& max, vec4 test)
 #pragma mark -
 Bounds Object::GetBounds() const
 {
-    mat4 m = glm::translate(mat4(1), position) *
-             mat4_cast(orientation);
-    
     // Get extremes of transformed bounding vertices
     vec3 min, max;
     
     // Seed min and max to first vertex
-    vec4 t = m * vec4(model->bounds.b1, 1.0);
-    min.x = max.x = 0;
-    min.y = max.y = 0;
-    min.z = max.z = 0;
+    vec4 t = M * vec4(model->bounds.b1, 1.0);
+    min.x = max.x = t.x;
+    min.y = max.y = t.y;
+    min.z = max.z = t.z;
     
-    updateMinMax(min, max, t);
-    updateMinMax(min, max, m * vec4(model->bounds.b2, 1.0));
-    updateMinMax(min, max, m * vec4(model->bounds.b3, 1.0));
-    updateMinMax(min, max, m * vec4(model->bounds.b4, 1.0));
-    updateMinMax(min, max, m * vec4(model->bounds.f1, 1.0));
-    updateMinMax(min, max, m * vec4(model->bounds.f2, 1.0));
-    updateMinMax(min, max, m * vec4(model->bounds.f3, 1.0));
-    updateMinMax(min, max, m * vec4(model->bounds.f4, 1.0));
+    updateMinMax(min, max, M * vec4(model->bounds.b2, 1.0));
+    updateMinMax(min, max, M * vec4(model->bounds.b3, 1.0));
+    updateMinMax(min, max, M * vec4(model->bounds.b4, 1.0));
+    updateMinMax(min, max, M * vec4(model->bounds.f1, 1.0));
+    updateMinMax(min, max, M * vec4(model->bounds.f2, 1.0));
+    updateMinMax(min, max, M * vec4(model->bounds.f3, 1.0));
+    updateMinMax(min, max, M * vec4(model->bounds.f4, 1.0));
     
     return Bounds(min, max);
 }
@@ -93,8 +89,6 @@ Bounds Object::GetBounds() const
 void Object::DrawAABB(const Program& p, const glm::mat4& viewProjection,
               const glm::vec3& cameraPos, GLenum mode) const
 {
-    glLineWidth(2.0);
-    
     mat4 model = mat4(1);
     mat4 mvp = viewProjection * model;
     
@@ -138,19 +132,18 @@ void Object::DrawAABB(const Program& p, const glm::mat4& viewProjection,
 void Object::Draw(const Program& p, const glm::mat4& viewProjection,
 				 const glm::vec3& cameraPos, GLenum mode) const
 {
-	mat4 model = glm::translate(mat4(1), position) *
-                 mat4_cast(orientation);
-    mat4 mvp = viewProjection * model;
+    mat4 MVP = viewProjection * M;
     
     p.Use();
-    p.SetModel(model); // Needed for Phong shading
-	p.SetMVP(mvp);
+    p.SetUniform("baseColor", color);
+    p.SetModel(M); // Needed for Phong shading
+	p.SetMVP(MVP);
     
 	Object::model->Draw(p, mode);
-    
-    p.Unuse();
     
 #ifdef DEBUG
     DrawAABB(p, viewProjection, cameraPos, mode);
 #endif
+    
+    p.Unuse();
 }

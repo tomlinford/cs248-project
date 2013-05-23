@@ -6,6 +6,7 @@
 #include <thread>
 #include <mutex>
 
+#include "CMSpline.hpp"
 #include "Object.h"
 #include "Flyable.h"
 #include "Map.h"
@@ -13,8 +14,10 @@
 /** Defines a control point along a route */
 struct ControlPoint
 {
+public:
     glm::vec3 position;     // In world space
     glm::quat orientation;  // Multiplier against previous orientation
+    CMSpline *spline;       // Spline to use for this control point (will need to be freed)
     float time;             // In elapsed seconds since start
 };
 
@@ -33,6 +36,7 @@ class Level
 {
 public:
 	Level();
+    ~Level();
 
     /** Gets a flyable object's position as a function of time */
     glm::vec3 GetPosition(Flyable *flyable, float time);
@@ -54,4 +58,7 @@ public:
 
 private:
 	MapLoader mapLoader;
+    
+    /** Precomputes splines. Call after loading control points. */
+    void PrecomputeSplines();
 };

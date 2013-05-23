@@ -53,9 +53,8 @@ void GLFWCALL WindowResizeCallback(int w, int h)
 #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
 int main(int argc, char *argv[])
 {
-	if (argc < 2) {
-		cout << "usage: EndersGame [server ip address]" << endl;
-		cout << "boss: you'll probably want yours to be localhost" << endl;
+	if (argc < 3) {
+		cout << "Usage: EndersGame [server ip address] [player number]" << endl;
 		exit(-1);
 	}
 
@@ -87,8 +86,13 @@ int main(int argc, char *argv[])
     Level *level = new Level();
     level->map = NULL;
     level->ship = new Ship("Models/ship.obj");
+    level->ship->SetColor(vec3(0.0, 0.9, 0.0));
     
-    scene = new Scene(PLAYER1);
+    // Choose player
+    if (argv[2][0] == '1')
+        scene = new Scene(PLAYER1);
+    else
+        scene = new Scene(PLAYER2);
 	Networking::Init(level, argv[1]);
     scene->LoadLevel(level);
     

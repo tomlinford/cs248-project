@@ -1,5 +1,9 @@
 #include "Scene.h"
 
+#define MAX_X 2.4
+#define MAX_Y 1.8
+
+using namespace::std;
 using namespace::glm;
 using boost::timer::cpu_timer;
 using boost::timer::cpu_times;
@@ -8,10 +12,6 @@ Scene::Scene(Player p)
 {
     player = p;
     main = new Program("Shaders/main.vert", "Shaders/main.frag");
-    
-    SetView(lookAt(vec3(0, 1, 0),   // Eye
-                   vec3(0, 0, 0),   // Apple
-                   vec3(0, 0, 1))); // Up
 }
 
 Scene::~Scene()
@@ -27,29 +27,84 @@ void Scene::LoadLevel(Level *l)
     level = l;
 }
 
-// TODO: Animation & player-specific camera updates
+void Scene::UpdateObjects(float elapsedSeconds)
+{
+    // Compute ship position along path
+    vec3 direction = level->GetDirection(level->ship, elapsedSeconds);
+    vec3 position = level->GetPosition(level->ship, elapsedSeconds);
+    
+    // Update ship position
+    // Important: Note offset and direction must be set before
+    // position
+    level->ship->SetOffset(shipOffset);
+    level->ship->SetDirection(direction);
+    level->ship->SetPosition(position);
+    
+    // Update other objects
+    for (std::vector<Object>::iterator it = level->objects.begin();
+         it != level->objects.end();
+         it++)
+    {
+        Object obj = *it;
+        // TODO
+    }
+}
+
+/* Scene update functions below */
+
+void Scene::HandleKeys()
+{
+    if (keyLeft)
+        shipOffset.x -= 0.1;
+    if (keyRight)
+        shipOffset.x += 0.1;
+    if (keyUp)
+        shipOffset.y -= 0.1;
+    if (keyDown)
+        shipOffset.y += 0.1;
+    
+    shipOffset = clamp(shipOffset, vec2(-MAX_X, -MAX_Y), vec2(MAX_X, MAX_Y));
+}
+
+void Scene::HandleCollisions()
+{
+    
+}
+
+void Scene::UpdateView(float elapsedSeconds)
+{
+    // Compute ship position along path
+    vec3 direction = level->GetDirection(level->ship, elapsedSeconds);
+    vec3 position = level->GetPosition(level->ship, elapsedSeconds);
+    
+    // View for player 1 (chase cam)
+    if (player == PLAYER1) {
+        vec3 up = vec3(0, 1, 0);
+        SetView(lookAt(position - 3.0f * direction,
+                       position + direction,
+                       up));
+    }
+    // View for player 2 (on board cam)
+    else {
+        vec3 up = vec3(0, 1, 0);
+        SetView(lookAt(level->ship->GetPosition(),
+                       level->ship->GetPosition() + direction,
+                       up));
+    }
+}
+
 void Scene::Update()
 {
     times = timer.elapsed();
     float elapsedSeconds = (float)times.wall / pow(10, 9);
     
-    // Ship position
-    vec3 position = level->GetPosition(level->ship, elapsedSeconds);
-    vec3 direction = level->GetDirection(level->ship, elapsedSeconds);
-    level->ship->SetPosition(position);
-    level->ship->SetDirection(direction);
-    
-    // Set view for player 1 (chase cam)
-    if (player == PLAYER1) {
-        vec3 up = vec3(0, 1, 0);
-        SetView(lookAt(position + up - 2.0f * direction,
-                       position + up + direction,
-                       up));
-    }
-    else {
-        
-    }
+    HandleKeys();
+    UpdateObjects(elapsedSeconds);
+    HandleCollisions();
+    UpdateView(elapsedSeconds);
 }
+
+/* Rendering functions below */
 
 void Scene::Render()
 {
@@ -57,7 +112,6 @@ void Scene::Render()
     
     main->Use();
     main->SetUniform("illum", 1);
-    main->SetUniform("baseColor", vec3(0, 0.9, 0));
     main->SetUniform("lightPosition", vec3(0, 5, 0));
     main->SetUniform("cameraPosition", vec3(0, 1, 2));
     
@@ -69,8 +123,10 @@ void Scene::Render()
 	level->DrawMap(projection * view, vec3(0.f, 0.f, 5.f));
     
     // Draw ship
-    if (level->ship) {
+    if (level->ship)
+    {
         level->ship->Draw(*main, projection * view, vec3(0, 0, 5));
+        level->ship->Draw(*main, projection * view, vec3(0, 0, 5), GL_LINE_LOOP);
     }
     
     // Draw objects in scene
@@ -83,14 +139,4 @@ void Scene::Render()
     }
     
     main->Unuse();
-}
-
-void Scene::SetView(mat4 v)
-{
-    view = v;
-}
-
-void Scene::SetProjection(mat4 p)
-{
-    projection = p;
 }

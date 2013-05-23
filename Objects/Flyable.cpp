@@ -1,5 +1,6 @@
 #include "Flyable.h"
 #include <glm/gtx/quaternion.hpp>
+#include <glm/gtx/vector_angle.hpp>
 
 using namespace::std;
 using namespace::glm;
@@ -12,36 +13,36 @@ Flyable::Flyable(const string& filename) : Object(filename)
 {
 }
 
-/** Draws the object */
-void Flyable::Draw(const Program& p, const glm::mat4& viewProjection,
-                   const glm::vec3& cameraPos, GLenum mode)
-{
-    // What is wrong with this argh:
-    // Trying to form a orientation quaternion that points the ship
-    // in the direction vector.
-    // 1. Find axis of rotation from default (0, 0, 1) to direction
+void Flyable::SetDirection(vec3 dir) {
+    direction = normalize(dir);
+    
+    // 1. Find axis of rotation from default direction (0, 0, -1) to current direction
     // 2. Find angle of rotation along that axis
     // 3. Build quaternion
-    vec3 axis = normalize(cross(vec3(0, 0, -1), direction));
-    float angle = acos(dot(vec3(0, 0, 1), normalize(direction)));
-    orientation = normalize(fquat(angle, axis));
+    vec3 z(0, 0, -1);
+    vec3 axis = normalize(cross(direction, z));
+    float angle = acos(dot(direction, z)) * 180 / M_PI;
     
-    mat4 model = glm::translate(mat4(1), position) * mat4_cast(orientation);
-    mat4 mvp = viewProjection * model;
+    cout << "Angle is " << angle << endl;
+    cout << "Axis is (" << axis.x << ", " << axis.y << ", " << axis.z << ")" << endl;
     
-    cout << "Direction is " << direction.x << ", " << direction.y << ", " << direction.z << ")" << endl;
+    orientation = normalize(angleAxis(-angle, axis));
+    M = translate(glm::mat4(1), position) *
+        mat4_cast(orientation);
     
-    p.Use();
-    p.SetModel(model); // Needed for Phong shading
-	p.SetMVP(mvp);
+    cout << "Orientation is (" << orientation.x << ", " << orientation.y << ", " << orientation.z << ", " << orientation.w << ")" << endl;
+}
+
+void Flyable::SetPosition(vec3 p)
+{
+    vec3 x(1, 0, 0);
+    vec3 y(0, 1, 0);
+    vec3 x_dir = orientation * x;
+    vec3 y_dir = orientation * y;
     
-	Object::model->Draw(p, mode);
-    
-    p.Unuse();
-    
-#ifdef DEBUG
-    DrawAABB(p, viewProjection, cameraPos, mode);
-#endif
+    position = p + offset.x * x_dir + offset.y * y_dir;
+    M = translate(glm::mat4(1), position) *
+        mat4_cast(orientation);
 }
 
 Ship::Ship(Model *model) : Flyable(model)

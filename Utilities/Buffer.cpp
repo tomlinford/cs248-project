@@ -126,7 +126,15 @@ ElementArrayBuffer::ElementArrayBuffer(const std::vector<size_t>& data)
 
 void ElementArrayBuffer::Draw(GLenum mode) const {
 	DataBuffer<size_t>::Bind();
-	glDrawElements(mode, size, dataType, 0);
+    if (mode == GL_LINE_LOOP)
+    {
+        for (int i = 0; i < size; i += 3) {
+            glDrawElements(mode, 3, dataType, reinterpret_cast<void *>(i));
+        }
+    }
+	else {
+        glDrawElements(mode, size, dataType, 0);
+    }
 }
 
 ModelBuffer::ModelBuffer(const ArrayBuffer<glm::vec3>& vertexBuffer,

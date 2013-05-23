@@ -18,19 +18,24 @@ public:
     virtual float GetSpeed() { return speed; }
     virtual void SetSpeed(float s) { speed = s; }
     
+    /** Set offset */
+    virtual glm::vec2 GetOffset() { return offset; }
+    virtual void SetOffset(glm::vec2 o) { offset = o; }
+    
     /** Set direction */
     virtual glm::vec3 GetDirection() { return direction; }
-    virtual void SetDirection(glm::vec3 dir) { direction = dir; }
+    virtual void SetDirection(glm::vec3 dir);
+    
+    /** Set position - we override the Object's SetPosition
+     method to add the offset to the position */
+    virtual void SetPosition(glm::vec3 p);
     
     /* Conversion - Euler angles to quaternion */
     glm::quat EulerAnglesToQuat(glm::vec3 angles) const;
     
-    /** Draws the object */
-    virtual void Draw(const Program& p, const glm::mat4& viewProjection,
-                      const glm::vec3& cameraPos, GLenum mode = GL_TRIANGLES);
-    
 protected:
     float speed;
+    glm::vec2 offset;
     glm::vec3 direction;
 };
 

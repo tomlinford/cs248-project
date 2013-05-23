@@ -25,13 +25,27 @@ public:
      intersects another object's AABB */
     virtual bool Intersects(Object other);
     
+    /** Color */
+    glm::vec3 GetColor() { return color; }
+    void SetColor(glm::vec3 c) { color = c; }
+    
     /** Position in world space */
     virtual glm::vec3 GetPosition() { return position; };
-    virtual void SetPosition(glm::vec3 p) { position = p; };
+    virtual void SetPosition(glm::vec3 p)
+    {
+        position = p;
+        M = glm::translate(glm::mat4(1), position) *
+            glm::mat4_cast(orientation);
+    };
     
     /** Orientation (rotation) in model space */
     virtual glm::quat GetOrientation() { return orientation; };
-    virtual void SetOrientation(glm::quat o) { orientation = o; };
+    virtual void SetOrientation(glm::quat o)
+    {
+        orientation = o;
+        M = glm::translate(glm::mat4(1), position) *
+            glm::mat4_cast(orientation);
+    };
     
     /** Returns axis-aligned world-space bounding box
      by finding the min/max of the transformed
@@ -56,6 +70,8 @@ public:
     
 protected:
     Model *model;
+    glm::mat4 M;
+    glm::vec3 color;
     glm::vec3 position;
     glm::quat orientation;
     

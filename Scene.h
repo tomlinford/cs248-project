@@ -38,8 +38,8 @@ public:
     void Render();
     
     /** Accessors for view matrices */
-    void SetView(glm::mat4 v);
-    void SetProjection(glm::mat4 p);
+    void SetView(glm::mat4 v) { view = v; }
+    void SetProjection(glm::mat4 p) { projection = p; }
     
     /** Key events */
     bool keyLeft, keyRight, keyUp, keyDown;
@@ -63,11 +63,20 @@ private:
     /** For post-processing effects */
     FBO *fbo;
     
-    /** Global timer */
+    /** Global animation timer */
     boost::timer::cpu_timer timer;
     boost::timer::cpu_times times;
     
+    /* Ship offset */
+    glm::vec2 shipOffset;
+    
     /** Main shader */
     Program *main;
+    
+    /** Update helpers */
+    void HandleKeys();
+    void UpdateObjects(float elapsedSeconds);
+    void HandleCollisions();
+    void UpdateView(float elapsedSeconds);
 };
 
