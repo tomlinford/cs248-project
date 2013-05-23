@@ -13,6 +13,7 @@ typedef enum
     TESSLVL_128
 } TessLevel;
 
+
 /** Represents a terrain map. A maps's model space should be
  the same as its world space; this restriction makes sense
  since the map really is the game world. It also simplifies
@@ -26,7 +27,7 @@ public:
      64 x 64, and one 32 x 32. We should select the
      object to use based on how much detail we need
      in the map. */
-    Map(float *heightMap, size_t size);
+    Map(float *heightMap, size_t size, int x, int y);
     
     /** Determine if an object and Map intersects by
      testing the z-value of the object's bounding box's
@@ -37,10 +38,17 @@ public:
     virtual bool Intersects(Object other);
 
 	void Draw(const glm::mat4& viewProjection, const glm::vec3& cameraPos) const;
+
+	void AddTerrain(float *heightMap, size_t size, int x, int y);
+
+	void SetColor(const glm::vec3& color) { this->color = color; }
     
 private:
     Texture heightField;
+	//ModelBuffer *lineMB;
+	ModelBuffer *triangleMB;
 	ModelBuffer *lineMB;
+	glm::mat4 modelMat;
 	Program p;
 	//Grid<float> heightMapGrid;
     

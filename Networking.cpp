@@ -10,7 +10,7 @@ namespace Networking {
 
 // these two need to be identified during init
 static Level *level;
-static string ip = ""; // boss, you probably will want to set this to be "localhost"
+static string ip = "";
 
 // constant port number
 const static char *port = "1338";
@@ -43,10 +43,14 @@ static void listenFunc() {
 			stringstream ss(line);
 			size_t size;
 			ss >> size;
+			getline(ns, line);
+			int x, y;
+			ss = stringstream(line);
+			ss >> x >> y;
 			// now we read in the appropriate bytes into an array
 			float *terrainMap = new float[size * size];
 			ns.read((char *)terrainMap, size * size * sizeof(float));
-			level->SetLevel(terrainMap, size);
+			level->SetLevel(terrainMap, size, x, y);
 		}
 	}
 }

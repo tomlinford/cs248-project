@@ -13,6 +13,7 @@ Scene::Scene(Player p) : particle_sys()
     player = p;
     theta = phi = 0.0f;
     main = new Program("Shaders/main.vert", "Shaders/main.frag");
+	//SetView(lookAt(vec3(0.0, 1.0, 0.0), vec3(1, 0, 1), vec3(0, 1, 0)));
 }
 
 Scene::~Scene()
@@ -77,12 +78,12 @@ void Scene::UpdateView(float elapsedSeconds)
     // View for player 1 (chase cam)
     if (player == PLAYER1)
     {
-        // Compute ship position along path
-        vec3 position = level->GetPosition(level->ship, elapsedSeconds);
+    // Compute ship position along path
+    vec3 position = level->GetPosition(level->ship, elapsedSeconds);
         quat orientation = level->ship->GetOrientation();
         vec3 direction = orientation * vec3(0, 0, -1);
         vec3 up = orientation * vec3(0, 1, 0);
-        
+    
         SetView(lookAt(position - 3.0f * direction,
                        position + direction,
                        up));
@@ -105,7 +106,7 @@ void Scene::UpdateView(float elapsedSeconds)
 void Scene::Update()
 {
     times = timer.elapsed();
-    float elapsedSeconds = (float)times.wall / pow(10, 9);
+    float elapsedSeconds = (float)times.wall / pow(10.f, 9.f);
     
     HandleKeys();
     UpdateObjects(elapsedSeconds);

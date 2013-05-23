@@ -20,10 +20,10 @@ void main() {
         // diffuseColor = vec3(0, 1, 0);
         
         // Camera position
-        vec3 V = normalize(vertexPosition - cameraPosition);
-        vec3 L = normalize(vertexPosition - lightPosition);
-        vec3 H = normalize(L + V);
         vec3 N = normalize(cross(dFdx(vertexPosition), dFdy(vertexPosition)));
+        vec3 L = normalize(lightPosition - vertexPosition);
+        vec3 V = normalize(vertexPosition - cameraPosition);
+        vec3 H = normalize(L - V);
 
         // Calculate ambient
         vec3 ambient = ambientColor;
@@ -40,6 +40,6 @@ void main() {
     }
     
     gl_FragColor = final_color;
-    // if (vertexPosition.z < -0.05)
+    // if (N.x < -0.05 || L.x < 0.0)
     //     gl_FragColor = vec4(1, 0, 0, 1);
 }

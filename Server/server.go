@@ -11,13 +11,19 @@ import (
 	"math/rand"
 	"net"
 	"os"
-    "runtime"
+	"runtime"
 	"strings"
 	"time"
 )
 
 const (
-	kSize = 32
+	kSize = 64
+	kDeg  = 2
+)
+
+// TODO: fix this shamefulness
+var (
+	maps []terrainMap
 )
 
 func init() {
@@ -49,61 +55,33 @@ func main() {
 		go func() {
 			sendCommands(conn)
 		}()
-        fmt.Println("after starting go routines")
 	}
 }
 
 func sendCommands(conn net.Conn) {
+	defer conn.Close()
 	// rd := bufio.NewReader(os.Stdin)
 	wr := bufio.NewWriter(conn)
 
 	// automatically write terrain map
-	tm := genTerrainMap(kSize)
-	wr.WriteString("terrain\n")
-	fmt.Fprintln(wr, kSize)
-	buf := new(bytes.Buffer)
-	err := binary.Write(buf, binary.LittleEndian, tm)
-	if err != nil {
-		fmt.Println(err)
-	}
-	io.Copy(wr, buf)
-	wr.Flush()
-    conn.Close()
-    fmt.Println("flushed output")
-
-	// for {
-	// 	fmt.Print("Enter command: ")
-	// 	command, _ := rd.ReadString('\n')
-	// 	command = strings.TrimSpace(command)
-	// 	if command == "animate" {
-	// 		command = animateCommand(rd)
-	// 	} else if command == "animate preset" {
-	// 		command = "animate 0 0 0 0 0 0 0 0 0 1 0 0 1 0 0 2 0 0 3 0 0 3 1 0 2 1 0 2 1 1 1 1 1 0 1 1 0 1 0 0 0 0 0 0 0"
-	// 	}
-	// 	_, err := wr.WriteString(command + "\n")
-	// 	if err != nil {
-	// 		fmt.Println("connection closed")
-	// 		return
-	// 	}
-	// 	err = wr.Flush()
-	// 	if err != nil {
-	// 		fmt.Println("connection closed")
-	// 		return
-	// 	}
-	// }
-}
-
-func animateCommand(rd *bufio.Reader) string {
-	command := "animate"
-	for {
-		fmt.Print("Enter three points separated by spaces (or empty line to stop): ")
-		line, _ := rd.ReadString('\n')
-		if len(line) < 3 {
-			break
+	_ = genTerrainMap(kSize)
+	for x := 0; x < kDeg; x++ {
+		for y := 0; y < kDeg; y++ {
+			// fmt.Println("sending terrain")
+			wr.WriteString("terrain\n")
+			fmt.Fprintln(wr, kSize/2)
+			fmt.Fprintln(wr, x, y)
+			buf := new(bytes.Buffer)
+			tm := maps[x+y*2].arr
+			err := binary.Write(buf, binary.LittleEndian, tm)
+			if err != nil {
+				fmt.Println(err)
+			}
+			io.Copy(wr, buf)
+			wr.Flush()
+			time.Sleep(time.Second)
 		}
-		command += " " + strings.TrimSpace(line)
 	}
-	return command
 }
 
 // terrain map generation
@@ -122,16 +100,11 @@ func genTerrainMap(size int) []float32 {
 	size = initSize
 	t1 := time.Now()
 	p := genPath(size)
-	// increment := float32(1) / float32(size)
 	for i := 0; i < size; i++ {
 		for j := 0; j < size; j++ {
-			// x := float32(i) * increment
-			// y := float32(j) * increment
 			dist := float64(p.distanceTo(float32(i), float32(j)))
-			// fmt.Println("dist:", dist)
 			if dist < 3.0 {
 				tm.set(i, j, tm.get(i, j)-float32(math.Sqrt(4.0-dist)))
-				// fmt.Println("depressed terrain")
 			}
 		}
 	}
@@ -141,12 +114,36 @@ func genTerrainMap(size int) []float32 {
 	fmt.Println("Initial algorithm took", t1.Sub(t0))
 	fmt.Println("Path calculations took", t2.Sub(t1))
 	fmt.Println("tm normalizations took", t3.Sub(t2))
+	maps = tm.subdivide(kDeg)
 	return tm.arr
 }
 
 type terrainMap struct {
 	arr  []float32
 	size int
+}
+
+func (tm *terrainMap) subdivide(deg int) []terrainMap {
+	arr := make([]terrainMap, deg*deg, deg*deg)
+	halfsize := tm.size / deg
+	for i := range arr {
+		arr[i].size = halfsize
+		arr[i].arr = make([]float32, halfsize*halfsize, halfsize*halfsize)
+	}
+	for x := 0; x < tm.size; x++ {
+		for y := 0; y < tm.size; y++ {
+			tmX := x - x/halfsize
+			tmY := y - y/halfsize
+			val := tm.get(tmX, tmY)
+			i := x / halfsize
+			j := y / halfsize
+			t := &arr[i+j*deg]
+			// fmt.Println("tmX", tmX, "tmY", tmY, "i", i, "j", j,
+			// 	"x", x%halfsize, "y", y%halfsize)
+			t.set(x%halfsize, y%halfsize, val)
+		}
+	}
+	return arr
 }
 
 func (tm *terrainMap) index(x, y int) int {
@@ -242,6 +239,7 @@ func genPath(size int) path {
 	for i := 0; i < len(p.arr); i++ {
 		p.arr[i].x = float32(i) + 0.5
 		p.arr[i].y = float32(i) + 0.5
+		// p.arr[i].y = float32(size / 2)
 	}
 	arr := make([]int, len(p.arr), len(p.arr))
 	for i := range arr {

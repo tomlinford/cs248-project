@@ -90,9 +90,6 @@
     <ClCompile Include="..\Networking.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\Utilities\Terrain.cpp">
-      <Filter>Utilities</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\gl.h">
@@ -154,9 +151,6 @@
     </ClInclude>
     <ClInclude Include="..\Networking.h">
       <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Utilities\Terrain.h">
-      <Filter>Utilities</Filter>
     </ClInclude>
     <ClInclude Include="..\Grid\foreach.h">
       <Filter>Grid</Filter>

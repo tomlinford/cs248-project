@@ -26,7 +26,6 @@
     <ClCompile Include="..\Utilities\Program.cpp" />
     <ClCompile Include="..\Utilities\RenderBuffer.cpp" />
     <ClCompile Include="..\Utilities\Screen.cpp" />
-    <ClCompile Include="..\Utilities\Terrain.cpp" />
     <ClCompile Include="..\Utilities\Texture.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -53,7 +52,6 @@
     <ClInclude Include="..\Utilities\Program.h" />
     <ClInclude Include="..\Utilities\RenderBuffer.h" />
     <ClInclude Include="..\Utilities\Screen.h" />
-    <ClInclude Include="..\Utilities\Terrain.h" />
     <ClInclude Include="..\Utilities\Texture.h" />
   </ItemGroup>
   <ItemGroup>
