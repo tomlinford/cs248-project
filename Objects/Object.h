@@ -58,10 +58,7 @@ public:
      z = roll */
     void Rotate(glm::vec3 angles)
     {
-        orientation = orientation * glm::fquat(angles.x, 0, 1, 0);
-        orientation = orientation * glm::fquat(angles.y, 1, 0, 0);
-        orientation = orientation * glm::fquat(angles.z, 0, 0, 1);
-        orientation = glm::normalize(orientation);
+        orientation = glm::normalize(glm::fquat(angles));
     };
     
     /** Draws the object */

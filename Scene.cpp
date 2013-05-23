@@ -11,6 +11,7 @@ using boost::timer::cpu_times;
 Scene::Scene(Player p) 
 {
     player = p;
+    theta = phi = 0.0f;
     main = new Program("Shaders/main.vert", "Shaders/main.frag");
 	SetView(lookAt(vec3(.7, .7, .7), vec3(0, 0, 0), vec3(0, 0, 1)));
 }
@@ -74,22 +75,30 @@ void Scene::HandleCollisions()
 
 void Scene::UpdateView(float elapsedSeconds)
 {
-    // Compute ship position along path
-    vec3 direction = level->GetDirection(level->ship, elapsedSeconds);
-    vec3 position = level->GetPosition(level->ship, elapsedSeconds);
-    
     // View for player 1 (chase cam)
-    if (player == PLAYER1) {
-        vec3 up = vec3(0, 1, 0);
+    if (player == PLAYER1)
+    {
+    // Compute ship position along path
+    vec3 position = level->GetPosition(level->ship, elapsedSeconds);
+        quat orientation = level->ship->GetOrientation();
+        vec3 direction = orientation * vec3(0, 0, -1);
+        vec3 up = orientation * vec3(0, 1, 0);
+    
         /*SetView(lookAt(position - 3.0f * direction,
                        position + direction,
                        up));*/
     }
     // View for player 2 (on board cam)
-    else {
-        vec3 up = vec3(0, 1, 0);
-        SetView(lookAt(level->ship->GetPosition(),
-                       level->ship->GetPosition() + direction,
+    else
+    {
+        // Compute view vectors
+        vec3 position = level->ship->GetPosition();
+        quat orientation = level->ship->GetOrientation() * fquat(vec3(phi, theta, 0));
+        vec3 direction = orientation * vec3(0, 0, -1);
+        vec3 up = orientation * vec3(0, 1, 0);
+        
+        SetView(lookAt(position + 0.3f * up,
+                       position + 0.3f * up + direction,
                        up));
     }
 }
@@ -110,7 +119,7 @@ void Scene::Update()
 void Scene::Render()
 {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
+    
     main->Use();
     main->SetUniform("illum", 1);
     main->SetUniform("lightPosition", vec3(0, 5, 0));

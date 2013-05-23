@@ -41,8 +41,11 @@ public:
     void SetView(glm::mat4 v) { view = v; }
     void SetProjection(glm::mat4 p) { projection = p; }
     
-    /** Key events */
+    /** Key events (Player 1) */
     bool keyLeft, keyRight, keyUp, keyDown;
+    
+    /** FPS direction in spherical coordinates (Player 2) */
+    float theta, phi;
     
 private:
     /** View matrices. These should be
@@ -70,8 +73,9 @@ private:
     /* Ship offset */
     glm::vec2 shipOffset;
     
-    /** Main shader */
+    /** Shaders */
     Program *main;
+    Program *terrain;
     
     /** Update helpers */
     void HandleKeys();
