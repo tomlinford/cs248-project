@@ -8,12 +8,13 @@ using namespace::glm;
 using boost::timer::cpu_timer;
 using boost::timer::cpu_times;
 
+static int count;
+
 Scene::Scene(Player p) : particle_sys()
 {
     player = p;
     theta = phi = 0.0f;
     main = new Program("Shaders/main.vert", "Shaders/main.frag");
-	//SetView(lookAt(vec3(0.0, 1.0, 0.0), vec3(1, 0, 1), vec3(0, 1, 0)));
 }
 
 Scene::~Scene()
@@ -50,6 +51,9 @@ void Scene::UpdateObjects(float elapsedSeconds)
         Object obj = *it;
         // TODO
     }
+    
+    // Update particles
+    particle_sys.Update();
 }
 
 /* Scene update functions below */
@@ -61,9 +65,9 @@ void Scene::HandleKeys()
     if (keyRight)
         shipOffset.x += 0.1;
     if (keyUp)
-        shipOffset.y -= 0.1;
-    if (keyDown)
         shipOffset.y += 0.1;
+    if (keyDown)
+        shipOffset.y -= 0.1;
     
     shipOffset = clamp(shipOffset, vec2(-MAX_X, -MAX_Y), vec2(MAX_X, MAX_Y));
 }
@@ -78,8 +82,8 @@ void Scene::UpdateView(float elapsedSeconds)
     // View for player 1 (chase cam)
     if (player == PLAYER1)
     {
-    // Compute ship position along path
-    vec3 position = level->GetPosition(level->ship, elapsedSeconds);
+        // Compute ship position along path
+        vec3 position = level->GetPosition(level->ship, elapsedSeconds);
         quat orientation = level->ship->GetOrientation();
         vec3 direction = orientation * vec3(0, 0, -1);
         vec3 up = orientation * vec3(0, 1, 0);
@@ -119,7 +123,7 @@ void Scene::Update()
 void Scene::Render()
 {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    
+
     // Some levels may be in space and not have a terrain map
     // Maps have their own shader program
 	level->DrawMap(projection * view, vec3(0.f, 0.f, 5.f));
@@ -154,6 +158,9 @@ void Scene::Render()
     }
     
     // Draw particles
+    ::count++;
+    if (::count % 100 == 0)
+        particle_sys.AddCluster(level->ship->GetPosition(), vec3(1.0, 0.0, 1.0));
     particle_sys.Draw(*main, viewProjection, cameraPosition);
     
     main->Unuse();

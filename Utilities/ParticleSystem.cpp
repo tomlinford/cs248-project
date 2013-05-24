@@ -1,26 +1,32 @@
 #include "ParticleSystem.h"
 
-#define DEFAULT_LIFETIME 30
-#define PARTICLES_PER_CLUSTER 100
+#define DEFAULT_LIFETIME 300
+#define PARTICLES_PER_CLUSTER 50
 
 using namespace::std;
 using namespace::glm;
 
+float rand(float min, float max) {
+    return min + (float)random() / RAND_MAX * (max - min);
+}
+
 Particle::Particle(glm::vec3 l, glm::vec3 v, float s)
 {
     location = l;
+    orientation = angleAxis(rand(0, 10), vec3(0, 0, 1));
     velocity = v;
     scale = s;
     age = 0;
-    lifetime = (float)rand() / RAND_MAX * DEFAULT_LIFETIME;
+    lifetime = rand(0, DEFAULT_LIFETIME);
 }
 
 
 void Particle::Update()
 {
     location += velocity;
-    scale *= 0.8;
-    age++;
+    velocity *= 0.95;
+    scale *= 0.95;
+    age += 1;
 }
 
 ParticleCluster::ParticleCluster(glm::vec3 location, glm::vec3 c)
@@ -30,10 +36,9 @@ ParticleCluster::ParticleCluster(glm::vec3 location, glm::vec3 c)
     srand(time(NULL));
     for (int i = 0; i < PARTICLES_PER_CLUSTER; i++)
     {
-        vec3 velocity;
-        velocity.x = rand();
-        velocity.y = rand();
-        velocity.z = rand();
+        vec3 velocity(rand(-0.1, 0.1),
+                      rand(-0.1, 0.1),
+                      rand(-0.1, 0.1));
         normalize(velocity);
         
         float scale = (float)rand() / RAND_MAX;
@@ -49,15 +54,12 @@ void ParticleCluster::AddParticle(glm::vec3 location, glm::vec3 velocity, float 
 
 void ParticleCluster::Update()
 {
-    for (std::vector<Particle>::iterator it = particles.begin();
-         it != particles.end();
-         it++)
-    {
-        Particle particle = *it;
+    for (int i = 0; i < particles.size(); i++) {
+        Particle &particle = particles[i];
         if (!particle.Valid())
         {
-            it = particles.erase(it);
-            it--;
+            particles.erase(particles.begin() + i);
+            i--;
         }
         else {
             particle.Update();
@@ -79,36 +81,42 @@ void ParticleCluster::Draw(const Program& p, const glm::mat4& viewProjection,
          it++)
     {
         Particle particle = *it;
-        vec3 v1 = particle.location + vec3(0.1, 0, 0);
-        vec3 v2 = particle.location + vec3(0.0, sqrt(0.3), 0.0);
-        vec3 v3 = particle.location + vec3(-0.1, 0, 0);
+        vec3 v1 = particle.location + particle.scale * vec3(0.1, 0, 0);
+        vec3 v2 = particle.location + particle.scale * vec3(0.0, sqrt(3.0) / 10, 0);
+        vec3 v3 = particle.location + particle.scale * vec3(-0.1, 0, 0);
+        
+        v1 = particle.orientation * v1;
+        v2 = particle.orientation * v2;
+        v3 = particle.orientation * v3;
+        
         vertices.push_back(v1);
         vertices.push_back(v2);
         vertices.push_back(v3);
+        
         indices.push_back(index++);
         indices.push_back(index++);
         indices.push_back(index++);
     }
     
-    // Create model
-	ArrayBuffer<vec3> vertexBuf(vertices);
-	ElementArrayBuffer elements(indices);
-	Model *model = new Model(ModelBuffer(vertexBuf, elements), Material(), Bounds());
+    cout << index / 3 << " particles drawn" << endl;
+    
+    ArrayBuffer<vec3> ab(vertices);
+    ElementArrayBuffer eab(indices);
+    Model model(ModelBuffer(ab, eab), Material(), Bounds());
     
     mat4 M = mat4(1);
     mat4 MVP = viewProjection * M;
     
-    p.SetUniform("baseColor", vec3(1.0f, 0.0f, 1.0f));
+    p.SetUniform("baseColor", color);
     p.SetModel(M); // Needed for Phong shading
-	p.SetMVP(MVP);
+    p.SetMVP(MVP);
     
-    p.SetUniform("illum", 0);
-	model->Draw(p, GL_LINE_LOOP);
+    p.SetUniform("illum", 1);
+    model.Draw(p, GL_TRIANGLES);
     
-	p.SetUniform("illum", 1);
-	model->Draw(p, GL_TRIANGLES);
-    
-    delete model;
+    p.SetUniform("baseColor", color);
+	p.SetUniform("illum", 0);
+	model.Draw(p, GL_LINE_LOOP);
 }
 
 void ParticleSystem::Update()
@@ -117,7 +125,7 @@ void ParticleSystem::Update()
          it != clusters.end();
          it++)
     {
-        ParticleCluster cluster = *it;
+        ParticleCluster &cluster = *it;
         if (!cluster.Valid()) {
             it = clusters.erase(it);
             it--;

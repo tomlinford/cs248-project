@@ -3,6 +3,7 @@
 #include "gl.h"
 
 #include <glm/glm.hpp>
+#include <glm/gtx/quaternion.hpp>
 #include <vector>
 #include <stdlib.h>
 #include <time.h>
@@ -22,6 +23,7 @@ public:
     float scale;
     float age;
     float lifetime;
+    glm::quat orientation;
     
     void Update();
     bool Valid() { return (age / lifetime) < 1.0; }
