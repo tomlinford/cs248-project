@@ -11,14 +11,14 @@ using namespace std;
 Level::Level() : ready(false)
 {
 }
-
+    
 Level::~Level()
 {
     for (int i = 2; i < path.size() - 1; i++) {
         delete path[i].spline;
+        }
     }
-}
-
+    
 void Level::Load() {
 	unique_lock<std::mutex> lock(mutex);
 	while(!ready) cond.wait(lock);
@@ -30,7 +30,7 @@ void Level::SetControlPoints(const glm::vec2 *points, size_t num) {
 		point.time = i;
 		point.position = vec3(points[i].x * 20, 2, points[i].y * 20);
 		path.push_back(point);
-	}
+    }
 	PrecomputeSplines();
 }
 
@@ -106,10 +106,10 @@ void Level::DrawMap(const glm::mat4& viewProjection, const glm::vec3& cameraPos)
 	}
 	if (mapLoaders.size() == 0) return;
 	for (MapLoader &mapLoader : mapLoaders) {
-		Map *newMap = new Map(mapLoader.terrainMap, mapLoader.size, mapLoader.x, mapLoader.y);
-		newMap->SetColor(vec3(0.0, 0.4, 0.5));
-		maps.push_back(newMap);
-		mapLoader.needsToLoad = false;
+	Map *newMap = new Map(mapLoader.terrainMap, mapLoader.size, mapLoader.x, mapLoader.y);
+	newMap->SetColor(vec3(0.0, 0.4, 0.5));
+	maps.push_back(newMap);
+	mapLoader.needsToLoad = false;
 		delete[] mapLoader.terrainMap;
 	}
 	mapLoaders.clear();

@@ -134,7 +134,6 @@ void Object::Draw(const Program& p, const glm::mat4& viewProjection,
 {
     mat4 MVP = viewProjection * M;
     
-    p.Use();
     p.SetUniform("baseColor", color);
     p.SetModel(M); // Needed for Phong shading
 	p.SetMVP(MVP);
@@ -144,6 +143,4 @@ void Object::Draw(const Program& p, const glm::mat4& viewProjection,
 #ifdef DEBUG
     DrawAABB(p, viewProjection, cameraPos, mode);
 #endif
-    
-    p.Unuse();
 }

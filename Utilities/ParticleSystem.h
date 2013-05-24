@@ -3,11 +3,14 @@
 #include "gl.h"
 
 #include <glm/glm.hpp>
+#include <glm/gtx/quaternion.hpp>
 #include <vector>
 #include <stdlib.h>
 #include <time.h>
 
 #include "Program.h"
+#include "Buffer.h"
+#include "Model.h"
 
 /* A single particle */
 class Particle
@@ -20,6 +23,7 @@ public:
     float scale;
     float age;
     float lifetime;
+    glm::quat orientation;
     
     void Update();
     bool Valid() { return (age / lifetime) < 1.0; }

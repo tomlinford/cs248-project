@@ -8,6 +8,11 @@ Model::Model(const ModelBuffer& mb, Material mat, Bounds b)
     bounds = b;
 }
 
+void Model::Delete()
+{
+    modelBuffer.Delete();
+}
+
 void Model::Draw(const Program& p, GLenum mode) const
 {
 	modelBuffer.Draw(p, mode);

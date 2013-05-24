@@ -8,7 +8,9 @@ using namespace::glm;
 using boost::timer::cpu_timer;
 using boost::timer::cpu_times;
 
-Scene::Scene(Player p) 
+static int count;
+
+Scene::Scene(Player p) : particle_sys()
 {
     player = p;
     theta = phi = 0.0f;
@@ -51,6 +53,9 @@ void Scene::UpdateObjects(float elapsedSeconds)
         Object obj = *it;
         // TODO
     }
+    
+    // Update particles
+    particle_sys.Update();
 }
 
 /* Scene update functions below */
@@ -62,9 +67,9 @@ void Scene::HandleKeys()
     if (keyRight)
         shipOffset.x += 0.1;
     if (keyUp)
-        shipOffset.y -= 0.1;
-    if (keyDown)
         shipOffset.y += 0.1;
+    if (keyDown)
+        shipOffset.y -= 0.1;
     
     shipOffset = clamp(shipOffset, vec2(-MAX_X, -MAX_Y), vec2(MAX_X, MAX_Y));
 }
@@ -121,23 +126,28 @@ void Scene::Render()
 {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     
+    // Some levels may be in space and not have a terrain map
+    // Maps have their own shader program
+	level->DrawMap(projection * view, vec3(0.f, 0.f, 5.f));
+    
+    mat4 viewProjection = projection * view;
+    vec3 lightPosition(0, 5, 0);
+    vec3 cameraPosition(0, 1, 2);
+    
     main->Use();
     main->SetUniform("illum", 1);
-    main->SetUniform("lightPosition", vec3(0, 5, 0));
-    main->SetUniform("cameraPosition", vec3(0, 1, 2));
+    main->SetUniform("lightPosition", lightPosition);
+    main->SetUniform("cameraPosition", cameraPosition);
     
     // Not currently needed
     // main->SetView(view);
     // main->SetProjection(projection);
     
-    // Some levels may be in space and not have a terrain map
-	level->DrawMap(projection * view, vec3(0.f, 0.f, 5.f));
-    
     // Draw ship
     if (level->ship)
     {
-        level->ship->Draw(*main, projection * view, vec3(0, 0, 5));
-        level->ship->Draw(*main, projection * view, vec3(0, 0, 5), GL_LINE_LOOP);
+        level->ship->Draw(*main, viewProjection, cameraPosition);
+        level->ship->Draw(*main, viewProjection, cameraPosition, GL_LINE_LOOP);
     }
     
     // Draw objects in scene
@@ -146,8 +156,15 @@ void Scene::Render()
          it++)
     {
         Object obj = *it;
-        obj.Draw(*main, projection * view, vec3(0, 0, 5));
+        obj.Draw(*main, viewProjection, vec3(0, 0, 5));
     }
+    
+    // Draw particles
+    ::count++;
+    if (::count % 100 == 0) {
+        particle_sys.AddCluster(level->ship->GetPosition(), vec3(0.0, 0.9, 0.0));
+    }
+    particle_sys.Draw(*main, viewProjection, cameraPosition);
     
     main->Unuse();
 }

@@ -15,11 +15,18 @@ Buffer::Buffer(GLenum target, void (*genFunc)(GLsizei, GLuint *))
 	: target(target)
 {
 	genFunc(1, &id);
+    valid = true;
 }
 
 
 Buffer::~Buffer(void)
 {
+}
+
+void Buffer::Delete()
+{
+    glDeleteBuffers(1, &id);
+    valid = false;
 }
 
 // These are to determine the types at compile time
@@ -105,6 +112,11 @@ ArrayBuffer<T>::ArrayBuffer(const std::vector<T>& data)
 
 template <typename T>
 void ArrayBuffer<T>::Use(Program program, const std::string& name) const {
+    if (!Buffer::valid) {
+        cerr << "Warning: ArrayBuffer has been deleted!" << endl;
+        return;
+    }
+    
 	GLint loc = program.GetAttribLocation(name.c_str());
 	if (loc < 0) return;
 	glEnableVertexAttribArray(loc);
@@ -125,6 +137,11 @@ ElementArrayBuffer::ElementArrayBuffer(const std::vector<size_t>& data)
 }
 
 void ElementArrayBuffer::Draw(GLenum mode) const {
+    if (!valid) {
+        cerr << "Warning: ElementArrayBuffer has been deleted!" << endl;
+        return;
+    }
+    
 	DataBuffer<size_t>::Bind();
     if (mode == GL_LINE_LOOP)
     {
@@ -143,7 +160,7 @@ ModelBuffer::ModelBuffer(const ArrayBuffer<glm::vec3>& vertexBuffer,
 	const ElementArrayBuffer& elementBuffer)
 	: vertexBuffer(vertexBuffer), textureBuffer(textureBuffer)
 	, normalBuffer(normalBuffer), elementBuffer(elementBuffer)
-	, hasTextureBuffer(true), hasNormalBuffer(true)
+	, hasTextureBuffer(true), hasNormalBuffer(true), valid(true)
 {
 }
 
@@ -152,7 +169,7 @@ ModelBuffer::ModelBuffer(const ArrayBuffer<glm::vec3>& vertexBuffer,
 	const ElementArrayBuffer& elementBuffer)
 	: vertexBuffer(vertexBuffer)
 	, normalBuffer(normalBuffer), elementBuffer(elementBuffer)
-	, hasTextureBuffer(false), hasNormalBuffer(true)
+	, hasTextureBuffer(false), hasNormalBuffer(true), valid(true)
 {
 }
 
@@ -161,18 +178,33 @@ ModelBuffer::ModelBuffer(const ArrayBuffer<glm::vec3>& vertexBuffer,
 	const ElementArrayBuffer& elementBuffer)
 	: vertexBuffer(vertexBuffer), textureBuffer(textureBuffer)
 	, elementBuffer(elementBuffer)
-	, hasTextureBuffer(true), hasNormalBuffer(false)
+	, hasTextureBuffer(true), hasNormalBuffer(false), valid(true)
 {
 }
 
 ModelBuffer::ModelBuffer(const ArrayBuffer<glm::vec3>& vertexBuffer,
 	const ElementArrayBuffer& elementBuffer)
 	: vertexBuffer(vertexBuffer), elementBuffer(elementBuffer)
-	, hasTextureBuffer(false), hasNormalBuffer(false)
+	, hasTextureBuffer(false), hasNormalBuffer(false), valid(true)
 {
 }
 
+void ModelBuffer::Delete() {
+    vertexBuffer.Delete();
+    if (hasTextureBuffer)
+        textureBuffer.Delete();
+    if (hasNormalBuffer)
+        normalBuffer.Delete();
+    elementBuffer.Delete();
+    valid = false;
+}
+
 void ModelBuffer::Draw(const Program& p, GLenum mode) const {
+    if (!valid) {
+        cerr << "Warning: Model buffer has been deleted!" << endl;
+        return;
+    }
+    
 	vertexBuffer.Use(p, "vertexCoordinates");
 	if (hasTextureBuffer)
 		textureBuffer.Use(p, "textureCoordinates");

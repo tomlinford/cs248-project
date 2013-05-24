@@ -13,6 +13,7 @@
 #include "Utilities/Buffer.h"
 #include "Utilities/Model.h"
 #include "Utilities/OBJFile.h"
+#include "Utilities/ParticleSystem.h"
 
 typedef enum
 {
@@ -60,22 +61,21 @@ private:
     /** The current level */
     Level *level;
     
-    /** The current player view */
+    /** Player information */
     Player player;
-    
-    /** For post-processing effects */
-    FBO *fbo;
+    glm::vec2 shipOffset;
     
     /** Global animation timer */
     boost::timer::cpu_timer timer;
     boost::timer::cpu_times times;
     
-    /* Ship offset */
-    glm::vec2 shipOffset;
-    
-    /** Shaders */
+    /** Shaders and FBOs */
     Program *main;
     Program *terrain;
+    FBO *fbo;
+    
+    /** Global objects */
+    ParticleSystem particle_sys;
     
     /** Update helpers */
     void HandleKeys();
