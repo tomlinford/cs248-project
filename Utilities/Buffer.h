@@ -17,10 +17,15 @@ public:
 	Buffer() {}
 	~Buffer(void);
 	virtual void Bind() const = 0;
+    
+    // Separate delete method (instead of destructor)
+    // to avoid copying issues
+    virtual void Delete();
 
 protected:
 	GLuint id;
 	GLenum target;
+    bool valid;
 };
 
 template <typename T>
@@ -86,8 +91,10 @@ public:
 		const ElementArrayBuffer& elementBuffer);
 
 	void Draw(const Program& p, GLenum mode) const;
+    void Delete();
 
 private:
+    bool valid;
 	const bool hasTextureBuffer, hasNormalBuffer;
 	ArrayBuffer<glm::vec3> vertexBuffer;
 	ArrayBuffer<glm::vec2> textureBuffer;

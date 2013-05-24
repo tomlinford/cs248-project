@@ -57,6 +57,10 @@ struct Bounds
 class Model {
 public:
 	Model(const ModelBuffer& mb, Material mat, Bounds b);
+    
+    // Separate delete method (instead of destructor)
+    // to avoid copying issues
+    virtual void Delete();
 
 	void Draw(const Program& p, GLenum mode = GL_TRIANGLES) const;
     

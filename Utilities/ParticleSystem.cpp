@@ -1,7 +1,7 @@
 #include "ParticleSystem.h"
 
 #define DEFAULT_LIFETIME 300
-#define PARTICLES_PER_CLUSTER 50
+#define PARTICLES_PER_CLUSTER 80
 
 using namespace::std;
 using namespace::glm;
@@ -25,6 +25,7 @@ void Particle::Update()
 {
     location += velocity;
     velocity *= 0.95;
+    velocity.y += -0.0001 * age;
     scale *= 0.95;
     age += 1;
 }
@@ -81,9 +82,9 @@ void ParticleCluster::Draw(const Program& p, const glm::mat4& viewProjection,
          it++)
     {
         Particle particle = *it;
-        vec3 v1 = particle.location + particle.scale * vec3(0.1, 0, 0);
-        vec3 v2 = particle.location + particle.scale * vec3(0.0, sqrt(3.0) / 10, 0);
-        vec3 v3 = particle.location + particle.scale * vec3(-0.1, 0, 0);
+        vec3 v1 = particle.location + particle.scale * vec3(0.2, 0, 0);
+        vec3 v2 = particle.location + particle.scale * vec3(0.0, sqrt(3.0) / 5, 0);
+        vec3 v3 = particle.location + particle.scale * vec3(-0.2, 0, 0);
         
         v1 = particle.orientation * v1;
         v2 = particle.orientation * v2;
@@ -117,6 +118,8 @@ void ParticleCluster::Draw(const Program& p, const glm::mat4& viewProjection,
     p.SetUniform("baseColor", color);
 	p.SetUniform("illum", 0);
 	model.Draw(p, GL_LINE_LOOP);
+    
+    model.Delete();
 }
 
 void ParticleSystem::Update()
