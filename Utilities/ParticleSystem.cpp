@@ -1,6 +1,6 @@
 #include "ParticleSystem.h"
 
-#define DEFAULT_LIFETIME 300
+#define MAX_LIFETIME 300
 #define PARTICLES_PER_CLUSTER 80
 
 using namespace::std;
@@ -13,11 +13,17 @@ float rand(float min, float max) {
 Particle::Particle(glm::vec3 l, glm::vec3 v, float s)
 {
     location = l;
-    orientation = angleAxis(rand(0, 10), vec3(0, 0, 1));
     velocity = v;
     scale = s;
+    
+    // Random lifetime up to MAX
     age = 0;
-    lifetime = rand(0, DEFAULT_LIFETIME);
+    lifetime = rand(0, MAX_LIFETIME);
+    
+    // Random orientation
+    orientation = angleAxis(rand(0, 360), vec3(0, 0, 1)) *
+    angleAxis(rand(0, 360), vec3(0, 1, 0)) *
+    angleAxis(rand(0, 360), vec3(1, 0, 0));
 }
 
 
@@ -82,13 +88,15 @@ void ParticleCluster::Draw(const Program& p, const glm::mat4& viewProjection,
          it++)
     {
         Particle particle = *it;
-        vec3 v1 = particle.location + particle.scale * vec3(0.2, 0, 0);
-        vec3 v2 = particle.location + particle.scale * vec3(0.0, sqrt(3.0) / 5, 0);
-        vec3 v3 = particle.location + particle.scale * vec3(-0.2, 0, 0);
         
-        v1 = particle.orientation * v1;
-        v2 = particle.orientation * v2;
-        v3 = particle.orientation * v3;
+        // Orient vertices
+        vec3 o1 = particle.orientation * vec3(0.2, 0.0, 0.0);
+        vec3 o2 = particle.orientation * vec3(0.0, sqrt(3.0) / 5, 0);
+        vec3 o3 = particle.orientation * vec3(-0.2, 0.0, 0.0);
+        
+        vec3 v1 = particle.location + particle.scale * o1;
+        vec3 v2 = particle.location + particle.scale * o2;
+        vec3 v3 = particle.location + particle.scale * o3;
         
         vertices.push_back(v1);
         vertices.push_back(v2);
