@@ -158,3 +158,4 @@ cs248-project/*
 
 # Sublime
 *.sublime-workspace
+*.exe

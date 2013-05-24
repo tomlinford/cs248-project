@@ -10,24 +10,11 @@ type TwoDTree struct {
 	root *node
 }
 
-func (tree *TwoDTree) NearestNeighbor(test [2]float32) [2]float32 {
-	g := guess{nil, test, float32(math.Inf(1))}
-	g.procedure(tree.root, 0, false)
-	// fmt.Println(g, test)
-	return g.guess.elem
-}
-
-// func (tree *TwoDTree) AddFromSlice(data [][2]float32) {
-// 	for _, val := range data {
-// 		tree.Add(val)
-// 	}
-// }
-
 func (tree *TwoDTree) Add(elem [2]float32) {
 	if tree.root == nil {
 		tree.root = &node{elem, nil, nil, nil}
 	} else {
-		tree.add(elem, tree.root, 1)
+		tree.add(elem, tree.root, 0)
 	}
 }
 
@@ -50,6 +37,12 @@ func (tree *TwoDTree) add(elem [2]float32, curr *node, count int) {
 	}
 }
 
+func (tree *TwoDTree) NearestNeighbor(test [2]float32) [2]float32 {
+	g := guess{nil, test, float32(math.Inf(1))}
+	g.procedure(tree.root, 0, false)
+	return g.bestGuess.elem
+}
+
 type node struct {
 	elem        [2]float32
 	left, right *node
@@ -57,14 +50,14 @@ type node struct {
 }
 
 func distance(one, two [2]float32) float32 {
-	sqsum := (one[0]-two[0])*(one[0]-two[0]) + (one[0]-two[1])*(one[0]-two[1])
+	sqsum := (one[0]-two[0])*(one[0]-two[0]) + (one[1]-two[1])*(one[1]-two[1])
 	return float32(math.Sqrt(float64(sqsum)))
 }
 
 type guess struct {
-	guess    *node
-	test     [2]float32
-	bestDist float32
+	bestGuess *node
+	test      [2]float32
+	bestDist  float32
 }
 
 // nearest neighbor lookup procedure
@@ -74,7 +67,7 @@ func (g *guess) procedure(curr *node, count int, visitedOtherSide bool) {
 	}
 	dist := distance(curr.elem, g.test)
 	if dist < g.bestDist {
-		g.guess = curr
+		g.bestGuess = curr
 		g.bestDist = dist
 	}
 	index := count % 2

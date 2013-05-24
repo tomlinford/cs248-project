@@ -73,7 +73,8 @@ const static string FRAG_FILENAME = "Shaders/terrain.frag";
 Map::Map(float *heightMap, size_t size, int x, int y) : p(VERT_FILENAME, FRAG_FILENAME)
 	, heightField(size, size, GL_LUMINANCE, heightMap)
 {
-	modelMat = translate(mat4(1), vec3(x, 0, y));
+	modelMat = scale(mat4(1), vec3(20));
+	modelMat = translate(modelMat, vec3(x, 0, y));
 	WirePlane *wp = WirePlane::GetPlane(size);
 	triangleMB = wp->triangleMB;
 	lineMB = wp->lineMB;

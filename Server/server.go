@@ -12,7 +12,6 @@ import (
 	"net"
 	"os"
 	"runtime"
-	"strings"
 	"time"
 )
 
@@ -23,7 +22,8 @@ const (
 
 // TODO: fix this shamefulness
 var (
-	maps []terrainMap
+	maps    []terrainMap
+	mapPath path
 )
 
 func init() {
@@ -58,30 +58,59 @@ func main() {
 	}
 }
 
+func sampleArr(arr []vec2, step int) []vec2 {
+	newArr := make([]vec2, 0)
+	for i := 0; i < len(arr); i += step {
+		var v vec2
+		slice := arr[i:]
+		if len(slice) > step {
+			slice = slice[:step]
+		}
+		for _, val := range slice {
+			v.x += val.x
+			v.y += val.y
+		}
+		v.x /= float32(len(slice))
+		v.y /= float32(len(slice))
+		newArr = append(newArr, v)
+	}
+	return newArr
+}
+
 func sendCommands(conn net.Conn) {
-	defer conn.Close()
+	// defer conn.Close()
 	// rd := bufio.NewReader(os.Stdin)
 	wr := bufio.NewWriter(conn)
 
 	// automatically write terrain map
 	_ = genTerrainMap(kSize)
+	for i := 0; i < len(mapPath.arr); i++ {
+		mapPath.arr[i].x /= float32(kSize / kDeg)
+		mapPath.arr[i].y /= float32(kSize / kDeg)
+	}
+	wr.WriteString("path\n")
+	pathArr := sampleArr(mapPath.arr, 3)
+	fmt.Fprintln(wr, len(pathArr))
+	buf := new(bytes.Buffer)
+	binary.Write(buf, binary.LittleEndian, pathArr)
+	io.Copy(wr, buf)
+	wr.Flush()
 	for x := 0; x < kDeg; x++ {
 		for y := 0; y < kDeg; y++ {
-			// fmt.Println("sending terrain")
-			wr.WriteString("terrain\n")
-			fmt.Fprintln(wr, kSize/2)
-			fmt.Fprintln(wr, x, y)
-			buf := new(bytes.Buffer)
+			fmt.Fprintln(wr, "terrain")
+			fmt.Fprintln(wr, kSize/2, x, y)
+			newBuf := new(bytes.Buffer)
 			tm := maps[x+y*2].arr
-			err := binary.Write(buf, binary.LittleEndian, tm)
+			err := binary.Write(newBuf, binary.LittleEndian, tm)
 			if err != nil {
 				fmt.Println(err)
 			}
-			io.Copy(wr, buf)
-			wr.Flush()
-			time.Sleep(time.Second)
+			io.Copy(wr, newBuf)
 		}
 	}
+	fmt.Fprintln(wr, "ready")
+	wr.Flush()
+	fmt.Println("Finished sending Level over network")
 }
 
 // terrain map generation
@@ -115,6 +144,7 @@ func genTerrainMap(size int) []float32 {
 	fmt.Println("Path calculations took", t2.Sub(t1))
 	fmt.Println("tm normalizations took", t3.Sub(t2))
 	maps = tm.subdivide(kDeg)
+	mapPath = p
 	return tm.arr
 }
 
@@ -235,11 +265,17 @@ type path struct {
 }
 
 func genPath(size int) path {
-	p := path{make([]vec2, size-1, size-1), twodtree.TwoDTree{}}
+	p := path{make([]vec2, size, size), twodtree.TwoDTree{}}
 	for i := 0; i < len(p.arr); i++ {
 		p.arr[i].x = float32(i) + 0.5
-		p.arr[i].y = float32(i) + 0.5
-		// p.arr[i].y = float32(size / 2)
+		// p.arr[i].y = float32(i) + 0.5
+		p.arr[i].y = float32(size / 2)
+		// p.arr[i].y = 0.0
+	}
+	size /= 2
+	for size > 1 {
+		p.line(size, float32(size))
+		size /= 2
 	}
 	arr := make([]int, len(p.arr), len(p.arr))
 	for i := range arr {
@@ -258,14 +294,40 @@ func genPath(size int) path {
 }
 
 func (p *path) distanceTo(x, y float32) float32 {
-	// o := vec2{x, y}
-	// minDist := o.distanceTo(p.arr[0])
-	// for _, v := range p.arr {
-	// 	if v.distanceTo(o) < minDist {
-	// 		minDist = v.distanceTo(o)
-	// 	}
-	// }
-	// return minDist
-	closest := p.tree.NearestNeighbor([2]float32{x, y})
-	return (vec2{x, y}).distanceTo(vec2{closest[0], closest[1]})
+	o := vec2{x, y}
+	minDist := o.distanceTo(p.arr[0])
+	for _, v := range p.arr {
+		if v.distanceTo(o) < minDist {
+			minDist = v.distanceTo(o)
+		}
+	}
+	return minDist
+	// closest := p.tree.NearestNeighbor([2]float32{x, y})
+	// return (vec2{x, y}).distanceTo(vec2{closest[0], closest[1]})
+}
+
+func (p *path) index(i int) int {
+	return i % len(p.arr)
+}
+
+func (p *path) get(i int) float32 {
+	return p.arr[p.index(i)].y
+}
+
+func (p *path) set(i int, value float32) {
+	p.arr[p.index(i)].y = value
+}
+
+func (p *path) line(stepsize int, scale float32) {
+	halfstep := stepsize / 2
+	for i := halfstep; i < len(p.arr); i += stepsize {
+		p.sampleLine(i, stepsize, randFloat32()*scale)
+	}
+}
+
+func (p *path) sampleLine(i, size int, value float32) {
+	hs := size / 2
+	a := p.get(i + hs)
+	b := p.get(i - hs)
+	p.set(i, (a+b)/2.0+value)
 }

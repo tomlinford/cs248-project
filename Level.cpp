@@ -8,26 +8,8 @@
 using namespace glm;
 using namespace std;
 
-Level::Level()
+Level::Level() : ready(false)
 {
-    mapLoader.needsToLoad = false;
-    
-    // Dummy control points
-    for (int i = 0; i < 10 * M_PI + 1; i += M_PI / 3) {
-        ControlPoint point;
-        point.time = i * 2;
-        point.position = glm::vec3(5 * std::cos(i),
-                                   (float)rand() / RAND_MAX * 3,
-                                   5 * std::sin(i));
-        path.push_back(point);
-        
-        // Duplicate start and end
-        if (i == 0 || i == (int)(10 * M_PI)) {
-            path.push_back(point);
-        }
-    }
-    
-    PrecomputeSplines();
 }
 
 Level::~Level()
@@ -35,6 +17,21 @@ Level::~Level()
     for (int i = 2; i < path.size() - 1; i++) {
         delete path[i].spline;
     }
+}
+
+void Level::Load() {
+	unique_lock<std::mutex> lock(mutex);
+	while(!ready) cond.wait(lock);
+}
+
+void Level::SetControlPoints(const glm::vec2 *points, size_t num) {
+	for (size_t i = 0; i < num; i++) {
+		ControlPoint point;
+		point.time = i;
+		point.position = vec3(points[i].x * 20, 2, points[i].y * 20);
+		path.push_back(point);
+	}
+	PrecomputeSplines();
 }
 
 void Level::PrecomputeSplines()
@@ -91,25 +88,36 @@ glm::vec3 Level::GetDirection(Flyable *flyable, float time)
 }
 
 void Level::SetLevel(float *terrainMap, size_t size, int x, int y) {
-	lock_guard<mutex> lock(mapLoader.mutex);
+	lock_guard<std::mutex> lock(mutex);
+	MapLoader mapLoader;
 	mapLoader.needsToLoad = true;
 	mapLoader.terrainMap = terrainMap;
 	mapLoader.size = size;
 	mapLoader.x = x;
 	mapLoader.y = y;
+	mapLoaders.push_back(mapLoader);
 }
 
 void Level::DrawMap(const glm::mat4& viewProjection, const glm::vec3& cameraPos) {
-	lock_guard<mutex> lock(mapLoader.mutex);
-	if (maps.size() > 0 && !mapLoader.needsToLoad) {
+	lock_guard<std::mutex> lock(mutex);
+	if (maps.size() > 0 && mapLoaders.size() == 0) {
 		for (Map *map : maps) map->Draw(viewProjection, cameraPos);
 		return;
 	}
-	if (!mapLoader.needsToLoad) return;
-	Map *newMap = new Map(mapLoader.terrainMap, mapLoader.size, mapLoader.x, mapLoader.y);
-	newMap->SetColor(vec3(0.0, 0.4, 0.5));
-	maps.push_back(newMap);
-	mapLoader.needsToLoad = false;
+	if (mapLoaders.size() == 0) return;
+	for (MapLoader &mapLoader : mapLoaders) {
+		Map *newMap = new Map(mapLoader.terrainMap, mapLoader.size, mapLoader.x, mapLoader.y);
+		newMap->SetColor(vec3(0.0, 0.4, 0.5));
+		maps.push_back(newMap);
+		mapLoader.needsToLoad = false;
+		delete[] mapLoader.terrainMap;
+	}
+	mapLoaders.clear();
 	for (Map *map : maps) map->Draw(viewProjection, cameraPos);
-	delete[] mapLoader.terrainMap;
+	cond.notify_all();
+}
+
+void Level::SetReady() {
+	ready = true;
+	cond.notify_all();
 }
