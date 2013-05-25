@@ -130,19 +130,15 @@ void ParticleCluster::Draw(const Program& p, const glm::mat4& viewProjection,
 
 void ParticleSystem::Update()
 {
-    for (std::vector<ParticleCluster>::iterator it = clusters.begin();
-         it != clusters.end();
-         it++)
-    {
-        ParticleCluster &cluster = *it;
-        if (!cluster.Valid()) {
-            it = clusters.erase(it);
-            it--;
-        }
-        else {
-            cluster.Update();
-        }
-    }
+	for (int i = 0; i < clusters.size(); i++ ) {
+		ParticleCluster &cluster = clusters[i];
+		if (!cluster.Valid()) {
+			clusters.erase(clusters.begin() + i);
+			i--;
+		} else {
+			cluster.Update();
+		}
+	}
 }
 
 void ParticleSystem::AddCluster(glm::vec3 location, glm::vec3 color)

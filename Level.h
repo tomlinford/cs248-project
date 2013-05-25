@@ -54,7 +54,7 @@ public:
 
 	void SetReady();
 
-	void SetControlPoints(const glm::vec2 *points, size_t num);
+	void SetControlPoints(const glm::vec3 *points, size_t num);
 
 	/* This will block until the level has been loaded. Must be called from the main thread. */
 	void Load();
