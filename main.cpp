@@ -71,7 +71,7 @@ void GLFWCALL WindowResizeCallback(int w, int h)
         scene->SetProjection(glm::perspective(75.0f,        // Field of view
                                               ratio,        // Aspect ratio
                                               0.1f,         // Near clipping plane
-                                              100.0f));     // Far clipping plane
+                                              300.0f));     // Far clipping plane
     
     // Update global
     win_width = w;

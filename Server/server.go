@@ -1,5 +1,8 @@
+// the main package is where Go programs start
 package main
 
+// as an effort to speed compilation and prevent bad programming
+// practices, Go requires all imported packages to be used
 import (
 	"./twodtree"
 	"bufio"
@@ -16,52 +19,123 @@ import (
 )
 
 const (
-	kSize = 64
-	kDeg  = 2
+	kSize = 1024 // size of total map
+	kDeg  = 16   // number of times to subdivide each side
 )
 
-// TODO: fix this shamefulness
-var (
-	maps    []terrainMap
-	mapPath path
-)
-
+// the init function will get called before main() gets called
 func init() {
+	// Go's rand package requires the seed to be set
+	// rand is a package, and Seed is a function in that package
+	// the capitalization of a function, variable, or constant in
+	// a package denotes whether or not it gets exported
 	rand.Seed(int64(time.Now().Nanosecond()))
+
+	// Sets how many threads Go will use. Note that a goroutine
+	// does not necessarily correspond with a thread
 	runtime.GOMAXPROCS(runtime.NumCPU())
 }
 
 func main() {
-	// fmt.Println("generating terrain map of size", 32)
-	// _ = genTerrainMap(32)
-	// fmt.Println("terrain generation completed")
-	// return
+	// this opens up a new tcp connection on port 1338
+	// note the multiple return values, it's idiomatic Go
+	// to return an error value after the regular return value
+	// if a function may fail
+
+	// the := operator is duck typing, and automatically sets
+	// the types of ln and err to the appropriate types
 	ln, err := net.Listen("tcp", ":1338")
 	if err != nil {
 		panic(err)
 	}
+
+	// no while loops in Go, just variations of the for loop:
+	// for with nothing -- like for (;;)
+	// for with one condition -- like a while loop
+	// for with three statements -- like a for loop
+	// for with a range statement -- like a foreach loop
 	for {
 		fmt.Println("waiting for connection")
+
+		// the conn object is the actual tcp connection
 		conn, err := ln.Accept()
 		if err != nil {
 			fmt.Print("Error accepting")
 			continue
 		}
 		fmt.Println("Connection accepted")
-		rd := bufio.NewReader(conn)
+
+		// the "go" keyword starts a new goroutine, the goroutine
+		// will be executed concurrently
+		go sendCommands(conn)
+
+		// you can also use the "go" keyword and start an anonymous
+		// function
 		go func() {
+			rd := bufio.NewReader(conn)
+
+			// a really cool thing about Go is the interfaces. Any type
+			// that implements all of the methods in an interface
+			// implements the interface, and implementing an interface
+			// doesn't need to be explicitly stated like in Java
+
+			// here, rd implements io.Reader because it has the method:
+			// Read(p []byte) (n int, err error)
+			// and and os.Stdout implements io.Writer because it has
+			// a method: Write(p []byte) (n int, err error)
+			// io.Copy takes a Writer and a Reader, and just calls the
+			// respective Read and Write methods on them
 			io.Copy(os.Stdout, rd)
-		}()
-		go func() {
-			sendCommands(conn)
-		}()
+		}() // the () calls the function
 	}
 }
 
-func sampleArr(arr []vec2, step int) []vec2 {
-	newArr := make([]vec2, 0)
+// right now, this function generates a terrain map and sends
+// it over the network
+func sendCommands(conn net.Conn) {
+	// the defer statement is also really cool. it will
+	// defer the execution of a function until the current
+	// function returns. It's commented out right now because
+	// closing winsocks early seems to prevent the data from
+	// getting sent over
+	// defer conn.Close()
+
+	wr := bufio.NewWriter(conn)
+
+	maps, p := genTerrainMap(kSize)
+
+	for x := 0; x < kDeg; x++ {
+		for y := 0; y < kDeg; y++ {
+			fmt.Fprintln(wr, "terrain")
+			fmt.Fprintln(wr, maps[x+y*kDeg].size, x, y)
+			buf := new(bytes.Buffer)
+			tm := maps[x+y*kDeg].arr
+			err := binary.Write(buf, binary.LittleEndian, tm)
+			if err != nil {
+				fmt.Println(err)
+			}
+			io.Copy(wr, buf)
+		}
+	}
+	fmt.Fprintf(wr, "path\n")
+	pathArr := sampleArr(p.arr, 14)
+	// pathArr := p.arr
+	fmt.Fprintln(wr, len(pathArr))
+	buf := new(bytes.Buffer)
+	binary.Write(buf, binary.LittleEndian, pathArr)
+	io.Copy(wr, buf)
+	fmt.Fprintln(wr, "ready")
+	wr.Flush()
+	fmt.Println("Finished sending Level over network")
+}
+
+// samples a slice in groups of size step and averages out the
+// values. This is to smooth out the path the ship will follow
+// to make it less jerky
+func sampleArr(arr []vec3, step int) []vec3 {
+	newArr := make([]vec3, 0)
 	for i := 0; i < len(arr); i += step {
-		var v vec2
+		var v vec3
 		slice := arr[i:]
 		if len(slice) > step {
 			slice = slice[:step]
@@ -69,53 +143,19 @@ func sampleArr(arr []vec2, step int) []vec2 {
 		for _, val := range slice {
 			v.x += val.x
 			v.y += val.y
+			v.z += val.z
 		}
 		v.x /= float32(len(slice))
 		v.y /= float32(len(slice))
+		v.z /= float32(len(slice))
 		newArr = append(newArr, v)
 	}
 	return newArr
 }
 
-func sendCommands(conn net.Conn) {
-	// defer conn.Close()
-	// rd := bufio.NewReader(os.Stdin)
-	wr := bufio.NewWriter(conn)
-
-	// automatically write terrain map
-	_ = genTerrainMap(kSize)
-	for i := 0; i < len(mapPath.arr); i++ {
-		mapPath.arr[i].x /= float32(kSize / kDeg)
-		mapPath.arr[i].y /= float32(kSize / kDeg)
-	}
-	wr.WriteString("path\n")
-	pathArr := sampleArr(mapPath.arr, 3)
-	fmt.Fprintln(wr, len(pathArr))
-	buf := new(bytes.Buffer)
-	binary.Write(buf, binary.LittleEndian, pathArr)
-	io.Copy(wr, buf)
-	wr.Flush()
-	for x := 0; x < kDeg; x++ {
-		for y := 0; y < kDeg; y++ {
-			fmt.Fprintln(wr, "terrain")
-			fmt.Fprintln(wr, kSize/2, x, y)
-			newBuf := new(bytes.Buffer)
-			tm := maps[x+y*2].arr
-			err := binary.Write(newBuf, binary.LittleEndian, tm)
-			if err != nil {
-				fmt.Println(err)
-			}
-			io.Copy(wr, newBuf)
-		}
-	}
-	fmt.Fprintln(wr, "ready")
-	wr.Flush()
-	fmt.Println("Finished sending Level over network")
-}
-
-// terrain map generation
-func genTerrainMap(size int) []float32 {
-	t0 := time.Now()
+// terrain map generation, with mutliple return values
+func genTerrainMap(size int) ([]terrainMap, path) {
+	// declares a terrainMap on the stack
 	tm := terrainMap{make([]float32, size*size, size*size), size}
 	tm.initialize()
 	var scale float32 = 1
@@ -127,32 +167,35 @@ func genTerrainMap(size int) []float32 {
 		scale /= 2.0
 	}
 	size = initSize
-	t1 := time.Now()
 	p := genPath(size)
 	for i := 0; i < size; i++ {
 		for j := 0; j < size; j++ {
 			dist := float64(p.distanceTo(float32(i), float32(j)))
 			if dist < 3.0 {
-				tm.set(i, j, tm.get(i, j)-float32(math.Sqrt(4.0-dist)))
+				// tm.set(i, j, tm.get(i, j)-float32(math.Sqrt(4.0-dist))/float32(kSize/64*kDeg)/16.0)
 			}
 		}
 	}
-	t2 := time.Now()
 	tm.normalize()
-	t3 := time.Now()
-	fmt.Println("Initial algorithm took", t1.Sub(t0))
-	fmt.Println("Path calculations took", t2.Sub(t1))
-	fmt.Println("tm normalizations took", t3.Sub(t2))
-	maps = tm.subdivide(kDeg)
-	mapPath = p
-	return tm.arr
+	p.adjustHeights(&tm)
+	for i := 0; i < len(p.arr); i++ {
+		p.arr[i].x /= float32(kSize / kDeg)
+		p.arr[i].y /= float32(kSize / kDeg)
+	}
+	maps := tm.subdivide(kDeg)
+	return maps, p
 }
 
+// a height map is represented by a slice of heights
+// note that the size should be a power of two
 type terrainMap struct {
 	arr  []float32
 	size int
 }
 
+// an example of a method in Go. After the func keyword, the type
+// that the method is being called on is declared.
+// this method subdivides a terrainMap into different sub maps
 func (tm *terrainMap) subdivide(deg int) []terrainMap {
 	arr := make([]terrainMap, deg*deg, deg*deg)
 	halfsize := tm.size / deg
@@ -168,22 +211,23 @@ func (tm *terrainMap) subdivide(deg int) []terrainMap {
 			i := x / halfsize
 			j := y / halfsize
 			t := &arr[i+j*deg]
-			// fmt.Println("tmX", tmX, "tmY", tmY, "i", i, "j", j,
-			// 	"x", x%halfsize, "y", y%halfsize)
 			t.set(x%halfsize, y%halfsize, val)
 		}
 	}
 	return arr
 }
 
+// this index method allows us to index into a terrainMap with overlap
 func (tm *terrainMap) index(x, y int) int {
 	return (x & (tm.size - 1)) + (y&(tm.size-1))*tm.size
 }
 
+// gets the value of the terrainMap at x, y
 func (tm *terrainMap) get(x, y int) float32 {
 	return tm.arr[tm.index(x, y)]
 }
 
+// sets the value of the terrainMap at x, y
 func (tm *terrainMap) set(x, y int, value float32) {
 	tm.arr[tm.index(x, y)] = value
 }
@@ -214,6 +258,8 @@ func (tm *terrainMap) sampleDiamond(x, y, size int, value float32) {
 	tm.set(x, y, (a+b+c+d)/4.0+value)
 }
 
+// runs a step of the Diamond Square algorithm for procedurally
+// generating height maps
 func (tm *terrainMap) diamondSquare(stepsize int, scale float32) {
 	halfstep := stepsize / 2
 	for y := halfstep; y < tm.size; y += stepsize {
@@ -229,6 +275,7 @@ func (tm *terrainMap) diamondSquare(stepsize int, scale float32) {
 	}
 }
 
+// normalizes a terrainMap to be between 0 and 1
 func (tm *terrainMap) normalize() {
 	min := tm.arr[0]
 	max := min
@@ -247,34 +294,34 @@ func (tm *terrainMap) normalize() {
 	}
 }
 
+// returns a random float32 between -1 and 1
 func randFloat32() float32 {
 	return rand.Float32()*2.0 - 1.0
 }
 
-type vec2 struct {
-	x, y float32
+type vec3 struct {
+	x, y, z float32
 }
 
-func (v vec2) distanceTo(o vec2) float32 {
+func (v vec3) distanceTo(o vec3) float32 {
 	return float32(math.Sqrt(float64((v.x-o.x)*(v.x-o.x) + (v.y-o.y)*(v.y-o.y))))
 }
 
 type path struct {
-	arr  []vec2
+	arr  []vec3
 	tree twodtree.TwoDTree
 }
 
+// creates a procedurally generated path using midpoint displacement
 func genPath(size int) path {
-	p := path{make([]vec2, size, size), twodtree.TwoDTree{}}
+	p := path{make([]vec3, size, size), twodtree.TwoDTree{}}
 	for i := 0; i < len(p.arr); i++ {
 		p.arr[i].x = float32(i) + 0.5
-		// p.arr[i].y = float32(i) + 0.5
 		p.arr[i].y = float32(size / 2)
-		// p.arr[i].y = 0.0
 	}
 	size /= 2
 	for size > 1 {
-		p.line(size, float32(size))
+		p.line(size, float32(size)/4.)
 		size /= 2
 	}
 	arr := make([]int, len(p.arr), len(p.arr))
@@ -289,23 +336,16 @@ func genPath(size int) path {
 	for _, i := range arr {
 		p.tree.Add([2]float32{p.arr[i].x, p.arr[i].y})
 	}
-	fmt.Println("added all elements")
 	return p
 }
 
 func (p *path) distanceTo(x, y float32) float32 {
-	o := vec2{x, y}
-	minDist := o.distanceTo(p.arr[0])
-	for _, v := range p.arr {
-		if v.distanceTo(o) < minDist {
-			minDist = v.distanceTo(o)
-		}
-	}
-	return minDist
-	// closest := p.tree.NearestNeighbor([2]float32{x, y})
-	// return (vec2{x, y}).distanceTo(vec2{closest[0], closest[1]})
+	closest := p.tree.NearestNeighbor([2]float32{x, y})
+	return (vec3{x, y, 0}).distanceTo(vec3{closest[0], closest[1], 0})
 }
 
+// these methods are the 1D counterpart of the diamond square
+// methods above
 func (p *path) index(i int) int {
 	return i % len(p.arr)
 }
@@ -330,4 +370,32 @@ func (p *path) sampleLine(i, size int, value float32) {
 	a := p.get(i + hs)
 	b := p.get(i - hs)
 	p.set(i, (a+b)/2.0+value)
+}
+
+func (p *path) adjustHeights(tm *terrainMap) {
+	for i := range p.arr {
+		x := int(p.arr[i].x)
+		y := int(p.arr[i].y)
+		if x < len(p.arr)-1 && y < len(p.arr)-1 {
+			s := p.arr[i].x - float32(x)
+			t := p.arr[i].y - float32(y)
+			v0 := tm.get(x, y)
+			v1 := tm.get(x+1, y)
+			v2 := tm.get(x, y+1)
+			v3 := tm.get(x+1, y+1)
+			p.arr[i].z = bilerp(s, t, v0, v1, v2, v3)
+		} else {
+			p.arr[i].z = tm.get(x, y)
+		}
+	}
+}
+
+func lerp(t, v0, v1 float32) float32 {
+	return (1-t)*v0 + t*v1
+}
+
+func bilerp(s, t, v0, v1, v2, v3 float32) float32 {
+	v01 := lerp(s, v0, v1)
+	v23 := lerp(s, v2, v3)
+	return lerp(t, v01, v23)
 }

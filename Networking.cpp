@@ -61,8 +61,8 @@ static void listenFunc() {
 			stringstream ss(line);
 			size_t num;
 			ss >> num;
-			vec2 *points = new vec2[num];
-			ns.read((char *)points, num * sizeof(float) * 2);
+			vec3 *points = new vec3[num];
+			ns.read((char *)points, num * sizeof(float) * 3);
 			level->SetControlPoints(points, num);
 		} else if (line == READY) {
 			level->SetReady();

@@ -15,7 +15,7 @@ Scene::Scene(Player p) : particle_sys()
     player = p;
     theta = phi = 0.0f;
     main = new Program("Shaders/main.vert", "Shaders/main.frag");
-	SetView(lookAt(vec3(0.0, 80.0, 0.0), vec3(1, 0, 1), vec3(0, 1, 0)));
+	SetView(lookAt(vec3(0.0, 50.0, 0.0), vec3(50, 0, 50), vec3(0, 1, 0)));
 }
 
 Scene::~Scene()

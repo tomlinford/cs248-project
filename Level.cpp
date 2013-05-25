@@ -24,11 +24,11 @@ void Level::Load() {
 	while(!ready) cond.wait(lock);
 }
 
-void Level::SetControlPoints(const glm::vec2 *points, size_t num) {
+void Level::SetControlPoints(const glm::vec3 *points, size_t num) {
 	for (size_t i = 0; i < num; i++) {
 		ControlPoint point;
-		point.time = i;
-		point.position = vec3(points[i].x * 20, 2, points[i].y * 20);
+		point.time = float(i);
+		point.position = vec3(points[i].x * 20, (points[i].z - .5) * 20 + 10, points[i].y * 20);
 		path.push_back(point);
     }
 	PrecomputeSplines();

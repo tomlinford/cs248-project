@@ -1,8 +1,14 @@
 // Implements a two dimensional tree for float32s
+// one of the downsides of Go is the lack of generics or templates.
+// The designers didn't want the compilation costs associated with
+// templates or the runtime costs associated with generics, so they
+// decides to just leave it out. As a result, this package just
+// implements a two dimensional kdtree for float32s
+// However, it would be easy to make it a kdtree of float32s by
+// just using slices instead of fixed sized arrays
 package twodtree
 
 import (
-	// "fmt"
 	"math"
 )
 
@@ -10,6 +16,7 @@ type TwoDTree struct {
 	root *node
 }
 
+// exported Add method, note the capitalizatoin
 func (tree *TwoDTree) Add(elem [2]float32) {
 	if tree.root == nil {
 		tree.root = &node{elem, nil, nil, nil}
@@ -18,6 +25,7 @@ func (tree *TwoDTree) Add(elem [2]float32) {
 	}
 }
 
+// unexported recursive add
 func (tree *TwoDTree) add(elem [2]float32, curr *node, count int) {
 	index := count % 2
 	if elem[index] < curr.elem[index] {
