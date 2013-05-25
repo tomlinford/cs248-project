@@ -7,7 +7,7 @@ using namespace::std;
 using namespace::glm;
 
 float rand(float min, float max) {
-    return min + (float)random() / RAND_MAX * (max - min);
+    return min + (float)rand() / RAND_MAX * (max - min);
 }
 
 Particle::Particle(glm::vec3 l, glm::vec3 v, float s)
@@ -107,8 +107,6 @@ void ParticleCluster::Draw(const Program& p, const glm::mat4& viewProjection,
         indices.push_back(index++);
     }
     
-    cout << index / 3 << " particles drawn" << endl;
-    
     ArrayBuffer<vec3> ab(vertices);
     ElementArrayBuffer eab(indices);
     Model model(ModelBuffer(ab, eab), Material(), Bounds());
@@ -116,10 +114,10 @@ void ParticleCluster::Draw(const Program& p, const glm::mat4& viewProjection,
     mat4 M = mat4(1);
     mat4 MVP = viewProjection * M;
     
-    p.SetUniform("baseColor", color);
     p.SetModel(M); // Needed for Phong shading
     p.SetMVP(MVP);
     
+    p.SetUniform("baseColor", color);
     p.SetUniform("illum", 1);
     model.Draw(p, GL_TRIANGLES);
     

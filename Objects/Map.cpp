@@ -68,8 +68,6 @@ unordered_map<size_t, WirePlane *> WirePlane::computedPlanes;
 const static string VERT_FILENAME = "Shaders/terrain.vert";
 const static string FRAG_FILENAME = "Shaders/terrain.frag";
 
-// TODO: Implement
-#pragma mark -
 Map::Map(float *heightMap, size_t size, int x, int y) : p(VERT_FILENAME, FRAG_FILENAME)
 	, heightField(size, size, GL_LUMINANCE, heightMap)
 {
