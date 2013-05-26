@@ -47,6 +47,9 @@ private:
     Texture heightField;
 	Program p;
     
+	ModelBuffer *triangleMB;
+	ModelBuffer *lineMB;
+    
     /** Helper method for sampling the height field. 
      x and y are wrapped around so that they will always
      fall within the height field. */

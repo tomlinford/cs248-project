@@ -4,38 +4,80 @@
 
 using namespace glm;
 
+class WirePlane {
+public:
+	static WirePlane *GetPlane(size_t size) {
+		if (computedPlanes.count(size) > 0) {
+			return computedPlanes[size];
+		}
+		computedPlanes[size] = new WirePlane(size);
+		return computedPlanes[size];
+	}
+	ModelBuffer *triangleMB;
+	ModelBuffer *lineMB;
+private:
+    
+	WirePlane(size_t size) {
+		vector<vec3> vertices;
+		vector<vec2> textures;
+		vector<size_t> triangleIndices;
+		vector<size_t> lineIndices;
+        
+		float increment = 1.f / (size - 1);
+		for (size_t i = 0; i < size; i++) {
+			for (size_t j = 0; j < size; j++) {
+				vertices.push_back(vec3(i * increment, 0, j * increment));
+				textures.push_back(vec2(i * increment + (increment / 2),
+										j * increment + (increment / 2)));
+			}
+		}
+		for (size_t i = 0; i < size - 1; i++) {
+			for (size_t j = 0; j < size - 1; j++) {
+				triangleIndices.push_back(i * size + j);
+				triangleIndices.push_back((i + 1) * size + j);
+				triangleIndices.push_back(i * size + (j + 1));
+				triangleIndices.push_back((i + 1) * size + j);
+				triangleIndices.push_back(i * size + (j + 1));
+				triangleIndices.push_back((i + 1) * size + (j + 1));
+                
+				lineIndices.push_back(i * size + j);
+				lineIndices.push_back((i + 1) * size + j);
+				lineIndices.push_back((i + 1) * size + j);
+				lineIndices.push_back((i + 1) * size + (j + 1));
+				lineIndices.push_back((i + 1) * size + (j + 1));
+				lineIndices.push_back(i * size + (j + 1));
+				lineIndices.push_back(i * size + (j + 1));
+				lineIndices.push_back(i * size + j);
+			}
+		}
+        
+		ArrayBuffer<vec3> vertexBuf(vertices);
+		ArrayBuffer<vec2> texBuf(textures);
+		ElementArrayBuffer triangleElements(triangleIndices);
+		ElementArrayBuffer lineElements(lineIndices);
+        
+		triangleMB = new ModelBuffer(vertexBuf, texBuf, triangleElements);
+		lineMB = new ModelBuffer(vertexBuf, texBuf, lineElements);
+	}
+    
+	static unordered_map<size_t, WirePlane *> computedPlanes;
+};
+
+unordered_map<size_t, WirePlane *> WirePlane::computedPlanes;
+
 const static string VERT_FILENAME = "Shaders/terrain.vert";
 const static string FRAG_FILENAME = "Shaders/terrain.frag";
-
-unordered_map<size_t, Model *>existingGrids;
 
 Map::Map(float *heightMap, size_t size, int x, int y) :
     p(VERT_FILENAME, FRAG_FILENAME),
 	heightField(size, size, GL_LUMINANCE, heightMap)
 {
     M = scale(mat4(1), vec3(20.0));
-	M = translate(M, vec3(x * 2, 0, y * 2));
+	M = translate(M, vec3(x, 0, y));
     
-	if (existingGrids.count(size) > 0) {
-        model = existingGrids[size];
-    }
-    else  {
-        string filename;
-        if (size == 64) {
-            filename = "Models/grid_32.obj";
-        }
-        else if (size == 32) {
-            filename = "Models/grid_32.obj";
-        }
-        else if (size == 16) {
-            filename = "Models/grid_16.obj";
-        }
-        
-        OBJFile *obj = new OBJFile(filename.c_str());
-        model = obj->GenModel();
-        existingGrids[size] = model;
-        delete obj;
-    }
+	WirePlane *wp = WirePlane::GetPlane(size);
+	triangleMB = wp->triangleMB;
+	lineMB = wp->lineMB;
 }
 
 void Map::Draw(const glm::mat4& viewProjection, const glm::vec3& cameraPos, const glm::vec3& lightPos) const {
@@ -49,12 +91,10 @@ void Map::Draw(const glm::mat4& viewProjection, const glm::vec3& cameraPos, cons
 	p.SetUniform("heightField", &heightField, GL_TEXTURE0);
     
 	p.SetUniform("illum", 0);
-    // This line crashes my computer, even on a 16 x 16 grid.
-    // Makes no sense. See if it works for you? lol
-	// model->Draw(p, GL_LINE_LOOP);
+    //lineMB->Draw(p, GL_LINE_LOOP);
     
 	p.SetUniform("illum", 1);
-	model->Draw(p, GL_TRIANGLES);
+	triangleMB->Draw(p, GL_TRIANGLES);
     
 	p.Unuse();
 }
