@@ -77,4 +77,6 @@ private:
     
     /** Precomputes splines. Call after loading control points. */
     void PrecomputeSplines();
+
+	void LoadMaps();
 };

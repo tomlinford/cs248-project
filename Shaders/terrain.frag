@@ -28,7 +28,7 @@ void main()
         vec3 diffuseColor = baseColor;
         
         // Camera position
-        vec3 N = normalize(-cross(dFdx(vertexPosition), dFdy(vertexPosition)));
+        vec3 N = normalize(cross(dFdx(vertexPosition), dFdy(vertexPosition)));
         vec3 L = normalize(lightPosition - vertexPosition);
         vec3 V = normalize(vertexPosition - cameraPosition);
         vec3 H = normalize(L - V);
@@ -42,6 +42,7 @@ void main()
         
         // Calculate final color
         final_color = ambient + diffuse;
+        final_color += cameraPosition * 0.0000000000001;
     } else {
         final_color = vec3(0.0, 0.7, 0.9);
     }
@@ -49,5 +50,5 @@ void main()
     // Attenuation factor
     float distance = length(vertexPosition - lightPosition);
     float attenuation = ((ATTENUATION_DISTANCE - distance) / ATTENUATION_DISTANCE);
-    gl_FragColor = vec4(final_color, 1.0);
+    gl_FragColor = vec4(final_color, 1.0) * attenuation;
 }
