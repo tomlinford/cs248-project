@@ -27,7 +27,7 @@ float rand(float min, float max) {
 void main() {
     vec3 normal = vec3(0, 1, 0);
     vec4 height = texture2D(heightField, textureCoordinates);
-    float displacement = 3 * (height.x - 0.5);
+    float displacement = 3.0 * (height.x - 0.5);
 
     vec3 position = vertexCoordinates;
     // position += displacement * normal;

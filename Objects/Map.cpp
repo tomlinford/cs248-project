@@ -86,8 +86,8 @@ void Map::Draw(const glm::mat4& viewProjection, const glm::vec3& cameraPos) cons
     p.SetUniform("baseColor", color);
 	p.SetUniform("heightField", &heightField, GL_TEXTURE0);
     
-	p.SetUniform("illum", 0);
-	lineMB->Draw(p, GL_LINES);
+	//p.SetUniform("illum", 0);
+	//lineMB->Draw(p, GL_LINES);
     
 	p.SetUniform("illum", 1);
 	triangleMB->Draw(p, GL_TRIANGLES);

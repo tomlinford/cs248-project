@@ -25,11 +25,25 @@ void Level::Load() {
 }
 
 void Level::SetControlPoints(const glm::vec3 *points, size_t num) {
-	for (size_t i = 0; i < num; i++) {
+	/*for (size_t i = 0; i < num; i++) {
 		ControlPoint point;
 		point.time = float(i);
 		point.position = vec3(points[i].x * 20, (points[i].z - .5) * 20 + 10, points[i].y * 20);
 		path.push_back(point);
+    }*/
+    // Dummy control points
+    for (int i = 0; i < 10 * M_PI + 1; i += M_PI / 3) {
+        ControlPoint point;
+        point.time = i * 1.5;
+        point.position = glm::vec3(160, 0.0, 160) + glm::vec3(60 * std::cos(i),
+                                                            20,//(float)rand() / RAND_MAX * 3,
+                                   60 * std::sin(i));
+        path.push_back(point);
+        
+        // Duplicate start and end
+        if (i == 0 || i == (int)(10 * M_PI)) {
+            path.push_back(point);
+        }
     }
 	PrecomputeSplines();
 }
