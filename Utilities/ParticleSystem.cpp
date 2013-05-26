@@ -1,5 +1,6 @@
 #include "ParticleSystem.h"
 
+#define MAX_VELOCITY 5
 #define MAX_LIFETIME 300
 #define PARTICLES_PER_CLUSTER 80
 
@@ -27,11 +28,11 @@ Particle::Particle(glm::vec3 l, glm::vec3 v, float s)
 }
 
 
-void Particle::Update()
+void Particle::Update(float elapsedTime)
 {
-    location += velocity;
+    location += velocity * elapsedTime;
     velocity *= 0.95;
-    velocity.y += -0.0001 * age;
+    velocity.y += -MAX_VELOCITY * elapsedTime;
     scale *= 0.95;
     age += 1;
 }
@@ -43,9 +44,9 @@ ParticleCluster::ParticleCluster(glm::vec3 location, glm::vec3 c)
     srand(time(NULL));
     for (int i = 0; i < PARTICLES_PER_CLUSTER; i++)
     {
-        vec3 velocity(rand(-0.1, 0.1),
-                      rand(-0.1, 0.1),
-                      rand(-0.1, 0.1));
+        vec3 velocity(rand(-MAX_VELOCITY, MAX_VELOCITY),
+                      rand(-MAX_VELOCITY, MAX_VELOCITY),
+                      rand(-MAX_VELOCITY, MAX_VELOCITY));
         normalize(velocity);
         
         float scale = (float)rand() / RAND_MAX;
@@ -59,7 +60,7 @@ void ParticleCluster::AddParticle(glm::vec3 location, glm::vec3 velocity, float 
     particles.push_back(Particle(location, velocity, scale));
 }
 
-void ParticleCluster::Update()
+void ParticleCluster::Update(float elapsedTime)
 {
     for (int i = 0; i < particles.size(); i++) {
         Particle &particle = particles[i];
@@ -69,7 +70,7 @@ void ParticleCluster::Update()
             i--;
         }
         else {
-            particle.Update();
+            particle.Update(elapsedTime);
         }
     }
 }
@@ -128,7 +129,7 @@ void ParticleCluster::Draw(const Program& p, const glm::mat4& viewProjection,
     model.Delete();
 }
 
-void ParticleSystem::Update()
+void ParticleSystem::Update(float elapsedTime)
 {
 	for (int i = 0; i < clusters.size(); i++ ) {
 		ParticleCluster &cluster = clusters[i];
@@ -136,9 +137,10 @@ void ParticleSystem::Update()
 			clusters.erase(clusters.begin() + i);
 			i--;
 		} else {
-			cluster.Update();
+			cluster.Update(elapsedTime - lastTime);
 		}
 	}
+    lastTime = elapsedTime;
 }
 
 void ParticleSystem::AddCluster(glm::vec3 location, glm::vec3 color)

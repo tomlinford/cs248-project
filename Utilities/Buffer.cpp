@@ -50,7 +50,7 @@ DataBuffer<T>::DataBuffer(const std::vector<T>& data, GLenum target)
 {
 	if (data.empty()) {
 		glDeleteBuffers(1, &target);
-		cerr << "Warning: empty data passed to DataBuffer constructor" << endl;
+		cerr << "Warning: Empty data passed to DataBuffer constructor" << endl;
 		return;
 	}
 	Bind();
@@ -64,7 +64,7 @@ DataBuffer<T>::DataBuffer(const std::vector<T>& data, GLenum target)
 		dataType = GL_FLOAT;
 		glBufferData(target, data.size() * sizeof(vec3), &data[0], GL_STATIC_DRAW);
 	} else {
-		cerr << "unknown data type passed to DataBuffer" << endl;
+		cerr << "Warning: Unknown data type passed to DataBuffer" << endl;
 	}
 }
 
@@ -73,7 +73,7 @@ DataBuffer<size_t>::DataBuffer(const std::vector<size_t>& data, GLenum target)
 {
 	if (data.empty()) {
 		glDeleteBuffers(1, &target);
-		cerr << "Warning: empty data passed to DataBuffer constructor" << endl;
+		cerr << "Warning: Empty data passed to DataBuffer constructor" << endl;
 		return;
 	}
 	Bind();
@@ -106,7 +106,7 @@ ArrayBuffer<T>::ArrayBuffer(const std::vector<T>& data)
 	} else if (is_same_type<T, vec3>::value) {
 		vertexSize = 3;
 	} else {
-		cerr << "unknown data type passed to ArrayBuffer" << endl;
+		cerr << "Warning: Unknown data type passed to ArrayBuffer" << endl;
 	}
 }
 

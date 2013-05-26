@@ -33,38 +33,63 @@ extern void Init(Level *currentLevel, std::string ip_addr) {
 	listenThread.detach();
 }
 
+/** Parses terrain data from the server.
+
+ The format is as follows:
+ terrain
+ [size] [x offset of chunk] [y offset of chunk]
+ [float data...]
+ */
+static void parseTerrain(boost::asio::ip::tcp::iostream& ns, string& line) {
+    cout << "Receiving terrain" << endl;
+    
+    // Read size and offset
+    getline(ns, line);
+    stringstream ss(line);
+    size_t size;
+    int x, y;
+    ss >> size >> x >> y;
+    
+    // Read data
+    float *terrainMap = new float[size * size];
+    ns.read((char *)terrainMap, size * size * sizeof(float));
+    level->SetLevel(terrainMap, size, x, y);
+}
+
+/** Parses path data from the server.
+ 
+ The format is as follows:
+ path
+ [size]
+ [float data...]
+ */
+static void parsePath(boost::asio::ip::tcp::iostream& ns, string& line) {
+    cout << "Receiving path" << endl;
+    
+    // Read size
+    getline(ns, line);
+    stringstream ss(line);
+    size_t num;
+    ss >> num;
+    
+    // Read data
+    vec3 *points = new vec3[num];
+    ns.read((char *)points, num * sizeof(float) * 3);
+    level->SetControlPoints(points, num);
+}
+
 static void listenFunc() {
 	boost::asio::ip::tcp::iostream ns(ip.c_str(), port);
 	string line;
-	
-	/*while (getline(ns, line)) {
-		line = "";
-	}*/
 
-	// will loop until stream closes
+	// Will loop until stream closes
 	while (getline(ns, line)) {
 		if (line == TERRAIN) {
-			cout << "reading in terrain" << endl;
-			// protocol: read next line to get the size of terrain.
-			// a size of 512 means will be reading in 512 * 512 floats
-			getline(ns, line);
-			stringstream ss(line);
-			size_t size;
-			int x, y;
-			ss >> size >> x >> y;
-			// now we read in the appropriate bytes into an array
-			float *terrainMap = new float[size * size];
-			ns.read((char *)terrainMap, size * size * sizeof(float));
-			level->SetLevel(terrainMap, size, x, y);
+			parseTerrain(ns, line);
 		} else if (line == PATH) {
-			getline(ns, line);
-			stringstream ss(line);
-			size_t num;
-			ss >> num;
-			vec3 *points = new vec3[num];
-			ns.read((char *)points, num * sizeof(float) * 3);
-			level->SetControlPoints(points, num);
+            parsePath(ns, line);
 		} else if (line == READY) {
+            cout << "Ready!" << endl;
 			level->SetReady();
 		}
 	}

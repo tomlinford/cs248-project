@@ -25,7 +25,7 @@ public:
     float lifetime;
     glm::quat orientation;
     
-    void Update();
+    void Update(float elapsedTime);
     bool Valid() { return (age / lifetime) < 1.0; }
 };
 
@@ -38,7 +38,7 @@ public:
     //~ParticleCluster();
     
     void AddParticle(glm::vec3 location, glm::vec3 velocity, float scale);
-    void Update();
+    void Update(float elapsedTime);
     bool Valid() { return particles.size() > 0; }
     void Draw(const Program& p, const glm::mat4& viewProjection,
               const glm::vec3& cameraPos, GLenum mode = GL_TRIANGLES);
@@ -56,12 +56,13 @@ private:
 class ParticleSystem
 {
 public:
-    void Update();
+    void Update(float elapsedTime);
     void AddCluster(glm::vec3 location, glm::vec3 color);
     void Draw(const Program& p, const glm::mat4& viewProjection,
               const glm::vec3& cameraPos, GLenum mode = GL_TRIANGLES);
     
 private:
     std::vector<ParticleCluster> clusters;
+    float lastTime = 0;
 };
 

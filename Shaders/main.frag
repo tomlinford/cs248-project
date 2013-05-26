@@ -3,6 +3,8 @@
 /* Specifies GLSL version 1.10 - corresponds to OpenGL 2.0 */
 #version 120
 
+#define ATTENUATION_DISTANCE 50
+
 uniform vec3 baseColor;
 
 /* Illumination model
@@ -20,8 +22,6 @@ uniform vec3 lightPosition;
 /* Interpolated vertex position from vertex shader */
 varying vec3 vertexPosition;
 varying vec3 normalPosition;
-
-#define ATTENUATION_DISTANCE 50
 
 void main()
 {
@@ -53,6 +53,6 @@ void main()
     
     // Attenuation factor
     float distance = length(vertexPosition - lightPosition);
-    float attenuation = 1.0;//((ATTENUATION_DISTANCE - distance) / ATTENUATION_DISTANCE);
+    float attenuation = ((ATTENUATION_DISTANCE - distance) / ATTENUATION_DISTANCE);
     gl_FragColor = attenuation * vec4(final_color, 1.0);
 }

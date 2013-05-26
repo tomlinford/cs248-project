@@ -37,7 +37,8 @@ public:
      geometry. */
     virtual bool Intersects(Object other);
 
-	void Draw(const glm::mat4& viewProjection, const glm::vec3& cameraPos) const;
+	void Draw(const glm::mat4& viewProjection, const glm::vec3& cameraPos,
+              const glm::vec3& lightPos) const;
 
 	void AddTerrain(float *heightMap, size_t size, int x, int y);
 
@@ -45,12 +46,7 @@ public:
     
 private:
     Texture heightField;
-	//ModelBuffer *lineMB;
-	ModelBuffer *triangleMB;
-	ModelBuffer *lineMB;
-	glm::mat4 modelMat;
 	Program p;
-	//Grid<float> heightMapGrid;
     
     /** Helper method for sampling the height field. 
      x and y are wrapped around so that they will always

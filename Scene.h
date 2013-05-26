@@ -56,7 +56,8 @@ private:
      movement. */
     glm::mat4 view;
     glm::mat4 projection;
-    glm::vec3 cameraPos;
+    glm::vec3 cameraPosition;
+    glm::vec3 lightPosition;
     
     /** The current level */
     Level *level;

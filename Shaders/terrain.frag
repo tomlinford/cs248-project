@@ -1,23 +1,31 @@
 #version 110
 
-varying vec3 vertexPosition;
-varying vec3 normal;
+#define ATTENUATION_DISTANCE 50.0
 
 uniform vec3 baseColor;
+
+/* Illumination model
+ * 0 - Flat
+ * 1 - Phong
+ */
 uniform int illum;
 
-void main() {
-    vec3 cameraPosition = vec3(0.0, 0.0, 1.0);
-    vec3 lightPosition = vec3(0.0, 1.0, 1.0);
+/* Camera position */
+uniform vec3 cameraPosition;
 
-    vec4 final_color;
-    
+/* Light position in camera space */
+uniform vec3 lightPosition;
+
+/* Interpolated vertex position from vertex shader */
+varying vec3 vertexPosition;
+
+void main()
+{
+    vec3 final_color;
     if (illum > 0) {
         // Calculate colors
         vec3 ambientColor = 0.3 * baseColor;
-        // ambientColor = 0.3 * vec3(1, 0, 0);
         vec3 diffuseColor = baseColor;
-        // diffuseColor = vec3(0, 1, 0);
         
         // Camera position
         vec3 N = normalize(-cross(dFdx(vertexPosition), dFdy(vertexPosition)));
@@ -33,13 +41,13 @@ void main() {
         diffuse = clamp(dot(L, N), 0.0, 1.0) * diffuseColor;
         
         // Calculate final color
-        final_color = vec4(ambient + diffuse, 1);
-        // final_color = vec4(base_color, 1);
+        final_color = ambient + diffuse;
     } else {
-        final_color = vec4(0.0, 0.7, 0.9, 0.6);
+        final_color = vec3(0.0, 0.7, 0.9);
     }
     
-    gl_FragColor = final_color;
-    // if (N.x < -0.05 || L.x < 0.0)
-    //     gl_FragColor = vec4(1, 0, 0, 1);
+    // Attenuation factor
+    float distance = length(vertexPosition - lightPosition);
+    float attenuation = ((ATTENUATION_DISTANCE - distance) / ATTENUATION_DISTANCE);
+    gl_FragColor = attenuation * vec4(final_color, 1.0);
 }

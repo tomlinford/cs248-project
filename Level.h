@@ -50,7 +50,8 @@ public:
 	void SetLevel(float *terrainMap, size_t size, int x, int y);
 
 	/** This will be called from the main thread, so the Level will load the map if necessary */
-	void DrawMap(const glm::mat4& viewProjection, const glm::vec3& cameraPos);
+	void DrawMap(const glm::mat4& viewProjection, const glm::vec3& cameraPos,
+                 const glm::vec3& lightPos);
 
 	void SetReady();
 

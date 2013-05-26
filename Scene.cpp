@@ -32,11 +32,34 @@ void Scene::LoadLevel(Level *l)
 	level->Load();
 }
 
+/* Scene update functions below */
+
+/** Captures ship offset based on key presses. */
+void Scene::HandleKeys()
+{
+    if (keyLeft)
+        shipOffset.x -= 0.1;
+    if (keyRight)
+        shipOffset.x += 0.1;
+    if (keyUp)
+        shipOffset.y += 0.1;
+    if (keyDown)
+        shipOffset.y -= 0.1;
+    
+    shipOffset = clamp(shipOffset, vec2(-MAX_X, -MAX_Y), vec2(MAX_X, MAX_Y));
+}
+
+/** Updates objects by moving them to their new locations,
+ which is a function of the elapsed time. */
 void Scene::UpdateObjects(float elapsedSeconds)
 {
     // Compute ship position along path
     vec3 direction = level->GetDirection(level->ship, elapsedSeconds);
     vec3 position = level->GetPosition(level->ship, elapsedSeconds);
+    
+    // Update light/camera
+    lightPosition = position;
+    cameraPosition = position - 3.0f * direction;
     
     // Update ship position
     // Important: Note offset and direction must be set before
@@ -55,37 +78,27 @@ void Scene::UpdateObjects(float elapsedSeconds)
     }
     
     // Update particles
-    particle_sys.Update();
+    particle_sys.Update(elapsedSeconds);
 }
 
-/* Scene update functions below */
-
-void Scene::HandleKeys()
-{
-    if (keyLeft)
-        shipOffset.x -= 0.1;
-    if (keyRight)
-        shipOffset.x += 0.1;
-    if (keyUp)
-        shipOffset.y += 0.1;
-    if (keyDown)
-        shipOffset.y -= 0.1;
-    
-    shipOffset = clamp(shipOffset, vec2(-MAX_X, -MAX_Y), vec2(MAX_X, MAX_Y));
-}
-
+/** Determine if a collision has occurred - if so,
+ determine which objects to remove from the scene, and
+ whether to add particle effects at the location of
+ collision. */
 void Scene::HandleCollisions()
 {
     
 }
 
+/** Updates the player views, which depends on the
+ ship position. */
 void Scene::UpdateView(float elapsedSeconds)
 {
     // View for player 1 (chase cam)
     if (player == PLAYER1)
     {
-    // Compute ship position along path
-    vec3 position = level->GetPosition(level->ship, elapsedSeconds);
+        // Compute ship position along path
+        vec3 position = level->GetPosition(level->ship, elapsedSeconds);
         quat orientation = level->ship->GetOrientation();
         vec3 direction = orientation * vec3(0, 0, -1);
         vec3 up = orientation * vec3(0, 1, 0);
@@ -106,6 +119,11 @@ void Scene::UpdateView(float elapsedSeconds)
         SetView(lookAt(position + 0.3f * up,
                        position + 0.3f * up + direction,
                        up));
+        
+        // Set light/camera position
+        position = level->GetPosition(level->ship, elapsedSeconds);
+        orientation = level->ship->GetOrientation();
+        direction = orientation * vec3(0, 0, -1);
     }
 }
 
@@ -126,13 +144,14 @@ void Scene::Render()
 {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     
-    // Some levels may be in space and not have a terrain map
+    //SetView(lookAt(vec3(0, 100, 0),
+    //               vec3(0, 0, 0),
+    //               vec3(0, 0, 1)));
+    
     // Maps have their own shader program
-	level->DrawMap(projection * view, vec3(0.f, 0.f, 5.f));
+	level->DrawMap(projection * view, cameraPosition, lightPosition);
     
     mat4 viewProjection = projection * view;
-    vec3 lightPosition(0, 5, 0);
-    vec3 cameraPosition(0, 1, 2);
     
     main->Use();
     main->SetUniform("illum", 1);
@@ -156,13 +175,13 @@ void Scene::Render()
          it++)
     {
         Object obj = *it;
-        obj.Draw(*main, viewProjection, vec3(0, 0, 5));
+        obj.Draw(*main, viewProjection, cameraPosition);
     }
     
     // Draw particles
     ::count++;
     if (::count % 100 == 0) {
-        particle_sys.AddCluster(level->ship->GetPosition(), vec3(1.0, 0.0, 1.0));
+        particle_sys.AddCluster(level->ship->GetPosition(), vec3(0.0, 0.9, 0.0));
     }
     particle_sys.Draw(*main, viewProjection, cameraPosition);
     
