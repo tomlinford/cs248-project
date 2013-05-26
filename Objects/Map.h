@@ -13,7 +13,6 @@ typedef enum
     TESSLVL_128
 } TessLevel;
 
-
 /** Represents a terrain map. A maps's model space should be
  the same as its world space; this restriction makes sense
  since the map really is the game world. It also simplifies

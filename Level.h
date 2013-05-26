@@ -29,7 +29,7 @@ struct MapLoader
     bool needsToLoad;       // Has the map been loaded yet?
     float *terrainMap;      // Will need to be freed
     size_t size;            // size of the map (32, 64, 128...)
-	int x, y; // x and y positions
+	int x, y;               // x and y positions
 };
 
 /** Defines a game level */

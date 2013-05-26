@@ -75,10 +75,13 @@ void ParticleCluster::Update(float elapsedTime)
     }
 }
 
-// TODO: Generate particle buffer
+// Generates and draws particle buffer
 void ParticleCluster::Draw(const Program& p, const glm::mat4& viewProjection,
                           const glm::vec3& cameraPos, GLenum mode)
 {
+    if (particles.size() == 0)
+        return;
+    
     vector<vec3> vertices;
 	vector<size_t> indices;
     

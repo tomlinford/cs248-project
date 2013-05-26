@@ -92,7 +92,6 @@ void Object::DrawAABB(const Program& p, const glm::mat4& viewProjection,
     mat4 model = mat4(1);
     mat4 mvp = viewProjection * model;
     
-    p.Use();
     p.SetModel(model);
     p.SetMVP(mvp);
     
@@ -125,8 +124,6 @@ void Object::DrawAABB(const Program& p, const glm::mat4& viewProjection,
     glVertex3f(bounds.f3.x, bounds.f3.y, bounds.f3.z);
     glVertex3f(bounds.b3.x, bounds.b3.y, bounds.b3.z);
     glEnd();
-    
-    p.Unuse();
 }
 
 void Object::Draw(const Program& p, const glm::mat4& viewProjection,
@@ -140,7 +137,7 @@ void Object::Draw(const Program& p, const glm::mat4& viewProjection,
     
 	Object::model->Draw(p, mode);
     
-#ifdef DEBUG
+//#ifdef DEBUG
     DrawAABB(p, viewProjection, cameraPos, mode);
-#endif
+//#endif
 }

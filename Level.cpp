@@ -16,12 +16,13 @@ Level::~Level()
 {
     for (int i = 2; i < path.size() - 1; i++) {
         delete path[i].spline;
-        }
     }
+}
     
 void Level::Load() {
 	unique_lock<std::mutex> lock(mutex);
-	while(!ready) cond.wait(lock);
+	while(!ready)
+        cond.wait(lock);
 }
 
 void Level::SetControlPoints(const glm::vec3 *points, size_t num) {
@@ -101,20 +102,27 @@ void Level::SetLevel(float *terrainMap, size_t size, int x, int y) {
 void Level::DrawMap(const glm::mat4& viewProjection, const glm::vec3& cameraPos,
                     const glm::vec3& lightPos) {
 	lock_guard<std::mutex> lock(mutex);
-	if (maps.size() > 0 && mapLoaders.size() == 0) {
-		for (Map *map : maps) map->Draw(viewProjection, cameraPos, lightPos);
+    
+    // If there are maps, then draw the maps
+	if (maps.size() > 0) {
+		for (Map *map : maps)
+            map->Draw(viewProjection, cameraPos, lightPos);
 		return;
 	}
-	if (mapLoaders.size() == 0) return;
+    
+    // Load whatever still needs to be loaded
+    // If there's nothing to load this for-loop should not execute
+    // Also, what does 'needsToLoad' do right now?
+    // It doesn't look like you're using it apart from setting to true/false
 	for (MapLoader &mapLoader : mapLoaders) {
-	Map *newMap = new Map(mapLoader.terrainMap, mapLoader.size, mapLoader.x, mapLoader.y);
-	newMap->SetColor(vec3(0.0, 0.4, 0.5));
-	maps.push_back(newMap);
-	mapLoader.needsToLoad = false;
-		delete[] mapLoader.terrainMap;
+        Map *newMap = new Map(mapLoader.terrainMap, mapLoader.size, mapLoader.x, mapLoader.y);
+        newMap->SetColor(vec3(0.0, 0.4, 0.5));
+        maps.push_back(newMap);
+        mapLoader.needsToLoad = false;
+        delete[] mapLoader.terrainMap;
 	}
 	mapLoaders.clear();
-	for (Map *map : maps) map->Draw(viewProjection, cameraPos, lightPos);
+    
 	cond.notify_all();
 }
 

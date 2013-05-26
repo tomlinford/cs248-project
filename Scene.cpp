@@ -87,7 +87,6 @@ void Scene::UpdateObjects(float elapsedSeconds)
  collision. */
 void Scene::HandleCollisions()
 {
-    
 }
 
 /** Updates the player views, which depends on the
@@ -144,11 +143,7 @@ void Scene::Render()
 {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     
-    //SetView(lookAt(vec3(0, 100, 0),
-    //               vec3(0, 0, 0),
-    //               vec3(0, 0, 1)));
-    
-    // Maps have their own shader program
+    // Maps have their own shader program for vertex displacement
 	level->DrawMap(projection * view, cameraPosition, lightPosition);
     
     mat4 viewProjection = projection * view;
