@@ -11,10 +11,11 @@ float rand(float min, float max) {
     return min + (float)rand() / RAND_MAX * (max - min);
 }
 
-Particle::Particle(glm::vec3 l, glm::vec3 v, float s)
+Particle::Particle(glm::vec3 l, glm::vec3 v, glm::vec3 f, float s)
 {
     location = l;
     velocity = v;
+    force = f;
     scale = s;
     
     // Random lifetime up to MAX
@@ -32,7 +33,7 @@ void Particle::Update(float elapsedTime)
 {
     location += velocity * elapsedTime;
     velocity *= 0.95;
-    velocity.y += -MAX_VELOCITY * elapsedTime;
+    velocity += force * elapsedTime;
     scale *= 0.95;
     age += 1;
 }
@@ -51,13 +52,13 @@ ParticleCluster::ParticleCluster(glm::vec3 location, glm::vec3 c)
         
         float scale = (float)rand() / RAND_MAX;
         
-        AddParticle(location, velocity, scale);
+        AddParticle(location, velocity, vec3(0, -MAX_VELOCITY, 0), scale);
     }
 }
 
-void ParticleCluster::AddParticle(glm::vec3 location, glm::vec3 velocity, float scale)
+void ParticleCluster::AddParticle(glm::vec3 location, glm::vec3 velocity, glm::vec3 force, float scale)
 {
-    particles.push_back(Particle(location, velocity, scale));
+    particles.push_back(Particle(location, velocity, force, scale));
 }
 
 void ParticleCluster::Update(float elapsedTime)
@@ -132,6 +133,95 @@ void ParticleCluster::Draw(const Program& p, const glm::mat4& viewProjection,
     model.Delete();
 }
 
+void FluidCluster::Update(float elapsedTime)
+{
+    ParticleCluster::Update(elapsedTime);
+    for (int i = 0; i < 30; i++) {
+        vec3 velocity(0, rand(0, MAX_VELOCITY), 0);
+        normalize(velocity);
+        
+        float scale = (float)rand() / RAND_MAX;
+        
+        AddParticle(location, velocity, wind, scale);
+        cout << "Added particle " << endl;
+    }
+}
+
+FluidCluster::FluidCluster(glm::vec3 l, glm::vec3 w, glm::vec3 c)
+{
+    location = l;
+    wind = w;
+    color = c;
+    
+    srand(time(NULL));
+    for (int i = 0; i < PARTICLES_PER_CLUSTER; i++)
+    {
+        vec3 velocity(0, rand(0, MAX_VELOCITY), 0);
+        normalize(velocity);
+        
+        float scale = (float)rand() / RAND_MAX;
+        
+        AddParticle(location, velocity, wind, scale);
+    }
+}
+
+// Generates and draws particle buffer
+void FluidCluster::Draw(const Program& p, const glm::mat4& viewProjection,
+                           const glm::vec3& cameraPos, GLenum mode)
+{
+    if (particles.size() == 0)
+        return;
+    
+    vector<vec3> vertices;
+	vector<size_t> indices;
+    
+    // Add triangle for each particle
+    int index = 0;
+	for (std::vector<Particle>::iterator it = particles.begin();
+         it != particles.end();
+         it++)
+    {
+        Particle particle = *it;
+        
+        // Orient vertices
+        vec3 o1 = particle.orientation * vec3(0.2, 0.0, 0.0);
+        vec3 o2 = particle.orientation * vec3(0.0, sqrt(3.0) / 5, 0);
+        vec3 o3 = particle.orientation * vec3(-0.2, 0.0, 0.0);
+        
+        vec3 v1 = particle.location + particle.scale * o1;
+        vec3 v2 = particle.location + particle.scale * o2;
+        vec3 v3 = particle.location + particle.scale * o3;
+        
+        vertices.push_back(v1);
+        vertices.push_back(v2);
+        vertices.push_back(v3);
+        
+        indices.push_back(index++);
+        indices.push_back(index++);
+        indices.push_back(index++);
+    }
+    
+    ArrayBuffer<vec3> ab(vertices);
+    ElementArrayBuffer eab(indices);
+    Model model(ModelBuffer(ab, eab), Material(), Bounds());
+    
+    mat4 M = mat4(1);
+    mat4 MVP = viewProjection * M;
+    
+    p.SetModel(M); // Needed for Phong shading
+    p.SetMVP(MVP);
+    
+    p.SetUniform("baseColor", color);
+    p.SetUniform("illum", 1);
+    model.Draw(p, GL_TRIANGLES);
+    
+    p.SetUniform("baseColor", color);
+	p.SetUniform("illum", 0);
+	model.Draw(p, GL_LINE_LOOP);
+    
+    model.Delete();
+}
+
 void ParticleSystem::Update(float elapsedTime)
 {
 	for (int i = 0; i < clusters.size(); i++ ) {
@@ -146,9 +236,15 @@ void ParticleSystem::Update(float elapsedTime)
     lastTime = elapsedTime;
 }
 
-void ParticleSystem::AddCluster(glm::vec3 location, glm::vec3 color)
+void ParticleSystem::AddExplosionCluster(glm::vec3 location, glm::vec3 color)
 {
     ParticleCluster cluster(location, color);
+    clusters.push_back(cluster);
+}
+
+void ParticleSystem::AddFluidCluster(glm::vec3 location, glm::vec3 wind, glm::vec3 color)
+{
+    FluidCluster cluster(location, wind, color);
     clusters.push_back(cluster);
 }
 

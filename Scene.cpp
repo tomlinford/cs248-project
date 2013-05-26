@@ -15,7 +15,6 @@ Scene::Scene(Player p) : particle_sys()
     player = p;
     theta = phi = 0.0f;
     main = new Program("Shaders/main.vert", "Shaders/main.frag");
-	SetView(lookAt(vec3(0.0, 50.0, 0.0), vec3(50, 0, 50), vec3(0, 1, 0)));
 }
 
 Scene::~Scene()
@@ -176,7 +175,7 @@ void Scene::Render()
     // Draw particles
     ::count++;
     if (::count % 100 == 0) {
-        particle_sys.AddCluster(level->ship->GetPosition(), vec3(0.0, 0.9, 0.0));
+        particle_sys.AddExplosionCluster(level->ship->GetPosition(), vec3(0.0, 0.9, 0.0));
     }
     particle_sys.Draw(*main, viewProjection, cameraPosition);
     

@@ -22,10 +22,10 @@ Map::Map(float *heightMap, size_t size, int x, int y) :
     else  {
         string filename;
         if (size == 64) {
-            filename = "Models/grid_16.obj";
+            filename = "Models/grid_32.obj";
         }
         else if (size == 32) {
-            filename = "Models/grid_16.obj";
+            filename = "Models/grid_32.obj";
         }
         else if (size == 16) {
             filename = "Models/grid_16.obj";
@@ -49,7 +49,9 @@ void Map::Draw(const glm::mat4& viewProjection, const glm::vec3& cameraPos, cons
 	p.SetUniform("heightField", &heightField, GL_TEXTURE0);
     
 	p.SetUniform("illum", 0);
-	//model->Draw(p, GL_LINE_LOOP);
+    // This line crashes my computer, even on a 16 x 16 grid.
+    // Makes no sense. See if it works for you? lol
+	// model->Draw(p, GL_LINE_LOOP);
     
 	p.SetUniform("illum", 1);
 	model->Draw(p, GL_TRIANGLES);
