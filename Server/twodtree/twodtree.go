@@ -84,6 +84,7 @@ func (g *guess) procedure(curr *node, count int, visitedOtherSide bool) {
 	} else {
 		g.procedure(curr.right, count+1, false)
 	}
+	index = (count + 1) % 2
 	if !visitedOtherSide &&
 		curr.parent != nil &&
 		math.Abs(float64(curr.elem[index]-g.test[index])) < float64(g.bestDist) {

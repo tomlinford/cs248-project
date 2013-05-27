@@ -153,6 +153,15 @@ func sampleArr(arr []vec3, step int) []vec3 {
 	return newArr
 }
 
+func canyon(d float64) float32 {
+	// y=1/(10 * sqrt(2*pi)) * e^(-x^2/(2*10*10))
+	sigma := 10.0
+	a := 1.0 / (sigma * math.Sqrt(2.0*math.Pi))
+	exp := a * math.Exp(-d*d/(2.0*sigma*sigma)) * 7.0
+	// fmt.Println(float32(1.0 - exp))
+	return float32(exp)
+}
+
 // terrain map generation, with mutliple return values
 func genTerrainMap(size int) ([]terrainMap, path) {
 	// declares a terrainMap on the stack
@@ -171,16 +180,20 @@ func genTerrainMap(size int) ([]terrainMap, path) {
 	for i := 0; i < size; i++ {
 		for j := 0; j < size; j++ {
 			dist := float64(p.distanceTo(float32(i), float32(j)))
-			if dist < 3.0 {
-				// tm.set(i, j, tm.get(i, j)-float32(math.Sqrt(4.0-dist))/float32(kSize/64*kDeg)/16.0)
-			}
+			// if dist < 10.0 {
+			// tm.set(i, j, tm.get(i, j)-float32(math.Sqrt(dist+1)/15.))
+			tm.set(i, j, tm.get(i, j)-canyon(dist))
+			// tm.set(i, j, tm.get(i, j)-1000.0)
+			// }
 		}
 	}
 	tm.normalize()
 	p.adjustHeights(&tm)
 	for i := 0; i < len(p.arr); i++ {
-		p.arr[i].x /= float32(kSize / kDeg)
-		p.arr[i].y /= float32(kSize / kDeg)
+		// p.arr[i].x /= float32(kSize/kDeg + float32(int(p.arr[i].x)/kDeg))
+		// p.arr[i].y /= float32(kSize/kDeg + float32(int(p.arr[i].y)/kDeg))
+		p.arr[i].x /= float32((kSize - 1) / kDeg)
+		p.arr[i].y /= float32((kSize - 1) / kDeg)
 	}
 	maps := tm.subdivide(kDeg)
 	return maps, p
@@ -314,9 +327,9 @@ type path struct {
 
 // creates a procedurally generated path using midpoint displacement
 func genPath(size int) path {
-	p := path{make([]vec3, size, size), twodtree.TwoDTree{}}
+	p := path{make([]vec3, size*2, size*2), twodtree.TwoDTree{}}
 	for i := 0; i < len(p.arr); i++ {
-		p.arr[i].x = float32(i) + 0.5
+		p.arr[i].x = float32(i)*0.5 + 0.5
 		p.arr[i].y = float32(size / 2)
 	}
 	size /= 2
@@ -340,6 +353,14 @@ func genPath(size int) path {
 }
 
 func (p *path) distanceTo(x, y float32) float32 {
+	// o := vec3{x, y, 0}
+	// minDist := o.distanceTo(p.arr[0])
+	// for _, v := range p.arr {
+	// 	if v.distanceTo(o) < minDist {
+	// 		minDist = v.distanceTo(o)
+	// 	}
+	// }
+	// return minDist
 	closest := p.tree.NearestNeighbor([2]float32{x, y})
 	return (vec3{x, y, 0}).distanceTo(vec3{closest[0], closest[1], 0})
 }
