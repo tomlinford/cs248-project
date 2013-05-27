@@ -1,5 +1,9 @@
 #include "Scene.h"
 
+#include <sstream>
+#include <thread>
+#include <boost/asio.hpp>
+
 #define MAX_X 2.4
 #define MAX_Y 1.8
 
@@ -16,7 +20,12 @@ Scene::Scene(Player p) : particle_sys()
     theta = phi = 0.0f;
     frustum = new Frustum();
     main = new Program("Shaders/main.vert", "Shaders/main.frag");
+    level = NULL;
 	SetView(lookAt(vec3(140, 30, 0), vec3(140, 0, 0), vec3(0, 0, 1)));
+    
+    // Spawn update thread
+	thread updateThread(&Scene::Update, this);
+	updateThread.detach();
 }
 
 Scene::~Scene()
@@ -33,6 +42,7 @@ void Scene::LoadLevel(Level *l)
 {
     level = l;
 	level->Load();
+    cond.notify_all();
 }
 
 /* Scene update functions below */
@@ -137,19 +147,28 @@ void Scene::UpdateView(float elapsedSeconds)
 
 void Scene::Update()
 {
-    times = timer.elapsed();
-    float elapsedSeconds = (float)times.wall / pow(10.f, 9.f);
-    
-    HandleKeys();
-    UpdateObjects(elapsedSeconds);
-    HandleCollisions();
-    UpdateView(elapsedSeconds);
+    while (true) {
+        times = timer.elapsed();
+        float elapsedSeconds = (float)times.wall / pow(10.f, 9.f);
+        
+        unique_lock<std::mutex> lock(mutex);
+        while (!level) {
+            cond.wait(lock);
+        }
+        
+        HandleKeys();
+        UpdateObjects(elapsedSeconds);
+        HandleCollisions();
+        UpdateView(elapsedSeconds);
+    }
 }
 
 /* Rendering functions below */
 
 void Scene::Render()
 {
+    unique_lock<std::mutex> lock(mutex);
+    
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     
     // Maps have their own shader program for vertex displacement
