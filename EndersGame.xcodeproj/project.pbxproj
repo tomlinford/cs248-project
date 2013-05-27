@@ -74,6 +74,7 @@
 		786F681917423ED700E359E4 /* CMSpline.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = CMSpline.hpp; sourceTree = "<group>"; };
 		7890FC341752CD5000A6E28B /* Frustum.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Frustum.cpp; sourceTree = "<group>"; };
 		7890FC351752CD5000A6E28B /* Frustum.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Frustum.h; sourceTree = "<group>"; };
+		7890FC3717530C7800A6E28B /* Material.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Material.h; sourceTree = "<group>"; };
 		789B1999174638B400C90C56 /* main.frag */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; path = main.frag; sourceTree = "<group>"; };
 		789B199A174638B400C90C56 /* main.vert */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; path = main.vert; sourceTree = "<group>"; };
 		789B19A117463C8800C90C56 /* Object.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Object.cpp; sourceTree = "<group>"; };
@@ -184,6 +185,7 @@
 		782BEAC117221FCD007668C8 /* Utilities */ = {
 			isa = PBXGroup;
 			children = (
+				7890FC3717530C7800A6E28B /* Material.h */,
 				789B19AF1746412600C90C56 /* Bitmap.cpp */,
 				789B19B01746412600C90C56 /* Bitmap.h */,
 				789B19B11746412600C90C56 /* Texture.cpp */,

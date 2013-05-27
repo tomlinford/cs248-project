@@ -78,11 +78,39 @@ Map::Map(float *heightMap, size_t size, int x, int y) :
     // Find position
     position = vec3(20 * x, 0, 20 * y);
     
-    cout << "Grid at (" << position.x << ", " << position.y << ", " << position.z << ")" << endl;
+    // Compute bounds
+    ComputeBounds();
     
+    // Object destructor will release model
 	WirePlane *wp = WirePlane::GetPlane(size);
-	triangleMB = wp->triangleMB;
-	lineMB = wp->lineMB;
+	triangles = wp->triangleMB;
+	lines = wp->lineMB;
+}
+
+void Map::ComputeBounds()
+{
+    int width = heightField.GetWidth();
+    int height = heightField.GetHeight();
+    GLfloat *data = heightField.GetData();
+    
+    assert(data != NULL && width > 0 && height > 0);
+    
+    float minY, maxY;
+    minY = maxY = data[0];
+    for (int i = 1; i < width * height; i++) {
+        if (data[i] < minY) {
+            minY = data[i];
+        }
+        else if (data[i] > maxY) {
+            maxY = data[i];
+        }
+    }
+    
+    minY = 3.0 * (20 * (minY - 0.5));
+    maxY = 3.0 * (20 * (maxY - 0.5));
+    
+    bounds = Bounds(position + vec3(0, minY, 0),
+                    position + vec3(20, maxY, 20));
 }
 
 void Map::Draw(const glm::mat4& viewProjection, const glm::vec3& cameraPos, const glm::vec3& lightPos) const {
@@ -96,10 +124,16 @@ void Map::Draw(const glm::mat4& viewProjection, const glm::vec3& cameraPos, cons
 	p.SetUniform("heightField", &heightField, GL_TEXTURE0);
     
 	p.SetUniform("illum", 0);
-    lineMB->Draw(p, GL_LINES);
+    lines->Draw(p, GL_LINES);
     
 	p.SetUniform("illum", 1);
-	triangleMB->Draw(p, GL_TRIANGLES);
+	triangles->Draw(p, GL_TRIANGLES);
+    
+//#ifdef DEBUG
+    p.SetUniform("illum", 0);
+    p.SetUniform("baseColor", vec3(1.0));
+    DrawAABB(p, viewProjection);
+//#endif
     
 	p.Unuse();
 }

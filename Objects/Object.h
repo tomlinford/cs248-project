@@ -55,7 +55,7 @@ public:
     /** Returns axis-aligned world-space bounding box
      by finding the min/max of the transformed
      model-space bounds */
-    Bounds GetBounds() const;
+    virtual Bounds GetBounds() const;
     
     /** Rotate by an angle represented by a vec3 where
      x = yaw
@@ -83,6 +83,5 @@ protected:
     void UpdateMinMax(glm::vec3& min, glm::vec3& max, glm::vec4 test);
     
     /* Draws the object's AABB */
-    void DrawAABB(const Program& p, const glm::mat4& viewProjection,
-                  const glm::vec3& cameraPos, GLenum mode) const;
+    void DrawAABB(const Program& p, const glm::mat4& viewProjection) const;
 };

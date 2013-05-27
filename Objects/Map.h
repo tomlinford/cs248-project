@@ -38,24 +38,32 @@ public:
     
     /** Returns the map's position */
     virtual glm::vec3 GetPosition();
+    
+    /** Returns the map's bounds */
+    virtual Bounds GetBounds() const { return bounds; }
+    
+    /** Sets the map's color */
+    void SetColor(const glm::vec3& color) { this->color = color; }
 
 	void Draw(const glm::mat4& viewProjection, const glm::vec3& cameraPos,
               const glm::vec3& lightPos) const;
 
 	void AddTerrain(float *heightMap, size_t size, int x, int y);
-
-	void SetColor(const glm::vec3& color) { this->color = color; }
     
 private:
     Texture heightField;
 	Program p;
+    Bounds bounds;
     
-	ModelBuffer *triangleMB;
-	ModelBuffer *lineMB;
+    ModelBuffer *triangles;
+	ModelBuffer *lines;
     
     /** Helper method for sampling the height field. 
      x and y are wrapped around so that they will always
      fall within the height field. */
     GLfloat Sample(GLfloat *map, GLuint width, GLuint height,
                    int x, int y);
+    
+    /** Computes this map's boundig box */
+    void ComputeBounds();
 };

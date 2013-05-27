@@ -86,8 +86,7 @@ Bounds Object::GetBounds() const
     return Bounds(min, max);
 }
 
-void Object::DrawAABB(const Program& p, const glm::mat4& viewProjection,
-              const glm::vec3& cameraPos, GLenum mode) const
+void Object::DrawAABB(const Program& p, const glm::mat4& viewProjection) const
 {
     mat4 model = mat4(1);
     mat4 mvp = viewProjection * model;
@@ -138,6 +137,6 @@ void Object::Draw(const Program& p, const glm::mat4& viewProjection,
 	Object::model->Draw(p, mode);
     
 //#ifdef DEBUG
-    DrawAABB(p, viewProjection, cameraPos, mode);
+    DrawAABB(p, viewProjection);
 //#endif
 }
