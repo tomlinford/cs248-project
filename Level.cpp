@@ -21,15 +21,17 @@ Level::~Level()
     
 void Level::Load() {
 	unique_lock<std::mutex> lock(mutex);
-	while(!ready)
+	while(!ready) {
         cond.wait(lock);
+        LoadMaps();
+	}
 }
 
 void Level::SetControlPoints(const glm::vec3 *points, size_t num) {
 	for (size_t i = 0; i < num; i += 4) {
 		ControlPoint point;
-		point.time = float(i);
-		point.position = vec3(points[i].x * 20, (points[i].z - .5) * 20 + 10, points[i].y * 20);
+		point.time = float(i) * 4.;
+		point.position = vec3(points[i].x * 20, (points[i].z - .5) * 60 + 4, points[i].y * 20);
 		path.push_back(point);
     }
 	PrecomputeSplines();
@@ -97,15 +99,19 @@ void Level::SetLevel(float *terrainMap, size_t size, int x, int y) {
 	mapLoader.x = x;
 	mapLoader.y = y;
 	mapLoaders.push_back(mapLoader);
+    
+	cond.notify_all();
 }
 
 void Level::DrawMap(const glm::mat4& viewProjection, const glm::vec3& cameraPos,
                     const glm::vec3& lightPos, const Frustum& frustum) {
-    
-    // Load whatever still needs to be loaded
-    // If there's nothing to load this for-loop should not execute
-    // Also, what does 'needsToLoad' do right now?
-    // It doesn't look like you're using it apart from setting to true/false
+	for (Map *map : maps) {
+        if (frustum.Contains(*map))
+            map->Draw(viewProjection, cameraPos, lightPos);
+    }
+}
+
+void Level::LoadMaps() {
 	for (MapLoader &mapLoader : mapLoaders) {
         Map *newMap = new Map(mapLoader.terrainMap, mapLoader.size, mapLoader.x, mapLoader.y);
         newMap->SetColor(vec3(0.0, 0.4, 0.5));
@@ -114,14 +120,6 @@ void Level::DrawMap(const glm::mat4& viewProjection, const glm::vec3& cameraPos,
         delete[] mapLoader.terrainMap;
 	}
 	mapLoaders.clear();
-    
-    // If there are maps, then draw the maps
-	if (maps.size() > 0) {
-		for (Map *map : maps) {
-            if (frustum.Contains(*map))
-                map->Draw(viewProjection, cameraPos, lightPos);
-        }
-    }
 }
 
 void Level::SetReady() {

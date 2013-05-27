@@ -16,7 +16,11 @@ const static string USE_MATERIAL("usemtl");
 const static string MATERIAL_LIBRARY("mtllib");
 
 static bool operator<(const VertexIndex& l, const VertexIndex& r) {
-    return l.v < r.v || l.t < r.t || l.n < r.n;
+    if (l.v < r.v) return true;
+    if (r.v < l.v) return false;
+    if (l.t < r.t) return true;
+    if (r.t < l.t) return false;
+    return l.n < r.n;
 }
 
 /** Parses a single face element */
@@ -36,8 +40,7 @@ void parseFaceElement(const string& str, size_t& v, size_t& t, size_t& n)
         if (!t) {
             n--;
             t = 0;
-        }
-        else if (!n) {
+        } else {
             t--;
             n = 0;
         }

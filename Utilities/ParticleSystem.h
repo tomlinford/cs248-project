@@ -75,6 +75,7 @@ private:
 class ParticleSystem
 {
 public:
+	ParticleSystem() : lastTime(0) {}
     void Update(float elapsedTime);
     void AddExplosionCluster(glm::vec3 location, glm::vec3 color);
     void AddFluidCluster(glm::vec3 location, glm::vec3 wind, glm::vec3 color);
@@ -83,6 +84,6 @@ public:
     
 private:
     std::vector<ParticleCluster> clusters;
-    float lastTime = 0;
+    float lastTime;
 };
 
