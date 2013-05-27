@@ -100,15 +100,7 @@ void Level::SetLevel(float *terrainMap, size_t size, int x, int y) {
 }
 
 void Level::DrawMap(const glm::mat4& viewProjection, const glm::vec3& cameraPos,
-                    const glm::vec3& lightPos) {
-	lock_guard<std::mutex> lock(mutex);
-    
-    // If there are maps, then draw the maps
-	if (maps.size() > 0) {
-		for (Map *map : maps)
-            map->Draw(viewProjection, cameraPos, lightPos);
-		return;
-	}
+                    const glm::vec3& lightPos, const Frustum& frustum) {
     
     // Load whatever still needs to be loaded
     // If there's nothing to load this for-loop should not execute
@@ -123,7 +115,13 @@ void Level::DrawMap(const glm::mat4& viewProjection, const glm::vec3& cameraPos,
 	}
 	mapLoaders.clear();
     
-	cond.notify_all();
+    // If there are maps, then draw the maps
+	if (maps.size() > 0) {
+		for (Map *map : maps) {
+            if (frustum.Contains(*map))
+                map->Draw(viewProjection, cameraPos, lightPos);
+        }
+    }
 }
 
 void Level::SetReady() {

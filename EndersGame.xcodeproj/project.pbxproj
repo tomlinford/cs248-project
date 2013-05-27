@@ -20,6 +20,7 @@
 		786F680117422A6F00E359E4 /* FBO.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 786F67FF17422A6F00E359E4 /* FBO.cpp */; };
 		786F6805174232C800E359E4 /* Screen.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 786F6803174232C800E359E4 /* Screen.cpp */; };
 		786F6806174233F400E359E4 /* Program.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 786F67EF1742259B00E359E4 /* Program.cpp */; };
+		7890FC361752CD5000A6E28B /* Frustum.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7890FC341752CD5000A6E28B /* Frustum.cpp */; };
 		789B19A317463C8800C90C56 /* Object.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 789B19A117463C8800C90C56 /* Object.cpp */; };
 		789B19A617463D1B00C90C56 /* Flyable.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 789B19A417463D1B00C90C56 /* Flyable.cpp */; };
 		789B19B31746412600C90C56 /* Bitmap.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 789B19AF1746412600C90C56 /* Bitmap.cpp */; };
@@ -71,6 +72,8 @@
 		786F68081742350100E359E4 /* quad.vert */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; path = quad.vert; sourceTree = "<group>"; };
 		786F68091742358200E359E4 /* quad.frag */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; path = quad.frag; sourceTree = "<group>"; };
 		786F681917423ED700E359E4 /* CMSpline.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = CMSpline.hpp; sourceTree = "<group>"; };
+		7890FC341752CD5000A6E28B /* Frustum.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Frustum.cpp; sourceTree = "<group>"; };
+		7890FC351752CD5000A6E28B /* Frustum.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Frustum.h; sourceTree = "<group>"; };
 		789B1999174638B400C90C56 /* main.frag */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; path = main.frag; sourceTree = "<group>"; };
 		789B199A174638B400C90C56 /* main.vert */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; path = main.vert; sourceTree = "<group>"; };
 		789B19A117463C8800C90C56 /* Object.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Object.cpp; sourceTree = "<group>"; };
@@ -203,6 +206,8 @@
 				786F67F01742259B00E359E4 /* Program.h */,
 				78B1AA021742EFAE003E5C24 /* ParticleSystem.cpp */,
 				78B1AA031742EFAE003E5C24 /* ParticleSystem.h */,
+				7890FC341752CD5000A6E28B /* Frustum.cpp */,
+				7890FC351752CD5000A6E28B /* Frustum.h */,
 			);
 			path = Utilities;
 			sourceTree = "<group>";
@@ -326,6 +331,7 @@
 				78E54B141746F0ED00BFC6B3 /* Level.cpp in Sources */,
 				78E54B181746F85800BFC6B3 /* Map.cpp in Sources */,
 				78C3DD141749C01E0030CEDD /* Networking.cpp in Sources */,
+				7890FC361752CD5000A6E28B /* Frustum.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

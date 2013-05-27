@@ -14,6 +14,7 @@ Scene::Scene(Player p) : particle_sys()
 {
     player = p;
     theta = phi = 0.0f;
+    frustum = new Frustum();
     main = new Program("Shaders/main.vert", "Shaders/main.frag");
 }
 
@@ -23,6 +24,8 @@ Scene::~Scene()
         delete main;
     if (level)
         delete level;
+    if (frustum)
+        delete frustum;
 }
 
 void Scene::LoadLevel(Level *l)
@@ -73,6 +76,9 @@ void Scene::UpdateObjects(float elapsedSeconds)
          it++)
     {
         Object obj = *it;
+        bool inFrustrum = length(cameraPosition - obj.GetPosition()) > 50;
+        obj.SetInFrustrum(inFrustrum);
+        
         // TODO
     }
     
@@ -104,6 +110,10 @@ void Scene::UpdateView(float elapsedSeconds)
         SetView(lookAt(position - 3.0f * direction,
                        position + direction,
                        up));
+        
+        frustum->LoadCam(position - 3.0f * direction,
+                         position + direction,
+                         up);
     }
     // View for player 2 (on board cam)
     else
@@ -118,10 +128,9 @@ void Scene::UpdateView(float elapsedSeconds)
                        position + 0.3f * up + direction,
                        up));
         
-        // Set light/camera position
-        position = level->GetPosition(level->ship, elapsedSeconds);
-        orientation = level->ship->GetOrientation();
-        direction = orientation * vec3(0, 0, -1);
+        frustum->LoadCam(position - 3.0f * direction,
+                         position + direction,
+                         up);
     }
 }
 
@@ -143,7 +152,7 @@ void Scene::Render()
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     
     // Maps have their own shader program for vertex displacement
-	level->DrawMap(projection * view, cameraPosition, lightPosition);
+	level->DrawMap(projection * view, cameraPosition, lightPosition, *frustum);
     
     mat4 viewProjection = projection * view;
     
@@ -157,7 +166,7 @@ void Scene::Render()
     // main->SetProjection(projection);
     
     // Draw ship
-    if (level->ship)
+    if (level->ship && frustum->Contains(*level->ship))
     {
         level->ship->Draw(*main, viewProjection, cameraPosition);
         level->ship->Draw(*main, viewProjection, cameraPosition, GL_LINE_LOOP);
@@ -169,7 +178,8 @@ void Scene::Render()
          it++)
     {
         Object obj = *it;
-        obj.Draw(*main, viewProjection, cameraPosition);
+        if (frustum->Contains(obj))
+            obj.Draw(*main, viewProjection, cameraPosition);
     }
     
     // Draw particles

@@ -35,6 +35,9 @@ public:
      terrain does not support overhangs or concave
      geometry. */
     virtual bool Intersects(Object other);
+    
+    /** Returns the map's position */
+    virtual glm::vec3 GetPosition();
 
 	void Draw(const glm::mat4& viewProjection, const glm::vec3& cameraPos,
               const glm::vec3& lightPos) const;
