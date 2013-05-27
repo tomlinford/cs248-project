@@ -43,7 +43,7 @@ public:
     virtual void Update(float elapsedTime);
     bool Valid() { return particles.size() > 0; }
     virtual void Draw(const Program& p, const glm::mat4& viewProjection,
-              const glm::vec3& cameraPos, GLenum mode = GL_TRIANGLES);
+                      const glm::vec3& cameraPos, GLenum mode = GL_TRIANGLES);
 
 protected:
     std::vector<Particle> particles;

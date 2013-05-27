@@ -31,7 +31,7 @@ void Frustum::ComputeCorners()
     
     ntl = midNear + up * yNear - left * xNear;
     ntr = midNear + up * yNear + left * xNear;
-    nll = midNear - up * yNear; - left * xNear;
+    nll = midNear - up * yNear - left * xNear;
     nlr = midNear - up * yNear + left * xNear;
     
     // Compute corners of far clipping plane

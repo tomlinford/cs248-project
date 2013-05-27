@@ -139,7 +139,7 @@ void Object::Draw(const Program& p, const glm::mat4& viewProjection,
     
 	Object::model->Draw(p, mode);
     
-//#ifdef DEBUG
+#ifdef DEBUG
     DrawAABB(p, viewProjection);
-//#endif
+#endif
 }
