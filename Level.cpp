@@ -23,14 +23,14 @@ void Level::Load() {
 	unique_lock<std::mutex> lock(mutex);
 	while(!ready) {
         cond.wait(lock);
-        LoadMaps();
+		LoadMaps();
 	}
 }
 
 void Level::SetControlPoints(const glm::vec3 *points, size_t num) {
 	for (size_t i = 0; i < num; i += 4) {
 		ControlPoint point;
-		point.time = float(i) * 2.;
+		point.time = float(i) * 0.5;
 		point.position = vec3(points[i].x * 20, (points[i].z - .5) * 60 + 4, points[i].y * 20);
 		path.push_back(point);
     }
@@ -105,10 +105,15 @@ void Level::SetLevel(float *terrainMap, size_t size, int x, int y) {
 
 void Level::DrawMap(const glm::mat4& viewProjection, const glm::vec3& cameraPos,
                     const glm::vec3& lightPos, const Frustum& frustum) {
-	for (Map *map : maps) {
+	int count = 0;
+    for (Map *map : maps) {
         if (frustum.Contains(*map))
             map->Draw(viewProjection, cameraPos, lightPos);
+        else
+            count++;
+            
     }
+    cout << "Culled " << count << " sub maps " << endl;
 }
 
 void Level::LoadMaps() {

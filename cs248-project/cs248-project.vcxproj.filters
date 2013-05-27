@@ -90,6 +90,9 @@
     <ClCompile Include="..\Networking.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\Utilities\Frustum.cpp">
+      <Filter>Utilities</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\gl.h">
@@ -163,6 +166,9 @@
     </ClInclude>
     <ClInclude Include="..\Grid\vector.h">
       <Filter>Grid</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Utilities\Frustum.h">
+      <Filter>Utilities</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

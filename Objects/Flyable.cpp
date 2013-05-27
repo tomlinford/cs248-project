@@ -43,6 +43,7 @@ void Flyable::SetPosition(vec3 p)
     vec3 x(1, 0, 0);
     vec3 y(0, 1, 0);
     vec3 x_dir = orientation * x;
+    
     vec3 y_dir = orientation * y;
     
     position = p + offset.x * x_dir + offset.y * y_dir;

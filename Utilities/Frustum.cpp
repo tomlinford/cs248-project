@@ -89,9 +89,53 @@ void Frustum::ComputePlanes()
 bool Frustum::Contains(Object& object) const
 {
     Bounds bounds = object.GetBounds();
+    
     for (int i = 0; i < 6; i++) {
         Plane plane = planes[i];
+        
+        int in = 0;
+        int out = 0;
+        
+        if (dot(plane.normal, bounds.b1 - plane.position) < 0)
+            out++;
+        else
+            in++;
+        if (dot(plane.normal, bounds.b2 - plane.position) < 0)
+            out++;
+        else
+            in++;
+        if (dot(plane.normal, bounds.b3 - plane.position) < 0)
+            out++;
+        else
+            in++;
+        if (dot(plane.normal, bounds.b4 - plane.position) < 0)
+            out++;
+        else
+            in++;
+        if (dot(plane.normal, bounds.f1 - plane.position) < 0)
+            out++;
+        else
+            in++;
+        if (dot(plane.normal, bounds.f2 - plane.position) < 0)
+            out++;
+        else
+            in++;
+        if (dot(plane.normal, bounds.f3 - plane.position) < 0)
+            out++;
+        else
+            in++;
+        if (dot(plane.normal, bounds.f4 - plane.position) < 0)
+            out++;
+        else
+            in++;
+        
+        // If everything is outside a plane - no intersection
+        if (in == 0)
+            return false;
+        // If some things are inside and some are outside - intersection
+        else if (out != 0)
+            return true;
     }
     
-    return length(position - object.GetPosition()) < 100;
+    return true;
 }

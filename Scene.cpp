@@ -16,6 +16,7 @@ Scene::Scene(Player p) : particle_sys()
     theta = phi = 0.0f;
     frustum = new Frustum();
     main = new Program("Shaders/main.vert", "Shaders/main.frag");
+	SetView(lookAt(vec3(140, 30, 0), vec3(140, 0, 0), vec3(0, 0, 1)));
 }
 
 Scene::~Scene()

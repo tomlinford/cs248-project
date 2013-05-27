@@ -111,13 +111,13 @@ ArrayBuffer<T>::ArrayBuffer(const std::vector<T>& data)
 }
 
 template <typename T>
-void ArrayBuffer<T>::Use(Program program, const std::string& name) const {
+void ArrayBuffer<T>::Use(Program program, const char *name) const {
     if (!Buffer::valid) {
         cerr << "Warning: ArrayBuffer has been deleted!" << endl;
         return;
     }
     
-	GLint loc = program.GetAttribLocation(name.c_str());
+	GLint loc = program.GetAttribLocation(name);
 	if (loc < 0) return;
 	glEnableVertexAttribArray(loc);
 	DataBuffer<T>::Bind();
@@ -125,8 +125,8 @@ void ArrayBuffer<T>::Use(Program program, const std::string& name) const {
 }
 
 template <typename T>
-void ArrayBuffer<T>::Unuse(Program program, const std::string& name) const {
-	GLint loc = program.GetAttribLocation(name.c_str());
+void ArrayBuffer<T>::Unuse(Program program, const char *name) const {
+	GLint loc = program.GetAttribLocation(name);
 	if (loc < 0) return;
 	glDisableVertexAttribArray(loc);
 }

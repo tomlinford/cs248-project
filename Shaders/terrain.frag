@@ -50,5 +50,6 @@ void main()
     // Attenuation factor
     float distance = length(vertexPosition - lightPosition);
     float attenuation = ((ATTENUATION_DISTANCE - distance) / ATTENUATION_DISTANCE);
-    gl_FragColor = attenuation * vec4(final_color, 1.0);
+    // gl_FragColor = vec4(final_color, 1.0);
+    gl_FragColor = vec4(final_color, 1.0) * attenuation;
 }
