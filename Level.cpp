@@ -30,7 +30,7 @@ void Level::Load() {
 void Level::SetControlPoints(const glm::vec3 *points, size_t num) {
 	for (size_t i = 0; i < num; i += 4) {
 		ControlPoint point;
-		point.time = float(i) * 4;
+		point.time = float(i) * .5;
 		point.position = vec3(points[i].x * 20, (points[i].z - .5) * 60 + 4, points[i].y * 20);
 		path.push_back(point);
     }
