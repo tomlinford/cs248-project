@@ -20,6 +20,7 @@
     <ClCompile Include="..\Scene.cpp" />
     <ClCompile Include="..\Utilities\Bitmap.cpp" />
     <ClCompile Include="..\Utilities\FBO.cpp" />
+    <ClCompile Include="..\Utilities\Frustum.cpp" />
     <ClCompile Include="..\Utilities\Model.cpp" />
     <ClCompile Include="..\Utilities\OBJFile.cpp" />
     <ClCompile Include="..\Utilities\ParticleSystem.cpp" />
@@ -44,6 +45,7 @@
     <ClInclude Include="..\Utilities\Buffer.h" />
     <ClInclude Include="..\Utilities\CMSpline.hpp" />
     <ClInclude Include="..\Utilities\FBO.h" />
+    <ClInclude Include="..\Utilities\Frustum.h" />
     <ClInclude Include="..\Utilities\gl.h" />
     <ClInclude Include="..\Utilities\Material.h" />
     <ClInclude Include="..\Utilities\Model.h" />

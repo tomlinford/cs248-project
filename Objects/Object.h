@@ -47,6 +47,11 @@ public:
             glm::mat4_cast(orientation);
     };
     
+    /** In view frustrum */
+    /** Orientation (rotation) in model space */
+    virtual bool InFrustrum() { return inFrustrum; };
+    virtual void SetInFrustrum(bool i) { inFrustrum = i; };
+    
     /** Returns axis-aligned world-space bounding box
      by finding the min/max of the transformed
      model-space bounds */
@@ -71,6 +76,7 @@ protected:
     glm::vec3 color;
     glm::vec3 position;
     glm::quat orientation;
+    bool inFrustrum;
     
     /** Helper function for finding object's AABB
      (axis-aligned bounding box) */

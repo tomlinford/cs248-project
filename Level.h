@@ -12,6 +12,8 @@
 #include "Flyable.h"
 #include "Map.h"
 
+#include "Utilities/Frustum.h"
+
 /** Defines a control point along a route */
 struct ControlPoint
 {
@@ -51,7 +53,7 @@ public:
 
 	/** This will be called from the main thread, so the Level will load the map if necessary */
 	void DrawMap(const glm::mat4& viewProjection, const glm::vec3& cameraPos,
-                 const glm::vec3& lightPos);
+                 const glm::vec3& lightPos, const Frustum& frustrum);
 
 	void SetReady();
 

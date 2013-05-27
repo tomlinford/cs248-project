@@ -75,6 +75,11 @@ Map::Map(float *heightMap, size_t size, int x, int y) :
     M = scale(mat4(1), vec3(20.0));
 	M = translate(M, vec3(x, 0, y));
     
+    // Find position
+    position = vec3(20 * x, 0, 20 * y);
+    
+    cout << "Grid at (" << position.x << ", " << position.y << ", " << position.z << ")" << endl;
+    
 	WirePlane *wp = WirePlane::GetPlane(size);
 	triangleMB = wp->triangleMB;
 	lineMB = wp->lineMB;
@@ -103,6 +108,11 @@ GLfloat Map::Sample(GLfloat *map, GLuint width, GLuint height, int x, int y)
 {
     return map[((y & (height - 1)) * height) + (x & (width - 1))];
 }
+
+vec3 Map::GetPosition()
+{
+    return position;
+};
 
 bool Map::Intersects(Object other)
 {

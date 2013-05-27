@@ -49,6 +49,10 @@ func main() {
 		panic(err)
 	}
 
+	// this is an example of channel in Go. another function will generate
+	// the terrain maps with a path and send it along this channel
+	ch := genMaps()
+
 	// no while loops in Go, just variations of the for loop:
 	// for with nothing -- like for (;;)
 	// for with one condition -- like a while loop
@@ -67,7 +71,8 @@ func main() {
 
 		// the "go" keyword starts a new goroutine, the goroutine
 		// will be executed concurrently
-		go sendCommands(conn)
+		// the "<-" operator receives a value from a channel
+		go sendCommands(conn, <-ch)
 
 		// you can also use the "go" keyword and start an anonymous
 		// function
@@ -92,7 +97,7 @@ func main() {
 
 // right now, this function generates a terrain map and sends
 // it over the network
-func sendCommands(conn net.Conn) {
+func sendCommands(conn net.Conn, tmp terrainMapPath) {
 	// the defer statement is also really cool. it will
 	// defer the execution of a function until the current
 	// function returns. It's commented out right now because
@@ -102,7 +107,8 @@ func sendCommands(conn net.Conn) {
 
 	wr := bufio.NewWriter(conn)
 
-	maps, p := genTerrainMap(kSize)
+	maps := tmp.maps
+	p := tmp.p
 
 	for x := 0; x < kDeg; x++ {
 		for y := 0; y < kDeg; y++ {
@@ -127,6 +133,24 @@ func sendCommands(conn net.Conn) {
 	fmt.Fprintln(wr, "ready")
 	wr.Flush()
 	fmt.Println("Finished sending Level over network")
+}
+
+// represents a struct containing terrainMaps and a path
+type terrainMapPath struct {
+	maps []terrainMap
+	p    path
+}
+
+func genMaps() chan terrainMapPath {
+	ch := make(chan terrainMapPath, 5)
+	go func() {
+		for {
+			maps, p := genTerrainMap(kSize)
+			fmt.Println("Level generated")
+			ch <- terrainMapPath{maps, p}
+		}
+	}()
+	return ch
 }
 
 // samples a slice in groups of size step and averages out the

@@ -14,6 +14,7 @@
 #include "Utilities/Model.h"
 #include "Utilities/OBJFile.h"
 #include "Utilities/ParticleSystem.h"
+#include "Utilities/Frustum.h"
 
 typedef enum
 {
@@ -39,6 +40,9 @@ public:
     void Render();
     
     /** Accessors for view matrices */
+    void SetFrustum(float FOV, float ratio, float near, float far) {
+        frustum->LoadView(FOV, ratio, near, far);
+    }
     void SetView(glm::mat4 v) { view = v; }
     void SetProjection(glm::mat4 p) { projection = p; }
     
@@ -58,6 +62,9 @@ private:
     glm::mat4 projection;
     glm::vec3 cameraPosition;
     glm::vec3 lightPosition;
+    
+    /* View frustrum */
+    Frustum *frustum;
     
     /** The current level */
     Level *level;
