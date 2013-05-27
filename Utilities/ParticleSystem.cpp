@@ -82,17 +82,14 @@ void ParticleCluster::Draw(const Program& p, const glm::mat4& viewProjection,
 {
     if (particles.size() == 0)
         return;
-    
-    vector<vec3> vertices;
-	vector<size_t> indices;
-    
-    // Add triangle for each particle
-    int index = 0;
-	for (std::vector<Particle>::iterator it = particles.begin();
-         it != particles.end();
-         it++)
-    {
-        Particle particle = *it;
+
+	// pre allocate space for vectors
+	vector<vec3> vertices(particles.size() * 3);
+	vector<size_t> indices(particles.size() * 3);
+	
+	// add triangle for each particle
+	for (size_t i = 0; i < particles.size(); i++) {
+		Particle particle = particles[i];
         
         // Orient vertices
         vec3 o1 = particle.orientation * vec3(0.2, 0.0, 0.0);
@@ -102,15 +99,15 @@ void ParticleCluster::Draw(const Program& p, const glm::mat4& viewProjection,
         vec3 v1 = particle.location + particle.scale * o1;
         vec3 v2 = particle.location + particle.scale * o2;
         vec3 v3 = particle.location + particle.scale * o3;
-        
-        vertices.push_back(v1);
-        vertices.push_back(v2);
-        vertices.push_back(v3);
-        
-        indices.push_back(index++);
-        indices.push_back(index++);
-        indices.push_back(index++);
-    }
+
+		vertices[i * 3] = v1;
+		vertices[i * 3 + 1] = v2;
+		vertices[i * 3 + 2] = v3;
+		
+		indices[i * 3] = i * 3;
+		indices[i * 3 + 1] = i * 3 + 1;
+		indices[i * 3 + 2] = i * 3 + 2;
+	}
     
     ArrayBuffer<vec3> ab(vertices);
     ElementArrayBuffer eab(indices);
