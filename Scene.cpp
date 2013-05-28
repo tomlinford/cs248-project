@@ -88,11 +88,19 @@ void Scene::UpdateObjects(float elapsedSeconds)
     {
         Flyable *obj = (Flyable *)*it;
         
-        direction = level->GetDirection(obj, 180 - (elapsedSeconds + obj->GetTimeOffset()));
-        position = level->GetPosition(obj, 180 - (elapsedSeconds + obj->GetTimeOffset()));
+        direction = level->GetDirection(obj, 70 - (elapsedSeconds + obj->GetTimeOffset()));
+        position = level->GetPosition(obj, 70 - (elapsedSeconds + obj->GetTimeOffset()));
         
-        obj->SetDirection(-direction);
-        obj->SetPosition(position);
+        if (position.x - 0.0 < 0.0001 &&
+            position.y - 0.0 < 0.0001 &&
+            position.z - 0.0 < 0.0001) {
+            it = level->objects.erase(it);
+            it--;
+        }
+        else {
+            obj->SetDirection(-direction);
+            obj->SetPosition(position);
+        }
     }
     
     // Update particles
@@ -110,9 +118,14 @@ void Scene::HandleCollisions()
          it++)
     {
         Flyable *obj = (Flyable *)*it;
-        if (level->ship->Intersects(*obj)) {
-            it = level->objects.erase(it);
-            it--;
+        if (frustum->Contains(*obj)) {
+            cout << "Testing for collision with object at (" << obj->GetPosition().x << ", " << obj->GetPosition().y << ", " << obj->GetPosition().z << ")" << endl;
+            if (level->ship->Intersects(*obj)) {
+                cout << "Collided" << endl;
+                particle_sys.AddExplosionCluster(obj->GetPosition(), obj->GetColor());
+                it = level->objects.erase(it);
+                it--;
+            }
         }
     }
 }
@@ -224,10 +237,6 @@ void Scene::Render()
     }
     
     // Draw particles
-    ::count++;
-    if (::count % 100 == 0) {
-        particle_sys.AddExplosionCluster(level->ship->GetPosition(), vec3(0.0, 0.9, 0.0));
-    }
     particle_sys.Draw(*main, viewProjection, cameraPosition);
     
     main->Unuse();

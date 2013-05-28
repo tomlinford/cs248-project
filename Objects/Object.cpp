@@ -46,14 +46,17 @@ bool Object::Intersects(Object& other)
     
     // f3 and b1 correspond to the max and min
     // corners of the bounding boxes, respectively
-    if (myBounds.f3.x < otherBounds.b1.x)
+    if (myBounds.f3.x < otherBounds.b1.x ||
+        otherBounds.f3.x < myBounds.b1.x)
         return false;
-    if (myBounds.f3.y < otherBounds.b1.y)
+    if (myBounds.f3.y < otherBounds.b1.y ||
+        otherBounds.f3.y < myBounds.b1.y)
         return false;
-    if (myBounds.f3.z < otherBounds.b1.z)
+    if (myBounds.f3.z < otherBounds.b1.z ||
+        otherBounds.f3.z < myBounds.b1.z)
         return false;
     
-    return false;
+    return true;
 }
 
 /* Helper function for finding AABB */

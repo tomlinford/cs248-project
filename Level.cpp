@@ -21,7 +21,7 @@ Level::Level() : ready(false)
     for (int i = 0; i < 40; i++) {
         Ship *ship = new Ship("Models/ship.obj");
         ship->SetColor(vec3(0.9, 0.0, 0.0));
-        ship->SetTimeOffset(rand2(0, 180));
+        ship->SetTimeOffset(rand2(0, 70));
         ship->SetOffset(vec2(rand2(-2.4, 2.4), rand2(-1.8, 1.8)));
         objects.push_back(ship);
     }
@@ -48,6 +48,11 @@ void Level::SetControlPoints(const glm::vec3 *points, size_t num) {
 		point.time = float(i) * 0.5;
 		point.position = vec3(points[i].x * 20, (points[i].z - .5) * 60 + 4, points[i].y * 20);
 		path.push_back(point);
+        
+        // Duplicate start and end
+        if (i == 0 || i == num - 1) {
+            path.push_back(point);
+        }
     }
 	PrecomputeSplines();
 }
