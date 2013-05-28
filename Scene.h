@@ -63,6 +63,10 @@ private:
     glm::vec3 cameraPosition;
     glm::vec3 lightPosition;
     
+    /* Level loading synchronization */
+    std::condition_variable cond;
+    std::mutex mutex;
+    
     /* View frustrum */
     Frustum *frustum;
     
@@ -84,6 +88,8 @@ private:
     
     /** Global objects */
     ParticleSystem particle_sys;
+    
+    int frames;
     
     /** Update helpers */
     void HandleKeys();

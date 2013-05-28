@@ -1,7 +1,7 @@
 #include "ParticleSystem.h"
 
 #define MAX_VELOCITY 5
-#define MAX_LIFETIME 300
+#define MAX_LIFETIME 10
 #define PARTICLES_PER_CLUSTER 80
 
 using namespace::std;
@@ -32,10 +32,9 @@ Particle::Particle(glm::vec3 l, glm::vec3 v, glm::vec3 f, float s)
 void Particle::Update(float elapsedTime)
 {
     location += velocity * elapsedTime;
-    velocity *= 0.95;
     velocity += force * elapsedTime;
-    scale *= 0.95;
-    age += 1;
+    age += elapsedTime;
+    scale *= (MAX_LIFETIME - age) / MAX_LIFETIME;
 }
 
 ParticleCluster::ParticleCluster(glm::vec3 location, glm::vec3 c)

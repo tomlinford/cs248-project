@@ -129,11 +129,11 @@ void Map::Draw(const glm::mat4& viewProjection, const glm::vec3& cameraPos, cons
 	p.SetUniform("illum", 1);
 	triangles->Draw(p, GL_TRIANGLES);
     
-//#ifdef DEBUG
+#ifdef DEBUG
     p.SetUniform("illum", 0);
     p.SetUniform("baseColor", vec3(1.0));
     DrawAABB(p, viewProjection);
-//#endif
+#endif
     
 	// this doesn't seem to have any effect and is using just under 4% of the cpu,
 	// so I'll just comment it out for now
