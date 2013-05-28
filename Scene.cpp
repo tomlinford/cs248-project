@@ -82,15 +82,17 @@ void Scene::UpdateObjects(float elapsedSeconds)
     level->ship->SetPosition(position);
     
     // Update other objects
-    for (std::vector<Object>::iterator it = level->objects.begin();
+    for (std::vector<Object *>::iterator it = level->objects.begin();
          it != level->objects.end();
          it++)
     {
-        Object obj = *it;
-        bool inFrustrum = length(cameraPosition - obj.GetPosition()) > 50;
-        obj.SetInFrustrum(inFrustrum);
+        Flyable *obj = (Flyable *)*it;
         
-        // TODO
+        direction = level->GetDirection(obj, 180 - (elapsedSeconds + obj->GetTimeOffset()));
+        position = level->GetPosition(obj, 180 - (elapsedSeconds + obj->GetTimeOffset()));
+        
+        obj->SetDirection(-direction);
+        obj->SetPosition(position);
     }
     
     // Update particles
@@ -103,6 +105,16 @@ void Scene::UpdateObjects(float elapsedSeconds)
  collision. */
 void Scene::HandleCollisions()
 {
+    for (std::vector<Object *>::iterator it = level->objects.begin();
+         it != level->objects.end();
+         it++)
+    {
+        Flyable *obj = (Flyable *)*it;
+        if (level->ship->Intersects(*obj)) {
+            it = level->objects.erase(it);
+            it--;
+        }
+    }
 }
 
 /** Updates the player views, which depends on the
@@ -168,12 +180,12 @@ void Scene::Update()
 void Scene::Render()
 {
     unique_lock<std::mutex> lock(mutex);
-    frames++;
     
-    cpu_times time = timer.elapsed();
-    float elapsedSeconds = (float)time.wall / pow(10.f, 9.f);
-    float fps = (float)frames / elapsedSeconds;
-    cout << "FPS: " << fps << endl;
+    //frames++;
+    //cpu_times time = timer.elapsed();
+    //float elapsedSeconds = (float)time.wall / pow(10.f, 9.f);
+    //float fps = (float)frames / elapsedSeconds;
+    //cout << "FPS: " << fps << endl;
     
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     
@@ -199,13 +211,16 @@ void Scene::Render()
     }
     
     // Draw objects in scene
-    for (std::vector<Object>::iterator it = level->objects.begin();
+    for (std::vector<Object *>::iterator it = level->objects.begin();
          it != level->objects.end();
          it++)
     {
-        Object obj = *it;
-        if (frustum->Contains(obj))
-            obj.Draw(*main, viewProjection, cameraPosition);
+        Object *obj = *it;
+        if (frustum->Contains(*obj)) {
+            main->SetUniform("illum", 1);
+            obj->Draw(*main, viewProjection, cameraPosition);
+            obj->Draw(*main, viewProjection, cameraPosition, GL_LINE_LOOP);
+        }
     }
     
     // Draw particles

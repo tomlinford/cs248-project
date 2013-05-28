@@ -8,10 +8,25 @@
 using namespace glm;
 using namespace std;
 
+float rand2(float min, float max) {
+    return min + (float)rand() / RAND_MAX * (max - min);
+}
+
 Level::Level() : ready(false)
 {
-}
+    ship = new Ship("Models/ship.obj");
+    ship->SetColor(vec3(0.0, 0.9, 0.0));
     
+    // Random objects
+    for (int i = 0; i < 40; i++) {
+        Ship *ship = new Ship("Models/ship.obj");
+        ship->SetColor(vec3(0.9, 0.0, 0.0));
+        ship->SetTimeOffset(rand2(0, 180));
+        ship->SetOffset(vec2(rand2(-2.4, 2.4), rand2(-1.8, 1.8)));
+        objects.push_back(ship);
+    }
+}
+
 Level::~Level()
 {
     for (int i = 2; i < path.size() - 1; i++) {

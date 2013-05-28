@@ -16,35 +16,44 @@ Object::Object(Model *m)
 
 Object::Object(const string& filename)
 {
+    model_file = filename;
     OBJFile obj(filename.c_str());
     model = obj.GenModel();
     M = mat4(1);
 }
 
+Object::Object(const Object& other)
+{
+    /*model_file = other.model_file;
+    OBJFile obj(model_file.c_str());
+    model = obj.GenModel();
+    M = other.M;*/
+    
+    model = other.model;
+    M = mat4(1);
+}
+
 Object::~Object()
 {
-    if (model)
-        delete model;
+    //if (model)
+    //   delete model;
 };
 
-bool Object::Intersects(Object other)
+bool Object::Intersects(Object& other)
 {
     Bounds myBounds = GetBounds();
     Bounds otherBounds = other.GetBounds();
     
     // f3 and b1 correspond to the max and min
     // corners of the bounding boxes, respectively
-    if (myBounds.f3.x < otherBounds.b1.x ||
-        otherBounds.f3.x < myBounds.b1.x)
+    if (myBounds.f3.x < otherBounds.b1.x)
         return false;
-    if (myBounds.f3.y < otherBounds.b1.y ||
-        otherBounds.f3.y < myBounds.b1.y)
+    if (myBounds.f3.y < otherBounds.b1.y)
         return false;
-    if (myBounds.f3.z < otherBounds.b1.z ||
-        otherBounds.f3.z < myBounds.b1.z)
+    if (myBounds.f3.z < otherBounds.b1.z)
         return false;
     
-    return true;
+    return false;
 }
 
 /* Helper function for finding AABB */
@@ -139,7 +148,7 @@ void Object::Draw(const Program& p, const glm::mat4& viewProjection,
     
 	Object::model->Draw(p, mode);
     
-#ifdef DEBUG
+//#ifdef DEBUG
     DrawAABB(p, viewProjection);
-#endif
+//#endif
 }

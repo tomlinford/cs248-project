@@ -115,8 +115,6 @@ int main(int argc, char *argv[])
     
     // TODO: Stream levels from server
     Level *level = new Level();
-    level->ship = new Ship("Models/ship.obj");
-    level->ship->SetColor(vec3(0.0, 0.9, 0.0));
     
     // Choose player
     if (argv[2][0] == '1') {
