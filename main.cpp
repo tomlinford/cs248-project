@@ -131,8 +131,8 @@ int main(int argc, char *argv[])
     
     // Choose player
 	Player p;
-	//switch (argv[2][0]) {
-	switch('1') { // TODO: change for final
+	switch (argv[2][0]) {
+	//switch('1') { // TODO: change for final
 	case '1': p = PLAYER1; glfwSetKeyCallback(KeyCallback); break;
 	case '2': p = PLAYER2; glfwSetMousePosCallback(MouseCallback); break;
 	}

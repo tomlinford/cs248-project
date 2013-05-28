@@ -155,7 +155,7 @@ func sendCommands(conn net.Conn, l *level, player string, send, receive chan str
 	_, _ = rd.ReadString('\n') // this should by READY
 	if player == "1" {
 		send <- READY
-	} else {
+	} else if player == "2" {
 		<-receive
 	}
 	fmt.Fprintln(wr, START)

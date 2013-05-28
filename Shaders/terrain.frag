@@ -52,9 +52,4 @@ void main()
     float attenuation = ((ATTENUATION_DISTANCE - distance) / ATTENUATION_DISTANCE);
     // gl_FragColor = vec4(final_color, 1.0);
     gl_FragColor = vec4(final_color, 1.0) * attenuation;
-
-    // this is to help detect if the ships are in sync
-    if (mod(vertexPosition.x, 30) < 0.5) {
-        gl_FragColor = vec4(1, 0, 0, 1) * attenuation;
-    }
 }
