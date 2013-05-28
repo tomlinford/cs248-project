@@ -19,11 +19,12 @@ public:
     Object();
     Object(Model *m);
     Object(const string& filename);
+    Object(const Object& other);
     ~Object();
     
     /** Returns whether the object's AABB
      intersects another object's AABB */
-    virtual bool Intersects(Object other);
+    virtual bool Intersects(Object& other);
     
     /** Color */
     glm::vec3 GetColor() { return color; }
@@ -46,11 +47,6 @@ public:
         M = glm::translate(glm::mat4(1), position) *
             glm::mat4_cast(orientation);
     };
-    
-    /** In view frustrum */
-    /** Orientation (rotation) in model space */
-    virtual bool InFrustrum() { return inFrustrum; };
-    virtual void SetInFrustrum(bool i) { inFrustrum = i; };
     
     /** Returns axis-aligned world-space bounding box
      by finding the min/max of the transformed
@@ -76,7 +72,7 @@ protected:
     glm::vec3 color;
     glm::vec3 position;
     glm::quat orientation;
-    bool inFrustrum;
+    string model_file;
     
     /** Helper function for finding object's AABB
      (axis-aligned bounding box) */

@@ -64,7 +64,7 @@ public:
 
     std::vector<Map *> maps;
     Ship *ship;
-    std::vector<Object> objects;
+    std::vector<Object *> objects;
     std::vector<ControlPoint> path;
 
 private:

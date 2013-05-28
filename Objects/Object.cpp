@@ -16,18 +16,30 @@ Object::Object(Model *m)
 
 Object::Object(const string& filename)
 {
+    model_file = filename;
     OBJFile obj(filename.c_str());
     model = obj.GenModel();
     M = mat4(1);
 }
 
+Object::Object(const Object& other)
+{
+    /*model_file = other.model_file;
+    OBJFile obj(model_file.c_str());
+    model = obj.GenModel();
+    M = other.M;*/
+    
+    model = other.model;
+    M = mat4(1);
+}
+
 Object::~Object()
 {
-    if (model)
-        delete model;
+    //if (model)
+    //   delete model;
 };
 
-bool Object::Intersects(Object other)
+bool Object::Intersects(Object& other)
 {
     Bounds myBounds = GetBounds();
     Bounds otherBounds = other.GetBounds();
@@ -139,7 +151,7 @@ void Object::Draw(const Program& p, const glm::mat4& viewProjection,
     
 	Object::model->Draw(p, mode);
     
-#ifdef DEBUG
+//#ifdef DEBUG
     DrawAABB(p, viewProjection);
-#endif
+//#endif
 }
