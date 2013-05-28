@@ -51,13 +51,13 @@ void Scene::LoadLevel(Level *l)
 void Scene::HandleKeys()
 {
     if (keyLeft)
-        shipOffset.x -= 0.1;
+        shipOffset.x -= 0.01;
     if (keyRight)
-        shipOffset.x += 0.1;
+        shipOffset.x += 0.01;
     if (keyUp)
-        shipOffset.y += 0.1;
+        shipOffset.y += 0.01;
     if (keyDown)
-        shipOffset.y -= 0.1;
+        shipOffset.y -= 0.01;
     
     shipOffset = clamp(shipOffset, vec2(-MAX_X, -MAX_Y), vec2(MAX_X, MAX_Y));
 }
@@ -168,6 +168,12 @@ void Scene::Update()
 void Scene::Render()
 {
     unique_lock<std::mutex> lock(mutex);
+    frames++;
+    
+    cpu_times time = timer.elapsed();
+    float elapsedSeconds = (float)time.wall / pow(10.f, 9.f);
+    float fps = (float)frames / elapsedSeconds;
+    cout << "FPS: " << fps << endl;
     
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     

@@ -89,6 +89,8 @@ private:
     /** Global objects */
     ParticleSystem particle_sys;
     
+    int frames;
+    
     /** Update helpers */
     void HandleKeys();
     void UpdateObjects(float elapsedSeconds);
