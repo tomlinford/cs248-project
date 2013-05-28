@@ -78,7 +78,7 @@ private:
     glm::vec2 shipOffset;
     
     /** Global animation timer */
-    boost::timer::cpu_timer timer;
+    boost::timer::cpu_timer *timer;
     boost::timer::cpu_times times;
     
     /** Shaders and FBOs */

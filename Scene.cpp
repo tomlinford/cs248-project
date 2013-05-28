@@ -147,14 +147,26 @@ void Scene::UpdateView(float elapsedSeconds)
 
 void Scene::Update()
 {
-    while (true) {
-        times = timer.elapsed();
-        float elapsedSeconds = (float)times.wall / pow(10.f, 9.f);
-        
-        unique_lock<std::mutex> lock(mutex);
+	// keep the initial load in a separate scope in order to
+	// calculate the start time
+	/*do {
+		unique_lock<std::mutex> lock(mutex);
         while (!level) {
             cond.wait(lock);
         }
+	} while (false);*/
+	//float start_time = (float) timer.elapsed().wall / pow(10.f, 9.f);
+
+    while (true) {
+        unique_lock<std::mutex> lock(mutex);
+        while (!level) {
+            cond.wait(lock);
+			if (timer) delete timer;
+			timer = new cpu_timer();
+        }
+		
+        times = timer->elapsed();
+		float elapsedSeconds = (float)times.wall / pow(10.f, 9.f);
         
         HandleKeys();
         UpdateObjects(elapsedSeconds);
@@ -167,13 +179,14 @@ void Scene::Update()
 
 void Scene::Render()
 {
+	if (!timer) return;
     unique_lock<std::mutex> lock(mutex);
     frames++;
     
-    cpu_times time = timer.elapsed();
+    cpu_times time = timer->elapsed();
     float elapsedSeconds = (float)time.wall / pow(10.f, 9.f);
     float fps = (float)frames / elapsedSeconds;
-    cout << "FPS: " << fps << endl;
+    //cout << "FPS: " << fps << endl;
     
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     

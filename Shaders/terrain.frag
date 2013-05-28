@@ -28,7 +28,7 @@ void main()
         vec3 diffuseColor = baseColor;
         
         // Camera position
-        vec3 N = normalize(-cross(dFdx(vertexPosition), dFdy(vertexPosition)));
+        vec3 N = normalize(cross(dFdx(vertexPosition), dFdy(vertexPosition)));
         vec3 L = normalize(lightPosition - vertexPosition);
         vec3 V = normalize(vertexPosition - cameraPosition);
         vec3 H = normalize(L - V);
@@ -52,4 +52,9 @@ void main()
     float attenuation = ((ATTENUATION_DISTANCE - distance) / ATTENUATION_DISTANCE);
     // gl_FragColor = vec4(final_color, 1.0);
     gl_FragColor = vec4(final_color, 1.0) * attenuation;
+
+    // this is to help detect if the ships are in sync
+    if (mod(vertexPosition.x, 30) < 0.5) {
+        gl_FragColor = vec4(1, 0, 0, 1) * attenuation;
+    }
 }

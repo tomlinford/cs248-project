@@ -12,6 +12,7 @@ namespace Networking {
 // these two need to be identified during init
 static Level *level;
 static string ip = "";
+static string player;
 
 // constant port number
 const static char *port = "1338";
@@ -19,14 +20,17 @@ const static char *port = "1338";
 // various commands
 const static string TERRAIN = "terrain";
 const static string PATH = "path";
+const static string DONE = "done";
 const static string READY = "ready";
+const static string START = "start";
 
 // function template
 static void listenFunc();
 
-extern void Init(Level *currentLevel, std::string ip_addr) {
+extern void Init(Level *currentLevel, std::string ip_addr, char *p) {
 	level = currentLevel;
 	ip = ip_addr;
+	player = p;
 
 	// starts listening thread
 	thread listenThread(listenFunc);
@@ -64,7 +68,7 @@ static void parseTerrain(boost::asio::ip::tcp::iostream& ns, string& line) {
  [float data...]
  */
 static void parsePath(boost::asio::ip::tcp::iostream& ns, string& line) {
-    cout << "Receiving path" << endl;
+    //cout << "Receiving path" << endl;
     
     // Read size
     getline(ns, line);
@@ -80,21 +84,31 @@ static void parsePath(boost::asio::ip::tcp::iostream& ns, string& line) {
 
 static void listenFunc() {
 	boost::asio::ip::tcp::iostream ns(ip.c_str(), port);
-	string line;
+	if (ns.fail()) {
+		cerr << "failed to open tcp connection" << endl;
+		return;
+	}
 
+	// write the player
+	ns << player << endl;
+	
 	// Will loop until stream closes
+	string line;
 	while (getline(ns, line)) {
 		if (line == TERRAIN) {
 			parseTerrain(ns, line);
 		} else if (line == PATH) {
             parsePath(ns, line);
-		} else if (line == READY) {
+		} else if (line == DONE) {
             cout << "Ready!" << endl;
-			level->SetReady();
+			break;
 		}
 	}
+	ns << READY << endl;
 	getline(ns, line);
-	line += "what";
+	//cout << "received command: " << line << endl;
+	// next line should be start
+	level->SetReady();
 }
 
 };

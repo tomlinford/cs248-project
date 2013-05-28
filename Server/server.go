@@ -13,14 +13,25 @@ import (
 	"math"
 	"math/rand"
 	"net"
-	"os"
+	// "os"
 	"runtime"
+	"strings"
 	"time"
 )
 
+// size parameters
 const (
 	kSize = 1024 // size of total map
 	kDeg  = 16   // number of times to subdivide each side
+)
+
+// commands
+const (
+	TERRAIN = "terrain"
+	PATH    = "path"
+	DONE    = "done"
+	READY   = "ready"
+	START   = "start"
 )
 
 // the init function will get called before main() gets called
@@ -53,6 +64,11 @@ func main() {
 	// the terrain maps with a path and send it along this channel
 	ch := genMaps()
 
+	oneToTwo := make(chan string)
+	twoToOne := make(chan string)
+
+	var lastLevel *level
+
 	// no while loops in Go, just variations of the for loop:
 	// for with nothing -- like for (;;)
 	// for with one condition -- like a while loop
@@ -64,40 +80,43 @@ func main() {
 		// the conn object is the actual tcp connection
 		conn, err := ln.Accept()
 		if err != nil {
-			fmt.Print("Error accepting")
+			fmt.Println("Error accepting")
+			fmt.Println(err)
 			continue
 		}
 		fmt.Println("Connection accepted")
 
 		// the "go" keyword starts a new goroutine, the goroutine
 		// will be executed concurrently
-		// the "<-" operator receives a value from a channel
-		go sendCommands(conn, <-ch)
-
-		// you can also use the "go" keyword and start an anonymous
-		// function
 		go func() {
 			rd := bufio.NewReader(conn)
+			player, err := rd.ReadString('\n')
+			if err != nil {
+				fmt.Println("Error reading from connection")
+				fmt.Println(err)
+				return
+			}
+			player = strings.TrimSpace(player)
+			if lastLevel == nil || player == "1" ||
+				(len(player) == 2 && player[1] == 's') {
+				// the "<-" operator receives a value from a channel
+				lastLevel = <-ch
+			}
 
-			// a really cool thing about Go is the interfaces. Any type
-			// that implements all of the methods in an interface
-			// implements the interface, and implementing an interface
-			// doesn't need to be explicitly stated like in Java
-
-			// here, rd implements io.Reader because it has the method:
-			// Read(p []byte) (n int, err error)
-			// and and os.Stdout implements io.Writer because it has
-			// a method: Write(p []byte) (n int, err error)
-			// io.Copy takes a Writer and a Reader, and just calls the
-			// respective Read and Write methods on them
-			io.Copy(os.Stdout, rd)
-		}() // the () calls the function
+			if len(player) == 2 {
+				sendCommands(conn, lastLevel, player, nil, nil)
+			} else if player == "1" {
+				sendCommands(conn, lastLevel, player, oneToTwo, twoToOne)
+			} else {
+				sendCommands(conn, lastLevel, player, twoToOne, oneToTwo)
+			}
+		}()
 	}
 }
 
 // right now, this function generates a terrain map and sends
 // it over the network
-func sendCommands(conn net.Conn, tmp terrainMapPath) {
+func sendCommands(conn net.Conn, l *level, player string, send, receive chan string) {
 	// the defer statement is also really cool. it will
 	// defer the execution of a function until the current
 	// function returns. It's commented out right now because
@@ -106,13 +125,14 @@ func sendCommands(conn net.Conn, tmp terrainMapPath) {
 	// defer conn.Close()
 
 	wr := bufio.NewWriter(conn)
+	rd := bufio.NewReader(conn)
 
-	maps := tmp.maps
-	p := tmp.p
+	maps := l.maps
+	p := l.p
 
 	for x := 0; x < kDeg; x++ {
 		for y := 0; y < kDeg; y++ {
-			fmt.Fprintln(wr, "terrain")
+			fmt.Fprintln(wr, TERRAIN)
 			fmt.Fprintln(wr, maps[x+y*kDeg].size, x, y)
 			buf := new(bytes.Buffer)
 			tm := maps[x+y*kDeg].arr
@@ -123,31 +143,39 @@ func sendCommands(conn net.Conn, tmp terrainMapPath) {
 			io.Copy(wr, buf)
 		}
 	}
-	fmt.Fprintf(wr, "path\n")
+	fmt.Fprintln(wr, PATH)
 	pathArr := sampleArr(p.arr, 14)
-	// pathArr := p.arr
 	fmt.Fprintln(wr, len(pathArr))
 	buf := new(bytes.Buffer)
 	binary.Write(buf, binary.LittleEndian, pathArr)
 	io.Copy(wr, buf)
-	fmt.Fprintln(wr, "ready")
+	fmt.Fprintln(wr, DONE)
 	wr.Flush()
 	fmt.Println("Finished sending Level over network")
+	_, _ = rd.ReadString('\n') // this should by READY
+	if player == "1" {
+		send <- READY
+	} else {
+		<-receive
+	}
+	fmt.Fprintln(wr, START)
+	wr.Flush()
+	fmt.Println("start command for player", player, "sent")
 }
 
 // represents a struct containing terrainMaps and a path
-type terrainMapPath struct {
+type level struct {
 	maps []terrainMap
 	p    path
 }
 
-func genMaps() chan terrainMapPath {
-	ch := make(chan terrainMapPath, 5)
+func genMaps() chan *level {
+	ch := make(chan *level, 5)
 	go func() {
 		for {
 			maps, p := genTerrainMap(kSize)
 			fmt.Println("Level generated")
-			ch <- terrainMapPath{maps, p}
+			ch <- &level{maps, p}
 		}
 	}()
 	return ch
