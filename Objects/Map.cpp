@@ -135,7 +135,9 @@ void Map::Draw(const glm::mat4& viewProjection, const glm::vec3& cameraPos, cons
     DrawAABB(p, viewProjection);
 //#endif
     
-	p.Unuse();
+	// this doesn't seem to have any effect and is using just under 4% of the cpu,
+	// so I'll just comment it out for now
+	//p.Unuse();
 }
 
 GLfloat Map::Sample(GLfloat *map, GLuint width, GLuint height, int x, int y)
