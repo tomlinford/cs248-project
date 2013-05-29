@@ -12,7 +12,7 @@ using namespace::glm;
 using boost::timer::cpu_timer;
 using boost::timer::cpu_times;
 
-static int count;
+//static int count;
 
 Scene::Scene(Player p) : particle_sys()
 {

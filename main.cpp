@@ -133,8 +133,14 @@ int main(int argc, char *argv[])
 	Player p;
 	switch (argv[2][0]) {
 	//switch('1') { // TODO: change for final
-	case '1': p = PLAYER1; glfwSetKeyCallback(KeyCallback); break;
-	case '2': p = PLAYER2; glfwSetMousePosCallback(MouseCallback); break;
+        case '1':
+            p = PLAYER1;
+            glfwSetKeyCallback(KeyCallback);
+            break;
+        case '2':
+            p = PLAYER2;
+            glfwSetMousePosCallback(MouseCallback);
+            break;
 	}
 	scene = new Scene(p);
 	Networking::Init(level, argv[1], argv[2]);
