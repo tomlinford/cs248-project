@@ -159,7 +159,6 @@ int main(int argc, char *argv[])
 
 	// Main render loop
 	while(glfwGetWindowParam(GLFW_OPENED)) {
-        //scene->Update();
         scene->Render();
 		glfwSwapBuffers();
 	}

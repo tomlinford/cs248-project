@@ -72,7 +72,7 @@ Map::Map(float *heightMap, size_t size, int x, int y) :
     p(VERT_FILENAME, FRAG_FILENAME),
 	heightField(size, size, GL_LUMINANCE, heightMap)
 {
-    M = scale(mat4(1), vec3(20.0));
+    M = glm::scale(mat4(1), vec3(20.0));
 	M = translate(M, vec3(x, 0, y));
     
     // Find position

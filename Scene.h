@@ -7,6 +7,7 @@
 #include <boost/timer/timer.hpp>
 
 #include "Level.h"
+#include "Flyable.h"
 
 #include "Utilities/FBO.h"
 #include "Utilities/Program.h"
@@ -80,6 +81,7 @@ private:
     /** Global animation timer */
     boost::timer::cpu_timer *timer;
     boost::timer::cpu_times times;
+    float lastTime;
     
     /** Shaders and FBOs */
     Program *main;
@@ -92,7 +94,7 @@ private:
     int frames;
     
     /** Update helpers */
-    void HandleKeys();
+    void HandleKeys(float elapsedSeconds);
     void UpdateObjects(float elapsedSeconds);
     void HandleCollisions();
     void UpdateView(float elapsedSeconds);
