@@ -82,11 +82,8 @@ void Scene::UpdateObjects(float elapsedSeconds)
     level->ship->SetPosition(position);
     
     // Update other objects
-    for (std::vector<Object *>::iterator it = level->objects.begin();
-         it != level->objects.end();
-         it++)
-    {
-        Flyable *obj = (Flyable *)*it;
+	for (size_t i = 0; i < level->objects.size(); i++) {
+		Flyable *obj = (Flyable *)level->objects[i];
         
         direction = level->GetDirection(obj, 70 - (elapsedSeconds + obj->GetTimeOffset()));
         position = level->GetPosition(obj, 70 - (elapsedSeconds + obj->GetTimeOffset()));
@@ -94,8 +91,8 @@ void Scene::UpdateObjects(float elapsedSeconds)
         if (position.x - 0.0 < 0.0001 &&
             position.y - 0.0 < 0.0001 &&
             position.z - 0.0 < 0.0001) {
-            it = level->objects.erase(it);
-            it--;
+				level->objects.erase(level->objects.begin());
+            i--;
         }
         else {
             obj->SetDirection(-direction);
@@ -113,21 +110,18 @@ void Scene::UpdateObjects(float elapsedSeconds)
  collision. */
 void Scene::HandleCollisions()
 {
-    for (std::vector<Object *>::iterator it = level->objects.begin();
-         it != level->objects.end();
-         it++)
-    {
-        Flyable *obj = (Flyable *)*it;
-        if (frustum->Contains(*obj)) {
-            cout << "Testing for collision with object at (" << obj->GetPosition().x << ", " << obj->GetPosition().y << ", " << obj->GetPosition().z << ")" << endl;
+	for (size_t i = 0; i < level->objects.size(); i++) {
+		Flyable *obj = (Flyable *)level->objects[i];
+		if (frustum->Contains(*obj)) {
+            //cout << "Testing for collision with object at (" << obj->GetPosition().x << ", " << obj->GetPosition().y << ", " << obj->GetPosition().z << ")" << endl;
             if (level->ship->Intersects(*obj)) {
-                cout << "Collided" << endl;
+                //cout << "Collided" << endl;
                 particle_sys.AddExplosionCluster(obj->GetPosition(), obj->GetColor());
-                it = level->objects.erase(it);
-                it--;
+				level->objects.erase(level->objects.begin() + i);
+                i--;
             }
         }
-    }
+	}
 }
 
 /** Updates the player views, which depends on the

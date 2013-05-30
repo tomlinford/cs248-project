@@ -2,7 +2,9 @@
 
 #include <sstream>
 #include <thread>
+#include <mutex>
 #include <boost/asio.hpp>
+#include <chrono>
 
 using namespace std;
 using namespace glm;
@@ -10,6 +12,7 @@ using namespace glm;
 namespace Networking {
 
 // these two need to be identified during init
+static Scene *scene;
 static Level *level;
 static string ip = "";
 static string player;
@@ -17,17 +20,24 @@ static string player;
 // constant port number
 const static char *port = "1338";
 
+// pointer to active network stream and associated lock
+static boost::asio::ip::tcp::iostream *nsp;
+static mutex nspMutex;
+
 // various commands
 const static string TERRAIN = "terrain";
 const static string PATH = "path";
 const static string DONE = "done";
 const static string READY = "ready";
 const static string START = "start";
+const static string END = "end";
+const static string KEY = "key";
 
 // function template
 static void listenFunc();
 
-extern void Init(Level *currentLevel, std::string ip_addr, char *p) {
+extern void Init(Scene *currScene, Level *currentLevel, std::string ip_addr, char *p) {
+	scene = currScene;
 	level = currentLevel;
 	ip = ip_addr;
 	player = p;
@@ -84,8 +94,10 @@ static void parsePath(boost::asio::ip::tcp::iostream& ns, string& line) {
 
 static void listenFunc() {
 	boost::asio::ip::tcp::iostream ns(ip.c_str(), port);
+	nsp = &ns;
 	if (ns.fail()) {
 		cerr << "failed to open tcp connection" << endl;
+		nsp = NULL;
 		return;
 	}
 
@@ -109,6 +121,48 @@ static void listenFunc() {
 	//cout << "received command: " << line << endl;
 	// next line should be start
 	level->SetReady();
+
+	// main loop for reading stuff
+	for (;;) {
+
+		// hacky solution:
+		// every 5 milliseconds, poll the underlying buffer of the network
+		// iostream to see if it has received more data
+		while(ns.rdbuf()->available() == 0)
+			std::this_thread::sleep_for(std::chrono::milliseconds(5));
+
+		getline(ns, line);
+		if (line == END) break;
+
+		stringstream ss(line); string header;
+		ss >> header;
+		if (header == KEY) {
+			int key, action; vec2 shipOffset;
+			ss >> key >> action >> shipOffset.x >> shipOffset.y;
+			switch(key) {
+			case GLFW_KEY_LEFT:
+	            scene->keyLeft = (action == GLFW_PRESS);
+	            break;
+	        case GLFW_KEY_RIGHT:
+	            scene->keyRight = (action == GLFW_PRESS);
+	            break;
+	        case GLFW_KEY_UP:
+	            scene->keyUp = (action == GLFW_PRESS);
+	            break;
+	        case GLFW_KEY_DOWN:
+	            scene->keyDown = (action == GLFW_PRESS);
+		        break;
+			}
+			scene->SetShipOffset(shipOffset);
+		}
+	}
+}
+
+extern void KeyAction(int key, int action, vec2 shipOffset) {
+	cout << "sending key action" << endl;
+	lock_guard<mutex> lock(nspMutex);
+	(*nsp) << KEY << " " << key << " " << action << " ";
+	(*nsp) << shipOffset.x << " " << shipOffset.y << endl;
 }
 
 };
