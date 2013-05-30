@@ -180,7 +180,6 @@ func (s *server) run() {
 	for {
 		select {
 		case line = <-s.oneToServer:
-			fmt.Println(line)
 			switch strings.Split(line, " ")[0] {
 			case KEY:
 				if s.two != nil {

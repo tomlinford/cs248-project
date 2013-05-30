@@ -68,6 +68,7 @@ public:
     
 protected:
     Model *model;
+    float scale;
     glm::mat4 M;
     glm::vec3 color;
     glm::vec3 position;

@@ -5,6 +5,7 @@ using namespace::glm;
 Object::Object()
 {
     M = mat4(1);
+    scale = 1.0;
 }
 
 Object::Object(Model *m)
@@ -12,6 +13,7 @@ Object::Object(Model *m)
     assert (m != NULL);
     model = m;
     M = mat4(1);
+    scale = 1.0;
 }
 
 Object::Object(const string& filename)
@@ -19,6 +21,7 @@ Object::Object(const string& filename)
     model_file = filename;
     OBJFile obj(filename.c_str());
     model = obj.GenModel();
+    scale = 1.0;
     M = mat4(1);
 }
 
@@ -31,6 +34,7 @@ Object::Object(const Object& other)
     
     model = other.model;
     M = mat4(1);
+    scale = 1.0;
 }
 
 Object::~Object()
@@ -151,7 +155,7 @@ void Object::Draw(const Program& p, const glm::mat4& viewProjection,
     
 	Object::model->Draw(p, mode);
     
-//#ifdef DEBUG
+#ifdef DEBUG
     DrawAABB(p, viewProjection);
-//#endif
+#endif
 }

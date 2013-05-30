@@ -33,6 +33,7 @@
 		78C3DD141749C01E0030CEDD /* Networking.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 78C3DD121749C01E0030CEDD /* Networking.cpp */; };
 		78E54B141746F0ED00BFC6B3 /* Level.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 78E54B121746F0ED00BFC6B3 /* Level.cpp */; };
 		78E54B181746F85800BFC6B3 /* Map.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 78E54B161746F85800BFC6B3 /* Map.cpp */; };
+		78E9C4C21755733800085AE7 /* EndersGame in CopyFiles */ = {isa = PBXBuildFile; fileRef = 8DD76F6C0486A84900D96B5E /* EndersGame */; };
 		8DD76F650486A84900D96B5E /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 08FB7796FE84155DC02AAC07 /* main.cpp */; settings = {ATTRIBUTES = (); }; };
 /* End PBXBuildFile section */
 
@@ -40,9 +41,10 @@
 		8DD76F690486A84900D96B5E /* CopyFiles */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 8;
-			dstPath = /usr/share/man/man1/;
+			dstPath = Users/bhnascar/Documents/School/Sophomore/CS248/FinalProject;
 			dstSubfolderSpec = 0;
 			files = (
+				78E9C4C21755733800085AE7 /* EndersGame in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 1;
 		};

@@ -33,7 +33,7 @@ void Flyable::SetDirection(vec3 dir) {
     
     orientation = angleAxis(angle, axis);
     M = translate(glm::mat4(1), position) *
-        mat4_cast(orientation);
+        mat4_cast(orientation) * glm::scale(mat4(1), vec3(scale));
     
     //cerr << "Orientation is (" << orientation.x << ", " << orientation.y << ", " << orientation.z << ", " << orientation.w << ")" << endl;
 }
@@ -48,7 +48,17 @@ void Flyable::SetPosition(vec3 p)
     
     position = p + offset.x * x_dir + offset.y * y_dir;
     M = translate(glm::mat4(1), position) *
-        mat4_cast(orientation);
+        mat4_cast(orientation) * glm::scale(mat4(1), vec3(scale));
+}
+
+Missile::Missile(Model *model) : Flyable(model)
+{
+    scale = 0.1;
+}
+
+Missile::Missile(const string& filename) : Flyable(filename)
+{
+    scale = 0.1;
 }
 
 Ship::Ship(Model *model) : Flyable(model)

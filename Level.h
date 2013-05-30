@@ -14,6 +14,12 @@
 
 #include "Utilities/Frustum.h"
 
+/* Defines a direction of travel along the path */
+enum Direction {
+    FORWARD,
+    BACKWARD
+};
+
 /** Defines a control point along a route */
 struct ControlPoint
 {
@@ -38,15 +44,16 @@ struct MapLoader
 class Level
 {
 public:
+    
 	Level();
     ~Level();
 
     /** Gets a flyable object's position as a function of time */
-    glm::vec3 GetPosition(Flyable *flyable, float time);
+    glm::vec3 GetPosition(Direction direction, float time);
     
     /** Gets a flyable object's direction as a function of time 
      (Assuming orientation is aligned along path axis */
-    glm::vec3 GetDirection(Flyable *flyable, float time);
+    glm::vec3 GetDirection(Direction direction, float time);
 
 	/* This will be called from another thread, so Level will have to hold onto this */
 	void SetLevel(float *terrainMap, size_t size, int x, int y);
@@ -55,13 +62,16 @@ public:
 	void DrawMap(const glm::mat4& viewProjection, const glm::vec3& cameraPos,
                  const glm::vec3& lightPos, const Frustum& frustrum);
 
+    /** Whether or not the level has finished loading */
 	void SetReady();
+    bool Ready() { return ready; }
 
 	void SetControlPoints(const glm::vec3 *points, size_t num);
 
 	/* This will block until the level has been loaded. Must be called from the main thread. */
 	void Load();
 
+    float totalTime;
     std::vector<Map *> maps;
     Ship *ship;
     std::vector<Object *> objects;

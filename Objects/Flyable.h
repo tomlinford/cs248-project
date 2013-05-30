@@ -44,6 +44,15 @@ protected:
     glm::vec3 direction;
 };
 
+/* A subclass of Flyable representing a 
+ missile */
+class Missile : public Flyable
+{
+public:
+    Missile(Model *model);
+    Missile(const string& filename);
+};
+
 /* A subclass of the Flyable to represent the
    player;s ship. */
 class Ship : public Flyable

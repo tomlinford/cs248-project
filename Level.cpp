@@ -50,8 +50,9 @@ void Level::SetControlPoints(const glm::vec3 *points, size_t num) {
 		path.push_back(point);
         
         // Duplicate start and end
-        if (i == 0 || i == num - 1) {
+        if (i == 0 || i + 4 >= num) {
             path.push_back(point);
+            totalTime = float(i) * 0.5;
         }
     }
 	PrecomputeSplines();
@@ -68,8 +69,11 @@ void Level::PrecomputeSplines()
     }
 }
 
-vec3 Level::GetPosition(Flyable *flyable, float time)
+vec3 Level::GetPosition(Direction direction, float time)
 {
+    if (direction == BACKWARD)
+        time = totalTime - time;
+    
     int i = 0;
     while (i < path.size() && path[i].time < time)
         i++;
@@ -89,8 +93,11 @@ vec3 Level::GetPosition(Flyable *flyable, float time)
     return vec3(0.0);
 }
 
-glm::vec3 Level::GetDirection(Flyable *flyable, float time)
+glm::vec3 Level::GetDirection(Direction direction, float time)
 {
+    if (direction == BACKWARD)
+        time = totalTime - time;
+    
     int i = 0;
     while (i < path.size() && path[i].time < time)
         i++;
@@ -103,7 +110,11 @@ glm::vec3 Level::GetDirection(Flyable *flyable, float time)
     {
         float u = (time - path[i - 1].time) /
                   (path[i].time - path[i - 1].time);
-        return path[i].spline->tangent3D(u);
+        
+        vec3 dir = path[i].spline->tangent3D(u);
+        if (direction == BACKWARD)
+            dir *= -1.0f;
+        return dir;
     }
     
     // Set to no direction if we fail
