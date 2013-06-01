@@ -204,7 +204,7 @@ void FluidCluster::Draw(const Program& p, const glm::mat4& viewProjection,
     mat4 M = mat4(1);
     mat4 MVP = viewProjection * M;
     
-    p.SetModel(M); // Needed for Phong shading
+    p.SetModel(M);
     p.SetMVP(MVP);
     
     p.SetUniform("baseColor", color);

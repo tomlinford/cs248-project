@@ -10,8 +10,8 @@
 class Flyable : public Object
 {
 public:
-    Flyable(Model *model);
-    Flyable(const string& filename);
+    Flyable(Model *model) : Object(model) {}
+    Flyable(const string& filename) : Object(filename) {}
     
     /** Set speed. This should be in voxels per
      animation interval. */
@@ -33,9 +33,6 @@ public:
     /** Set position - we override the Object's SetPosition
      method to add the offset to the position */
     virtual void SetPosition(glm::vec3 p);
-    
-    /* Conversion - Euler angles to quaternion */
-    glm::quat EulerAnglesToQuat(glm::vec3 angles) const;
     
 protected:
     float speed;

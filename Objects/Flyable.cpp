@@ -9,14 +9,6 @@
 using namespace::std;
 using namespace::glm;
 
-Flyable::Flyable(Model *model) : Object(model)
-{
-}
-
-Flyable::Flyable(const string& filename) : Object(filename)
-{
-}
-
 void Flyable::SetDirection(vec3 dir) {
     direction = normalize(dir);
     
@@ -28,14 +20,10 @@ void Flyable::SetDirection(vec3 dir) {
     float cos_angle = dot(direction, z);
     float angle = acos(cos_angle) * 180 / M_PI;
     
-    //cerr << "Angle is " << angle << endl;
-    //cerr << "Axis is (" << axis.x << ", " << axis.y << ", " << axis.z << ")" << endl;
-    
     orientation = angleAxis(angle, axis);
     M = translate(glm::mat4(1), position) *
-        mat4_cast(orientation) * glm::scale(mat4(1), vec3(scale));
-    
-    //cerr << "Orientation is (" << orientation.x << ", " << orientation.y << ", " << orientation.z << ", " << orientation.w << ")" << endl;
+        mat4_cast(orientation) *
+        glm::scale(mat4(1), vec3(scale));
 }
 
 void Flyable::SetPosition(vec3 p)
@@ -43,12 +31,12 @@ void Flyable::SetPosition(vec3 p)
     vec3 x(1, 0, 0);
     vec3 y(0, 1, 0);
     vec3 x_dir = orientation * x;
-    
     vec3 y_dir = orientation * y;
     
     position = p + offset.x * x_dir + offset.y * y_dir;
     M = translate(glm::mat4(1), position) *
-        mat4_cast(orientation) * glm::scale(mat4(1), vec3(scale));
+        mat4_cast(orientation) *
+        glm::scale(mat4(1), vec3(scale));
 }
 
 Missile::Missile(Model *model) : Flyable(model)
@@ -63,8 +51,10 @@ Missile::Missile(const string& filename) : Flyable(filename)
 
 Ship::Ship(Model *model) : Flyable(model)
 {
+    health = 10;
 }
 
 Ship::Ship(const string& filename) : Flyable(filename)
 {
+    health = 10;
 }

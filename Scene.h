@@ -98,5 +98,6 @@ private:
     void UpdateObjects(float elapsedSeconds);
     void HandleCollisions();
     void UpdateView(float elapsedSeconds);
+    void LoadNewObjects();
 };
 

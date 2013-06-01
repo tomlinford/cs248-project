@@ -87,8 +87,6 @@ public:
 	/* Prints all active uniforms for debugging */
 	void PrintActiveUniforms() const;
 
-    static Program Wire;
-
 private:
     Program() : id(-1) {}
 
