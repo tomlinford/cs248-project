@@ -41,7 +41,6 @@ ParticleCluster::ParticleCluster(glm::vec3 location, glm::vec3 c)
 {
     color = c;
     
-    srand(time(NULL));
     for (int i = 0; i < PARTICLES_PER_CLUSTER; i++)
     {
         vec3 velocity(rand(-MAX_VELOCITY, MAX_VELOCITY),
@@ -149,7 +148,6 @@ FluidCluster::FluidCluster(glm::vec3 l, glm::vec3 w, glm::vec3 c)
     wind = w;
     color = c;
     
-    srand(time(NULL));
     for (int i = 0; i < PARTICLES_PER_CLUSTER; i++)
     {
         vec3 velocity(0, rand(0, MAX_VELOCITY), 0);

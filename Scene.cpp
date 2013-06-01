@@ -136,31 +136,6 @@ void Scene::UpdateObjects(float elapsedSeconds)
  collision. */
 void Scene::HandleCollisions()
 {
-    // Check object collisions
-    for (int i = 0; i < level->objects.size(); i++)
-    {
-        Object *obj = level->objects[i];
-        Missile *missile = dynamic_cast<Missile *>(obj);
-        
-        // If the object is not in the frustum,
-        // skip it for now
-        if (!frustum->Contains(*obj))
-            continue;
-        
-        // Check ship intersections
-        if (level->ship && level->ship->Intersects(*obj))
-        {
-            if (missile)
-            {
-                //particle_sys.AddExplosionCluster(level->ship->GetPosition(), level->ship->GetColor());
-                //delete level->ship;
-                //level->ship = NULL;
-            }
-            particle_sys.AddExplosionCluster(obj->GetPosition(), obj->GetColor());
-            delete obj;
-            level->objects.erase(level->objects.begin() + i--);
-        }
-	}
     // Check map collision
     for (int i = 0; i < level->maps.size(); i++)
     {
@@ -174,6 +149,40 @@ void Scene::HandleCollisions()
         // Check ship intersections
         if (level->ship && map->Intersects(*level->ship))
             particle_sys.AddExplosionCluster(level->ship->GetPosition(), level->ship->GetColor());
+        
+        // Check object collisions
+        for (int i = 0; i < level->objects.size(); i++)
+        {
+            Object *obj = level->objects[i];
+            Missile *missile = dynamic_cast<Missile *>(obj);
+            
+            // If the object is not in the frustum,
+            // skip it for now
+            if (!frustum->Contains(*obj))
+                continue;
+            
+            // Check object-ship intersections
+            if (level->ship && level->ship->Intersects(*obj))
+            {
+                if (missile)
+                {
+                    //particle_sys.AddExplosionCluster(level->ship->GetPosition(), level->ship->GetColor());
+                    //delete level->ship;
+                    //level->ship = NULL;
+                }
+                particle_sys.AddExplosionCluster(obj->GetPosition(), obj->GetColor());
+                delete obj;
+                obj = NULL;
+                level->objects.erase(level->objects.begin() + i--);
+            }
+            
+            // Check object-map intersections
+            if (obj && map->Intersects(*obj)) {
+                particle_sys.AddExplosionCluster(obj->GetPosition(), obj->GetColor());
+                //delete obj;
+                //level->objects.erase(level->objects.begin() + i--);
+            }
+        }
     }
 }
 
