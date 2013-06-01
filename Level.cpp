@@ -153,7 +153,9 @@ void Level::LoadMaps() {
         newMap->SetColor(vec3(0.0, 0.4, 0.5));
         maps.push_back(newMap);
         mapLoader.needsToLoad = false;
-        delete[] mapLoader.terrainMap;
+        
+        // We need this data for collision testing - don't delete!
+        //delete[] mapLoader.terrainMap;
 	}
 	mapLoaders.clear();
 }

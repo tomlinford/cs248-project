@@ -34,7 +34,7 @@ public:
      this only works because procedural height-field
      terrain does not support overhangs or concave
      geometry. */
-    virtual bool Intersects(Object other);
+    virtual bool Intersects(Object& other);
     
     /** Returns the map's position */
     virtual glm::vec3 GetPosition();

@@ -1,6 +1,8 @@
 #include "Map.h"
-
 #include <unordered_map>
+
+#define MAP_SCALE_FACTOR 20.0
+#define HEIGHT_SCALE_FACTOR 3.0
 
 using namespace glm;
 
@@ -72,11 +74,11 @@ Map::Map(float *heightMap, size_t size, int x, int y) :
     p(VERT_FILENAME, FRAG_FILENAME),
 	heightField(size, size, GL_LUMINANCE, heightMap)
 {
-    M = glm::scale(mat4(1), vec3(20.0));
+    M = glm::scale(mat4(1), vec3(MAP_SCALE_FACTOR));
 	M = translate(M, vec3(x, 0, y));
     
     // Find position
-    position = vec3(20 * x, 0, 20 * y);
+    position = vec3(MAP_SCALE_FACTOR * x, 0, MAP_SCALE_FACTOR * y);
     
     // Compute bounds
     ComputeBounds();
@@ -106,11 +108,11 @@ void Map::ComputeBounds()
         }
     }
     
-    minY = 3.0 * (20 * (minY - 0.5));
-    maxY = 3.0 * (20 * (maxY - 0.5));
+    minY = HEIGHT_SCALE_FACTOR * (MAP_SCALE_FACTOR * (minY - 0.5));
+    maxY = HEIGHT_SCALE_FACTOR * (MAP_SCALE_FACTOR * (maxY - 0.5));
     
     bounds = Bounds(position + vec3(0, minY, 0),
-                    position + vec3(20, maxY, 20));
+                    position + vec3(MAP_SCALE_FACTOR, maxY, MAP_SCALE_FACTOR));
 }
 
 void Map::Draw(const glm::mat4& viewProjection, const glm::vec3& cameraPos, const glm::vec3& lightPos) const {
@@ -142,7 +144,7 @@ void Map::Draw(const glm::mat4& viewProjection, const glm::vec3& cameraPos, cons
 
 GLfloat Map::Sample(GLfloat *map, GLuint width, GLuint height, int x, int y)
 {
-    return map[((y & (height - 1)) * height) + (x & (width - 1))];
+    return map[((y & (height - 1)) * width) + (x & (width - 1))];
 }
 
 vec3 Map::GetPosition()
@@ -150,8 +152,13 @@ vec3 Map::GetPosition()
     return position;
 };
 
-bool Map::Intersects(Object other)
+bool Map::Intersects(Object& other)
 {
+    // Check bounding box intersection first
+    if (!Object::Intersects(other))
+        return false;
+    
+    // Check height map intersection next
     GLenum format = heightField.GetFormat();
     assert(format == GL_LUMINANCE); // Single component
     
@@ -161,10 +168,17 @@ bool Map::Intersects(Object other)
     
     Bounds bounds = other.GetBounds();
     
-    for (int y = bounds.b1.z; y < bounds.f3.z; y++) {
+    for (int z = bounds.b1.z; z < bounds.f3.z; z++) {
         for (int x = bounds.b1.x; x < bounds.f3.x; x++) {
-            if (Sample(data, width, height, x, y) > bounds.b1.z)
+            int xPos = ((float)x - position.x) * (64.0f / MAP_SCALE_FACTOR);
+            int zPos = ((float)z - position.z) * (64.0f / MAP_SCALE_FACTOR);
+            float displacement = Sample(data, width, height, xPos, zPos);
+            displacement = HEIGHT_SCALE_FACTOR * (displacement - 0.5); // From vertex shader
+            displacement *= MAP_SCALE_FACTOR;
+            
+            if (displacement > bounds.b1.y) {
                 return true;
+            }
         }
     }
     

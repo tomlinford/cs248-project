@@ -136,6 +136,7 @@ void Scene::UpdateObjects(float elapsedSeconds)
  collision. */
 void Scene::HandleCollisions()
 {
+    // Check object collisions
     for (int i = 0; i < level->objects.size(); i++)
     {
         Object *obj = level->objects[i];
@@ -160,6 +161,20 @@ void Scene::HandleCollisions()
             level->objects.erase(level->objects.begin() + i--);
         }
 	}
+    // Check map collision
+    for (int i = 0; i < level->maps.size(); i++)
+    {
+        Map *map = level->maps[i];
+        
+        // If the map is not in the frustum,
+        // skip it for now
+        if (!frustum->Contains(*map))
+            continue;
+        
+        // Check ship intersections
+        if (level->ship && map->Intersects(*level->ship))
+            particle_sys.AddExplosionCluster(level->ship->GetPosition(), level->ship->GetColor());
+    }
 }
 
 /** Updates the player views, which depends on the
