@@ -46,6 +46,9 @@ public:
     }
     void SetView(glm::mat4 v) { view = v; }
     void SetProjection(glm::mat4 p) { projection = p; }
+
+	glm::vec2 GetShipOffset() { return shipOffset; }
+	void SetShipOffset(glm::vec2 offs) { shipOffset = offs; }
     
     /** Key events (Player 1) */
     bool keyLeft, keyRight, keyUp, keyDown;

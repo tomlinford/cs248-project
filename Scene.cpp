@@ -61,7 +61,7 @@ void Scene::HandleKeys(float elapsedSeconds)
     if (keyDown)
         shipOffset.y -= interval;
     
-    shipOffset = clamp(shipOffset, vec2(-MAX_X, -MAX_Y), vec2(MAX_X, MAX_Y));
+    shipOffset = glm::clamp(shipOffset, vec2(-MAX_X, -MAX_Y), vec2(MAX_X, MAX_Y));
 }
 
 /** Updates objects by moving them to their new locations,
@@ -159,7 +159,7 @@ void Scene::HandleCollisions()
             delete obj;
             level->objects.erase(level->objects.begin() + i--);
         }
-    }
+	}
 }
 
 /** Updates the player views, which depends on the
@@ -290,7 +290,8 @@ void Scene::Render()
          it++)
     {
         Object *obj = *it;
-        if (frustum->Contains(*obj)) {
+        if (frustum->Contains(*obj))
+        {
             main->SetUniform("illum", 1);
             obj->Draw(*main, viewProjection, cameraPosition);
             obj->Draw(*main, viewProjection, cameraPosition, GL_LINE_LOOP);

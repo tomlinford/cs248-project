@@ -10,10 +10,6 @@
 #include "Level.h"
 #include "Networking.h"
 
-#ifdef _WIN32
-#include <Windows.h>
-#endif
-
 using namespace std;
 using namespace glm;
 
@@ -42,6 +38,7 @@ void GLFWCALL KeyCallback(int key, int action) {
             scene->keyDown = (action == GLFW_PRESS);
             break;
 	}
+	Networking::KeyAction(key, action, scene->GetShipOffset());
 }
 
 void GLFWCALL MouseCallback(int x, int y) {
@@ -93,15 +90,6 @@ int main(int argc, char *argv[])
 		exit(-1);
 	}
 
-	// because Visual Studio puts the executable in the Debug folder,
-	// we have to make it change directories if it gets executed from
-	// the command line
-#ifdef _WIN32
-	if (argc == 4 && argv[3][0] == 'c') {
-		SetCurrentDirectory("..");
-	}
-#endif
-
     if (!glfwInit()) {
 		cerr << "Failed to initialize glfw" << endl;
 		exit(-1);
@@ -131,8 +119,8 @@ int main(int argc, char *argv[])
     
     // Choose player
 	Player p;
-	switch (argv[2][0]) {
-	//switch('1') { // TODO: change for final
+	//switch (argv[2][0]) {
+	switch('1') { // TODO: change for final
         case '1':
             p = PLAYER1;
             glfwSetKeyCallback(KeyCallback);
@@ -143,7 +131,7 @@ int main(int argc, char *argv[])
             break;
 	}
 	scene = new Scene(p);
-	Networking::Init(level, argv[1], argv[2]);
+	Networking::Init(scene, level, argv[1], argv[2]);
     scene->LoadLevel(level);
     
 	glfwSetWindowTitle("CS248 Project");
