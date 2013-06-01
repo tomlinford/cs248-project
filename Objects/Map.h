@@ -36,9 +36,6 @@ public:
      geometry. */
     virtual bool Intersects(Object& other);
     
-    /** Returns the map's position */
-    virtual glm::vec3 GetPosition();
-    
     /** Returns the map's bounds */
     virtual Bounds GetBounds() const { return bounds; }
     

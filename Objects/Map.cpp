@@ -147,11 +147,6 @@ GLfloat Map::Sample(GLfloat *map, GLuint width, GLuint height, int x, int y)
     return map[((y & (height - 1)) * width) + (x & (width - 1))];
 }
 
-vec3 Map::GetPosition()
-{
-    return position;
-};
-
 bool Map::Intersects(Object& other)
 {
     // Check bounding box intersection first
@@ -166,19 +161,26 @@ bool Map::Intersects(Object& other)
     int height = heightField.GetHeight();
     GLfloat *data = heightField.GetData();
     
+    // Get object bounding box in world space
     Bounds bounds = other.GetBounds();
     
+    // Check edges of bottom face against height map
     for (int z = bounds.b1.z; z < bounds.f3.z; z++) {
         for (int x = bounds.b1.x; x < bounds.f3.x; x++) {
             int xPos = ((float)x - position.x) * (64.0f / MAP_SCALE_FACTOR);
             int zPos = ((float)z - position.z) * (64.0f / MAP_SCALE_FACTOR);
+            
+            // Checking this vertex against the wrong map
+            // This may occur if the ship bounding box overlaps several maps
+            if (xPos < 0 || xPos > 63 || zPos < 0 || zPos > 63)
+                continue;
+            
             float displacement = Sample(data, width, height, xPos, zPos);
             displacement = HEIGHT_SCALE_FACTOR * (displacement - 0.5); // From vertex shader
             displacement *= MAP_SCALE_FACTOR;
             
-            if (displacement > bounds.b1.y) {
+            if (displacement > bounds.b1.y)
                 return true;
-            }
         }
     }
     
