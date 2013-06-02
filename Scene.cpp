@@ -24,6 +24,13 @@ Scene::Scene(Player p) : particle_sys()
     main = new Program("Shaders/main.vert", "Shaders/main.frag");
     level = NULL;
     timer = NULL;
+
+	keyLeft = false;
+	keyRight = false;
+	keyDown = false;
+	keyUp = false;
+	mouseLeft = false;
+	mouseRight = false;
     
     // Spawn update thread
 	thread updateThread(&Scene::Update, this);
@@ -109,11 +116,9 @@ void Scene::UpdateObjects(float elapsedSeconds)
     }
     
     // Update other objects
-    for (std::vector<Object *>::iterator it = level->objects.begin();
-         it != level->objects.end();
-         it++)
+	for (int i = 0; i < level->objects.size(); i++)
     {
-        Object *obj = *it;
+		Object *obj = level->objects[i];
         Flyable *flyable = dynamic_cast<Flyable *>(obj);
         Missile *missile = dynamic_cast<Missile *>(obj);
         
@@ -137,8 +142,7 @@ void Scene::UpdateObjects(float elapsedSeconds)
                 position.y - 0.0 < 0.0001 &&
                 position.z - 0.0 < 0.0001)
             {
-                it = level->objects.erase(it);
-                it--;
+				level->objects.erase(level->objects.begin() + i--);
             }
             else
             {
@@ -281,8 +285,10 @@ void Scene::Update()
         // Handle player-specific input
         if (player == PLAYER1)
             HandleKeys(elapsedSeconds);
-        else
+        else {
+			HandleKeys(elapsedSeconds);
             HandleMouse(elapsedSeconds);
+		}
         
         UpdateObjects(elapsedSeconds);
         HandleCollisions();

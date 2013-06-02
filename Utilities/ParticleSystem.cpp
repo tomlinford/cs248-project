@@ -130,6 +130,8 @@ void ParticleCluster::Draw(const Program& p, const glm::mat4& viewProjection,
 bool BulletCluster::Intersects(Object *object)
 {
     lock_guard<std::mutex> lock(mutex);
+
+	if (particles.empty()) return false;
     
     // Check if bullet is in object's bounding box
     Bounds bounds = object->GetBounds();
