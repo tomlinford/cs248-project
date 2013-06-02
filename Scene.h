@@ -98,6 +98,7 @@ private:
     ParticleSystem particle_sys;
     
     int frames;
+    bool updated;
     
     /** Update helpers */
     void HandleKeys(float elapsedSeconds);
