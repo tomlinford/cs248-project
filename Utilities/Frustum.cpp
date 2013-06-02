@@ -97,28 +97,24 @@ bool Frustum::Contains(Object& object) const
     for (int i = 0; i < 6; i++) {
         Plane plane = planes[i];
         
-        int out = 0;
+        vec3 p = bounds.b1;
+        if (plane.normal.x >= 0)
+            p.x = bounds.f3.x;
+        if (plane.normal.y >=0)
+            p.y = bounds.f3.y;
+        if (plane.normal.z >= 0)
+            p.z = bounds.f3.z;
         
-        if (dot(plane.normal, bounds.b1 - plane.position) < 0)
-            out++;
-        if (dot(plane.normal, bounds.b2 - plane.position) < 0)
-            out++;
-        if (dot(plane.normal, bounds.b3 - plane.position) < 0)
-            out++;
-        if (dot(plane.normal, bounds.b4 - plane.position) < 0)
-            out++;
-        if (dot(plane.normal, bounds.f1 - plane.position) < 0)
-            out++;
-        if (dot(plane.normal, bounds.f2 - plane.position) < 0)
-            out++;
-        if (dot(plane.normal, bounds.f3 - plane.position) < 0)
-            out++;
-        if (dot(plane.normal, bounds.f4 - plane.position) < 0)
-            out++;
-        
-        // If everything is outside a plane - no intersection
-		if (out == 8)
-			return false;
+        vec3 n = bounds.f3;
+        if (plane.normal.x >= 0)
+            n.x = bounds.b1.x;
+        if (plane.normal.y >=0)
+            n.y = bounds.b1.y;
+        if (plane.normal.z >= 0)
+            n.z = bounds.b1.z;
+    
+        if (dot(plane.normal, p - plane.position) < 0)
+            return false;
     }
     
     return true;
