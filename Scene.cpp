@@ -278,6 +278,9 @@ void Scene::Update()
                 delete timer;
 			timer = new cpu_timer();
         }
+        
+        if (updated)
+            continue;
 		
         times = timer->elapsed();
 		float elapsedSeconds = (float)times.wall / pow(10.f, 9.f);
@@ -295,6 +298,7 @@ void Scene::Update()
         UpdateView(elapsedSeconds);
         
         lastTime = elapsedSeconds;
+        updated = true;
     }
 }
 
@@ -326,6 +330,7 @@ void Scene::Render()
 {
 	if (!timer) return;
     unique_lock<std::mutex> lock(mutex);
+    updated = false;
     
     LoadNewObjects();
     
