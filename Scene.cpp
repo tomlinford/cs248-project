@@ -70,7 +70,7 @@ void Scene::HandleMouse(float elapsedSeconds)
 {
     float interval = 3 * (elapsedSeconds - lastTime);
     
-    if (mouseLeft) {
+    if (mouseLeft && level->ship) {
         vec3 selected = glm::unProject(vec3(512, 384, 1.0),
                                        view,
                                        projection,
@@ -78,7 +78,7 @@ void Scene::HandleMouse(float elapsedSeconds)
         vec3 velocity = 20.0f * normalize(selected - level->ship->GetPosition());
         level->ship->AddBullet(level->ship->GetPosition(), velocity);
     }
-    if (mouseRight) {
+    if (mouseRight && level->ship) {
         
     }
 }
@@ -195,8 +195,8 @@ void Scene::HandleCollisions()
                 if (missile)
                 {
                     particle_sys.AddExplosionCluster(level->ship->GetPosition(), level->ship->GetColor());
-                    //delete level->ship;
-                    //level->ship = NULL;
+                    delete level->ship;
+                    level->ship = NULL;
                 }
                 particle_sys.AddExplosionCluster(obj->GetPosition(), obj->GetColor());
                 delete obj;
