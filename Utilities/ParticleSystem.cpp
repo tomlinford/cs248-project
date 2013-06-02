@@ -36,11 +36,6 @@ void Particle::Update(float elapsedTime)
     scale *= (MAX_LIFETIME - age) / MAX_LIFETIME;
 }
 
-Bullet::Bullet(glm::vec3 l, glm::vec3 v, glm::vec3 c) :
-    Particle(l, v, vec3(0), 1.0), color(c)
-{
-}
-
 ParticleCluster::ParticleCluster(glm::vec3 location, glm::vec3 c)
 {
     color = c;
@@ -132,155 +127,25 @@ void ParticleCluster::Draw(const Program& p, const glm::mat4& viewProjection,
     model.Delete();
 }
 
-void FluidCluster::Update(float elapsedTime)
+void BulletCluster::AddBullet(glm::vec3 l, glm::vec3 v)
 {
-    ParticleCluster::Update(elapsedTime);
-    for (int i = 0; i < 30; i++) {
-        vec3 velocity(0, rand(0, MAX_VELOCITY), 0);
-        normalize(velocity);
-        
-        float scale = (float)rand() / RAND_MAX;
-        
-        AddParticle(location, velocity, wind, scale);
-        cout << "Added particle " << endl;
-    }
+    particles.push_back(Particle(l, v, vec3(0), 1.0));
 }
 
-FluidCluster::FluidCluster(glm::vec3 l, glm::vec3 w, glm::vec3 c)
+void BulletCluster::Draw(const Program& p, const glm::mat4& viewProjection,
+                  const glm::vec3& cameraPos, GLenum mode)
 {
-    location = l;
-    wind = w;
-    color = c;
-    
-    for (int i = 0; i < PARTICLES_PER_CLUSTER; i++)
-    {
-        vec3 velocity(0, rand(0, MAX_VELOCITY), 0);
-        normalize(velocity);
-        
-        float scale = (float)rand() / RAND_MAX;
-        
-        AddParticle(location, velocity, wind, scale);
-    }
-}
-
-// Generates and draws particle buffer
-void FluidCluster::Draw(const Program& p, const glm::mat4& viewProjection,
-                           const glm::vec3& cameraPos, GLenum mode)
-{
+    // Draw bullets
     if (particles.size() == 0)
         return;
     
-    vector<vec3> vertices;
-	vector<size_t> indices;
-    
-    // Add triangle for each particle
-    int index = 0;
-	for (std::vector<Particle>::iterator it = particles.begin();
-         it != particles.end();
-         it++)
-    {
-        Particle particle = *it;
-        
-        // Orient vertices
-        vec3 o1 = particle.orientation * vec3(0.2, 0.0, 0.0);
-        vec3 o2 = particle.orientation * vec3(0.0, sqrt(3.0) / 5, 0);
-        vec3 o3 = particle.orientation * vec3(-0.2, 0.0, 0.0);
-        
-        vec3 v1 = particle.location + particle.scale * o1;
-        vec3 v2 = particle.location + particle.scale * o2;
-        vec3 v3 = particle.location + particle.scale * o3;
-        
-        vertices.push_back(v1);
-        vertices.push_back(v2);
-        vertices.push_back(v3);
-        
-        indices.push_back(index++);
-        indices.push_back(index++);
-        indices.push_back(index++);
-    }
-    
-    ArrayBuffer<vec3> ab(vertices);
-    ElementArrayBuffer eab(indices);
-    Model model(ModelBuffer(ab, eab), Material(), Bounds());
-    
-    mat4 M = mat4(1);
-    mat4 MVP = viewProjection * M;
-    
-    p.SetModel(M);
-    p.SetMVP(MVP);
-    
-    p.SetUniform("baseColor", color);
-    p.SetUniform("illum", 1);
-    model.Draw(p, GL_TRIANGLES);
-    
-    p.SetUniform("baseColor", color);
-	p.SetUniform("illum", 0);
-	model.Draw(p, GL_LINE_LOOP);
-    
-    model.Delete();
-}
-
-void ParticleSystem::Update(float elapsedTime)
-{
-	for (int i = 0; i < clusters.size(); i++ ) {
-		ParticleCluster& cluster = clusters[i];
-		if (!cluster.Valid())
-			clusters.erase(clusters.begin() + i--);
-		else
-			cluster.Update(elapsedTime - lastTime);
-	}
-    
-    // Remove expired bullets
-    for (int i = 0; i < bullets.size(); i++) {
-        Bullet& bullet = bullets[i];
-        if (!bullet.Valid())
-            bullets.erase(bullets.begin() + i--);
-        else
-            bullet.Update(elapsedTime - lastTime);
-    }
-    
-    lastTime = elapsedTime;
-}
-
-void ParticleSystem::AddBullet(glm::vec3 location, glm::vec3 velocity, glm::vec3 color)
-{
-    bullets.push_back(Bullet(location, velocity, color));
-}
-
-void ParticleSystem::AddExplosionCluster(glm::vec3 location, glm::vec3 color)
-{
-    ParticleCluster cluster(location, color);
-    clusters.push_back(cluster);
-}
-
-void ParticleSystem::AddFluidCluster(glm::vec3 location, glm::vec3 wind, glm::vec3 color)
-{
-    FluidCluster cluster(location, wind, color);
-    clusters.push_back(cluster);
-}
-
-void ParticleSystem::Draw(const Program& p, const glm::mat4& viewProjection,
-          const glm::vec3& cameraPos, GLenum mode)
-{
-    for (std::vector<ParticleCluster>::iterator it = clusters.begin();
-         it != clusters.end();
-         it++)
-    {
-        ParticleCluster cluster = *it;
-        cluster.Draw(p, viewProjection, cameraPos, mode);
-    }
-    
-    // Draw bullets
-    if (bullets.size() == 0)
-        return;
-    
 	// pre allocate space for vectors
-	vector<vec3> vertices(bullets.size() * 2);
-	vector<size_t> indices(bullets.size() * 2);
+	vector<vec3> vertices(particles.size() * 2);
+	vector<size_t> indices(particles.size() * 2);
 	
 	// add triangle for each particle
-	for (size_t i = 0; i < bullets.size(); i++) {
-		Bullet bullet = bullets[i];
+	for (size_t i = 0; i < particles.size(); i++) {
+		Particle bullet = particles[i];
         
 		vertices[i * 2] = bullet.location;
 		vertices[i * 2 + 1] = bullet.location - normalize(bullet.velocity);
@@ -299,10 +164,48 @@ void ParticleSystem::Draw(const Program& p, const glm::mat4& viewProjection,
     p.SetModel(M); // Needed for Phong shading
     p.SetMVP(MVP);
     
-    p.SetUniform("baseColor", vec3(1.0, 0.0, 1.0));
+    p.SetUniform("baseColor", color);
     p.SetUniform("illum", 0);
     glLineWidth(3.0);
     model.Draw(p, GL_LINES);
     
     model.Delete();
+}
+
+void ParticleSystem::Update(float elapsedTime)
+{
+	for (int i = 0; i < clusters.size(); i++ ) {
+		ParticleCluster *cluster = clusters[i];
+		if (!cluster->Valid()) {
+            delete cluster;
+			clusters.erase(clusters.begin() + i--);
+        }
+		else
+			cluster->Update(elapsedTime - lastTime);
+	}
+    
+    lastTime = elapsedTime;
+}
+
+void ParticleSystem::AddBulletCluster(BulletCluster *cluster)
+{
+    clusters.push_back(cluster);
+}
+
+void ParticleSystem::AddExplosionCluster(glm::vec3 location, glm::vec3 color)
+{
+    ParticleCluster *cluster = new ParticleCluster(location, color);
+    clusters.push_back(cluster);
+}
+
+void ParticleSystem::Draw(const Program& p, const glm::mat4& viewProjection,
+          const glm::vec3& cameraPos, GLenum mode)
+{
+    for (std::vector<ParticleCluster *>::iterator it = clusters.begin();
+         it != clusters.end();
+         it++)
+    {
+        ParticleCluster *cluster = *it;
+        cluster->Draw(p, viewProjection, cameraPos, mode);
+    }
 }

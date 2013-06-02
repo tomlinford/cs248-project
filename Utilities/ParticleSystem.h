@@ -32,54 +32,40 @@ public:
     bool Valid() { return (age / lifetime) < 1.0; }
 };
 
-/* A single bullet */
-class Bullet : public Particle
-{
-public:
-    Bullet(glm::vec3 l, glm::vec3 v, glm::vec3 c);
-    
-private:
-    glm::vec3 color;
-};
-
 /** A particle cluster represents an individual group of particles
  forming an explosion effect. */
 class ParticleCluster
 {
 public:
     ParticleCluster() {}
-    ParticleCluster(glm::vec3 location, glm::vec3 direction);
+    ParticleCluster(glm::vec3 location, glm::vec3 color);
     //~ParticleCluster();
+    
+    void SetColor(glm::vec3 c) { color = c; }
     
     void AddParticle(glm::vec3 location, glm::vec3 velocity, glm::vec3 force, float scale);
     virtual void Update(float elapsedTime);
-    bool Valid() { return particles.size() > 0; }
+    virtual bool Valid() { return particles.size() > 0; }
     virtual void Draw(const Program& p, const glm::mat4& viewProjection,
                       const glm::vec3& cameraPos, GLenum mode = GL_TRIANGLES);
 
 protected:
     std::vector<Particle> particles;
     std::vector<glm::vec3> particleVertices;
-    std::vector<glm::vec3> particleNormals;
     std::vector<float> particleIndices;
     glm::vec3 color;
 };
 
-/** A fluid cluster represents an individual group of particles
- forming a fire/smoke effect. */
-class FluidCluster : public ParticleCluster
+/** A bullet cluster is a permanent cluster that belongs to
+ an Object. The Object will add bullets to this cluster
+ when desired. (The object is an "emitter" so to speak) */
+class BulletCluster : public ParticleCluster
 {
 public:
-    FluidCluster(glm::vec3 location, glm::vec3 wind, glm::vec3 color);
-    //~FluidCluster();
-    
-    virtual void Update(float elapsedTime);
+    void AddBullet(glm::vec3 l, glm::vec3 v);
+    virtual bool Valid() { return true; }
     virtual void Draw(const Program& p, const glm::mat4& viewProjection,
-              const glm::vec3& cameraPos, GLenum mode = GL_TRIANGLES);
-    
-private:
-    glm::vec3 location;
-    glm::vec3 wind;
+                      const glm::vec3& cameraPos, GLenum mode = GL_TRIANGLES);
 };
 
 /** A particle system is made up of a bunch of particle clusters, each
@@ -89,15 +75,13 @@ class ParticleSystem
 public:
 	ParticleSystem() : lastTime(0) {}
     void Update(float elapsedTime);
-    void AddBullet(glm::vec3 location, glm::vec3 velocity, glm::vec3 color);
+    void AddBulletCluster(BulletCluster *cluster);
     void AddExplosionCluster(glm::vec3 location, glm::vec3 color);
-    void AddFluidCluster(glm::vec3 location, glm::vec3 wind, glm::vec3 color);
     void Draw(const Program& p, const glm::mat4& viewProjection,
               const glm::vec3& cameraPos, GLenum mode = GL_TRIANGLES);
     
 private:
-    std::vector<Bullet> bullets;
-    std::vector<ParticleCluster> clusters;
+    std::vector<ParticleCluster *> clusters;
     float lastTime;
 };
 

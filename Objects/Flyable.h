@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Object.h"
+#include "ParticleSystem.h"
 
 /* The Flyable class represents Objects that can
    move/fly. These objects have a speed and direction
@@ -58,10 +59,21 @@ public:
     Ship(Model *model);
     Ship(const string& filename);
     
+    /** Override set color to update bullet cluster color
+     as well */
+    virtual void SetColor(glm::vec3 c);
+    
+    /** Adds a bullet */
+    void AddBullet(glm::vec3 location, glm::vec3 velocity);
+    
+    /** Bullet cluster accessor */
+    BulletCluster *GetBulletCluster() { return cluster; }
+    
     /** Accessors for health */
     float GetHealth() { return health; }
     void SetHealth(float h) { health = h; }
     
 protected:
     float health;
+    BulletCluster *cluster;
 };

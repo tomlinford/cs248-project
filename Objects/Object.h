@@ -28,8 +28,8 @@ public:
     virtual bool Intersects(Object& other);
     
     /** Color */
-    glm::vec3 GetColor() { return color; }
-    void SetColor(glm::vec3 c) { color = c; }
+    virtual glm::vec3 GetColor() { return color; }
+    virtual void SetColor(glm::vec3 c) { color = c; }
     
     /** Position in world space */
     virtual glm::vec3 GetPosition() { return position; };
@@ -71,7 +71,10 @@ public:
                       const glm::vec3& cameraPos, GLenum mode = GL_TRIANGLES) const;
     
 protected:
+    /** Associated 3D model */
     Model *model;
+    
+    /** Properties */
     float scale;
     glm::mat4 M;
     glm::vec3 color;

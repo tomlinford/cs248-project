@@ -52,9 +52,21 @@ Missile::Missile(const string& filename) : Flyable(filename)
 Ship::Ship(Model *model) : Flyable(model)
 {
     health = 10;
+    cluster = new BulletCluster();
 }
 
 Ship::Ship(const string& filename) : Flyable(filename)
 {
     health = 10;
+    cluster = new BulletCluster();
+}
+
+void Ship::AddBullet(glm::vec3 location, glm::vec3 velocity)
+{
+    cluster->AddBullet(location, velocity);
+}
+
+void Ship::SetColor(glm::vec3 c) {
+    Object::SetColor(c);
+    cluster->SetColor(c);
 }

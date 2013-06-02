@@ -43,6 +43,7 @@ void Scene::LoadLevel(Level *l)
     level = l;
 	level->Load();
     cond.notify_all();
+    particle_sys.AddBulletCluster(level->ship->GetBulletCluster());
 }
 
 /* Scene update functions below */
@@ -74,11 +75,8 @@ void Scene::HandleMouse(float elapsedSeconds)
                                        view,
                                        projection,
                                        vec4(0, 0, 1024 ,768));
-        
-        cout << "Selected (" << selected.x << ", " << selected.y << ", " << selected.z << ")" << endl;
-        
-        vec3 direction = 20.0f * normalize(selected - level->ship->GetPosition());
-        particle_sys.AddBullet(level->ship->GetPosition(), direction, level->ship->GetColor());
+        vec3 velocity = 20.0f * normalize(selected - level->ship->GetPosition());
+        level->ship->AddBullet(level->ship->GetPosition(), velocity);
     }
     if (mouseRight) {
         
@@ -291,7 +289,7 @@ void Scene::LoadNewObjects()
         Ship *ship = dynamic_cast<Ship *>(level->objects[i]);
         if (ship &&
             level->ship &&
-            ::count % 50 == 0 &&
+            ::count % 30 == 0 &&
             distance(level->ship->GetPosition(), ship->GetPosition()) < 20)
         {
             Missile *missile = new Missile("Models/missile.obj");
