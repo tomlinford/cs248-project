@@ -90,6 +90,8 @@ void Frustum::ComputePlanes()
     planes[5] = far;
 }
 
+/* Faster frustum culling for AABBs
+ See here: http://www.lighthouse3d.com/tutorials/view-frustum-culling/geometric-approach-testing-boxes-ii/ */
 bool Frustum::Contains(Object& object) const
 {
     Bounds bounds = object.GetBounds();
