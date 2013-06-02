@@ -7,6 +7,7 @@
 #include <vector>
 #include <stdlib.h>
 #include <time.h>
+#include <mutex>
 
 #include "Program.h"
 #include "Buffer.h"
