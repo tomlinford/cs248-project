@@ -32,6 +32,7 @@ const static string READY = "ready";
 const static string START = "start";
 const static string END = "end";
 const static string KEY = "key";
+const static string BULLET = "bullet";
 
 // function template
 static void listenFunc();
@@ -154,15 +155,26 @@ static void listenFunc() {
 		        break;
 			}
 			scene->SetShipOffset(shipOffset);
+		} else if (header == BULLET) {
+			vec3 position, velocity;
+			ss >> position.x >> position.y >> position.z;
+			ss >> velocity.x >> velocity.y >> velocity.z;
+			level->ship->AddBullet(position, velocity);
 		}
 	}
 }
 
 extern void KeyAction(int key, int action, vec2 shipOffset) {
-	cout << "sending key action" << endl;
 	lock_guard<mutex> lock(nspMutex);
 	(*nsp) << KEY << " " << key << " " << action << " ";
 	(*nsp) << shipOffset.x << " " << shipOffset.y << endl;
+}
+
+extern void AddBullet(glm::vec3 position, glm::vec3 velocity) {
+	lock_guard<mutex> lock(nspMutex);
+	(*nsp) << BULLET << " ";
+	(*nsp) << position.x << " " << position.y << " " << position.z << " ";
+	(*nsp) << velocity.x << " " << velocity.y << " " << velocity.z << endl;
 }
 
 };

@@ -29,6 +29,7 @@ const (
 	START   = "start"
 	END     = "end"
 	KEY     = "key"
+	BULLET  = "bullet"
 )
 
 // the init function will get called before main() gets called
@@ -187,6 +188,12 @@ func (s *server) run() {
 				}
 			}
 		case line = <-s.twoToServer:
+			switch strings.Split(line, " ")[0] {
+			case BULLET:
+				if s.one != nil {
+					s.one.outChan <- line
+				}
+			}
 		}
 	}
 }

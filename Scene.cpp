@@ -4,6 +4,8 @@
 #include <thread>
 #include <boost/asio.hpp>
 
+#include "Networking.h"
+
 #define MAX_X 2.4
 #define MAX_Y 1.8
 
@@ -77,6 +79,7 @@ void Scene::HandleMouse(float elapsedSeconds)
                                        vec4(0, 0, 1024 ,768));
         vec3 velocity = 20.0f * normalize(selected - level->ship->GetPosition());
         level->ship->AddBullet(level->ship->GetPosition(), velocity);
+		Networking::AddBullet(level->ship->GetPosition(), velocity);
     }
     if (mouseRight && level->ship) {
         
@@ -195,8 +198,8 @@ void Scene::HandleCollisions()
                 if (missile)
                 {
                     particle_sys.AddExplosionCluster(level->ship->GetPosition(), level->ship->GetColor());
-                    delete level->ship;
-                    level->ship = NULL;
+                    //delete level->ship;
+                    //level->ship = NULL;
                 }
                 particle_sys.AddExplosionCluster(obj->GetPosition(), obj->GetColor());
                 delete obj;
@@ -300,7 +303,7 @@ void Scene::LoadNewObjects()
         if (ship &&
             level->ship &&
             ::count % 30 == 0 &&
-            distance(level->ship->GetPosition(), ship->GetPosition()) < 20)
+            glm::distance(level->ship->GetPosition(), ship->GetPosition()) < 20)
         {
             Missile *missile = new Missile("Models/missile.obj");
             missile->SetColor(vec3(1.0, 1.0, 1.0));

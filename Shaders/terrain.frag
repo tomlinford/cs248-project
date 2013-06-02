@@ -28,7 +28,7 @@ void main()
         vec3 diffuseColor = baseColor;
         
         // Camera position
-        vec3 N = normalize(-cross(dFdx(vertexPosition), dFdy(vertexPosition)));
+        vec3 N = normalize(cross(dFdx(vertexPosition), dFdy(vertexPosition)));
         vec3 L = normalize(lightPosition - vertexPosition);
         vec3 V = normalize(vertexPosition - cameraPosition);
         vec3 H = normalize(L - V);

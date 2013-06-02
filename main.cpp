@@ -137,7 +137,6 @@ int main(int argc, char *argv[])
 	glewInit();
 #endif
     
-    // TODO: Stream levels from server
     Level *level = new Level();
     
     // Choose player
