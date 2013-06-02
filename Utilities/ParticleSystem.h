@@ -11,6 +11,7 @@
 #include "Program.h"
 #include "Buffer.h"
 #include "Model.h"
+#include "Object.h"
 
 /* A single particle */
 class Particle
@@ -44,6 +45,7 @@ public:
     void SetColor(glm::vec3 c) { color = c; }
     
     void AddParticle(glm::vec3 location, glm::vec3 velocity, glm::vec3 force, float scale);
+    virtual bool Intersects(Object *object) { return false; }
     virtual void Update(float elapsedTime);
     virtual bool Valid() { return particles.size() > 0; }
     virtual void Draw(const Program& p, const glm::mat4& viewProjection,
@@ -63,6 +65,7 @@ class BulletCluster : public ParticleCluster
 {
 public:
     void AddBullet(glm::vec3 l, glm::vec3 v);
+    virtual bool Intersects(Object *object);
     virtual bool Valid() { return true; }
     virtual void Draw(const Program& p, const glm::mat4& viewProjection,
                       const glm::vec3& cameraPos, GLenum mode = GL_TRIANGLES);
@@ -74,6 +77,7 @@ class ParticleSystem
 {
 public:
 	ParticleSystem() : lastTime(0) {}
+    bool Intersects(Object *object);
     void Update(float elapsedTime);
     void AddBulletCluster(BulletCluster *cluster);
     void AddExplosionCluster(glm::vec3 location, glm::vec3 color);

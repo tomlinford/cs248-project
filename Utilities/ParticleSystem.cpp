@@ -127,6 +127,31 @@ void ParticleCluster::Draw(const Program& p, const glm::mat4& viewProjection,
     model.Delete();
 }
 
+bool BulletCluster::Intersects(Object *object)
+{
+    // Check if bullet is in object's bounding box
+    Bounds bounds = object->GetBounds();
+    
+    for (int i = 0; i < particles.size(); i++) {
+        Particle& bullet = particles[i];
+        
+        // f3 and b1 correspond to the max and min
+        // corners of the bounding boxes, respectively
+        if (bullet.location.x < bounds.b1.x ||
+            bounds.f3.x < bullet.location.x)
+            continue;
+        if (bullet.location.y < bounds.b1.y ||
+            bounds.f3.y < bullet.location.y)
+            continue;
+        if (bullet.location.z < bounds.b1.z ||
+            bounds.f3.z < bullet.location.z)
+            continue;
+        return true;
+    }
+    
+    return false;
+}
+
 void BulletCluster::AddBullet(glm::vec3 l, glm::vec3 v)
 {
     particles.push_back(Particle(l, v, vec3(0), 1.0));
@@ -196,6 +221,19 @@ void ParticleSystem::AddExplosionCluster(glm::vec3 location, glm::vec3 color)
 {
     ParticleCluster *cluster = new ParticleCluster(location, color);
     clusters.push_back(cluster);
+}
+
+bool ParticleSystem::Intersects(Object *object)
+{
+    for (std::vector<ParticleCluster *>::iterator it = clusters.begin();
+         it != clusters.end();
+         it++)
+    {
+        ParticleCluster *cluster = *it;
+        if (cluster->Intersects(object))
+            return true;
+    }
+    return false;
 }
 
 void ParticleSystem::Draw(const Program& p, const glm::mat4& viewProjection,

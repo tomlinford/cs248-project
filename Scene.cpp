@@ -180,6 +180,15 @@ void Scene::HandleCollisions()
             if (!frustum->Contains(*obj))
                 continue;
             
+            // Check object-bullet intersections
+            if (particle_sys.Intersects(obj)) {
+                particle_sys.AddExplosionCluster(obj->GetPosition(), obj->GetColor());
+                delete obj;
+                obj = NULL;
+                level->objects.erase(level->objects.begin() + i--);
+                continue;
+            }
+            
             // Check object-ship intersections
             if (level->ship && level->ship->Intersects(*obj))
             {
@@ -193,10 +202,11 @@ void Scene::HandleCollisions()
                 delete obj;
                 obj = NULL;
                 level->objects.erase(level->objects.begin() + i--);
+                continue;
             }
             
             // Check object-map intersections
-            if (obj && map->Intersects(*obj)) {
+            if (map->Intersects(*obj)) {
                 //particle_sys.AddExplosionCluster(obj->GetPosition(), map->GetColor());
                 //delete obj;
                 //level->objects.erase(level->objects.begin() + i--);
