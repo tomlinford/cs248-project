@@ -77,9 +77,9 @@ void Scene::HandleMouse(float elapsedSeconds)
                                        view,
                                        projection,
                                        vec4(0, 0, 1024 ,768));
-        vec3 velocity = 20.0f * normalize(selected - level->ship->GetPosition());
-        level->ship->AddBullet(level->ship->GetPosition(), velocity);
-		Networking::AddBullet(level->ship->GetPosition(), velocity);
+        vec3 velocity = normalize(selected - level->ship->GetPosition());
+        level->ship->AddBullet(level->ship->GetPosition() + velocity, 20.0f * velocity);
+		Networking::AddBullet(level->ship->GetPosition() + velocity, 20.0f * velocity);
     }
     if (mouseRight && level->ship) {
         
