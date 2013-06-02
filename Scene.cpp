@@ -195,8 +195,8 @@ void Scene::HandleCollisions()
                 if (missile)
                 {
                     particle_sys.AddExplosionCluster(level->ship->GetPosition(), level->ship->GetColor());
-                    delete level->ship;
-                    level->ship = NULL;
+                    //delete level->ship;
+                    //level->ship = NULL;
                 }
                 particle_sys.AddExplosionCluster(obj->GetPosition(), obj->GetColor());
                 delete obj;

@@ -129,6 +129,8 @@ void ParticleCluster::Draw(const Program& p, const glm::mat4& viewProjection,
 
 bool BulletCluster::Intersects(Object *object)
 {
+    lock_guard<std::mutex> lock(mutex);
+    
     // Check if bullet is in object's bounding box
     Bounds bounds = object->GetBounds();
     
@@ -154,12 +156,16 @@ bool BulletCluster::Intersects(Object *object)
 
 void BulletCluster::AddBullet(glm::vec3 l, glm::vec3 v)
 {
+    lock_guard<std::mutex> lock(mutex);
+    
     particles.push_back(Particle(l, v, vec3(0), 1.0));
 }
 
 void BulletCluster::Draw(const Program& p, const glm::mat4& viewProjection,
                   const glm::vec3& cameraPos, GLenum mode)
 {
+    lock_guard<std::mutex> lock(mutex);
+    
     // Draw bullets
     if (particles.size() == 0)
         return;

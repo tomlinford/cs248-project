@@ -52,6 +52,7 @@ public:
                       const glm::vec3& cameraPos, GLenum mode = GL_TRIANGLES);
 
 protected:
+    std::mutex mutex;
     std::vector<Particle> particles;
     std::vector<glm::vec3> particleVertices;
     std::vector<float> particleIndices;
