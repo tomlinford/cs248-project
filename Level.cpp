@@ -136,15 +136,15 @@ void Level::SetLevel(float *terrainMap, size_t size, int x, int y) {
 
 void Level::DrawMap(const glm::mat4& viewProjection, const glm::vec3& cameraPos,
                     const glm::vec3& lightPos, const Frustum& frustum) {
-	//int count = 0;
+	int count = 0;
     for (Map *map : maps) {
         if (frustum.Contains(*map))
             map->Draw(viewProjection, cameraPos, lightPos);
-        /*else
-            count++;*/
+        else
+            count++;
             
     }
-    //cout << "Culled " << count << " sub maps " << endl;
+    cout << "Culled " << count << " sub maps " << endl;
 }
 
 void Level::LoadMaps() {
