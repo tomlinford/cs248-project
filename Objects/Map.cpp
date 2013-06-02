@@ -126,6 +126,7 @@ void Map::Draw(const glm::mat4& viewProjection, const glm::vec3& cameraPos, cons
 	p.SetUniform("heightField", &heightField, GL_TEXTURE0);
     
 	p.SetUniform("illum", 0);
+    glLineWidth(2.0f);
     lines->Draw(p, GL_LINES);
     
 	p.SetUniform("illum", 1);

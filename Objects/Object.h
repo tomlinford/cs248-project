@@ -4,6 +4,7 @@
 #include "../Utilities/OBJFile.h"
 
 #include <assert.h> 
+#include <unordered_map>
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -47,6 +48,9 @@ public:
         M = glm::translate(glm::mat4(1), position) *
             glm::mat4_cast(orientation);
     };
+    
+    /** Returns the object's model matrix */
+    virtual glm::mat4 GetModelMatrix() { return M; }
     
     /** Returns axis-aligned world-space bounding box
      by finding the min/max of the transformed

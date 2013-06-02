@@ -16,6 +16,8 @@
 class Particle
 {
 public:
+    /* Initializes particle with a given location, velocity
+     force, and scale */
     Particle(glm::vec3 l, glm::vec3 v, glm::vec3 f, float s);
     glm::vec3 location;
     glm::vec3 velocity;
@@ -28,6 +30,16 @@ public:
     
     void Update(float elapsedTime);
     bool Valid() { return (age / lifetime) < 1.0; }
+};
+
+/* A single bullet */
+class Bullet : public Particle
+{
+public:
+    Bullet(glm::vec3 l, glm::vec3 v, glm::vec3 c);
+    
+private:
+    glm::vec3 color;
 };
 
 /** A particle cluster represents an individual group of particles
@@ -77,12 +89,14 @@ class ParticleSystem
 public:
 	ParticleSystem() : lastTime(0) {}
     void Update(float elapsedTime);
+    void AddBullet(glm::vec3 location, glm::vec3 velocity, glm::vec3 color);
     void AddExplosionCluster(glm::vec3 location, glm::vec3 color);
     void AddFluidCluster(glm::vec3 location, glm::vec3 wind, glm::vec3 color);
     void Draw(const Program& p, const glm::mat4& viewProjection,
               const glm::vec3& cameraPos, GLenum mode = GL_TRIANGLES);
     
 private:
+    std::vector<Bullet> bullets;
     std::vector<ParticleCluster> clusters;
     float lastTime;
 };

@@ -1,6 +1,9 @@
 #include "Object.h"
 
+using namespace::std;
 using namespace::glm;
+
+static unordered_map<string, Model *> existingModels;
 
 Object::Object()
 {
@@ -19,24 +22,26 @@ Object::Object(Model *m)
 Object::Object(const string& filename)
 {
     model_file = filename;
-    OBJFile obj(filename.c_str());
-    model = obj.GenModel();
+    if (existingModels[filename] > 0) {
+        model = existingModels[filename];
+    }
+    else {
+        OBJFile obj(filename.c_str());
+        model = obj.GenModel();
+        existingModels[filename] = model;
+    }
     scale = 1.0;
     M = mat4(1);
 }
 
 Object::Object(const Object& other)
 {
-    /*model_file = other.model_file;
-    OBJFile obj(model_file.c_str());
-    model = obj.GenModel();
-    M = other.M;*/
-    
     model = other.model;
-    M = mat4(1);
-    scale = 1.0;
+    scale = other.scale;
+    M = other.M;
 }
 
+// TODO: When to delete model?
 Object::~Object()
 {
     //if (model)
@@ -155,7 +160,7 @@ void Object::Draw(const Program& p, const glm::mat4& viewProjection,
     
 	Object::model->Draw(p, mode);
     
-//#ifdef DEBUG
+#ifdef DEBUG
     DrawAABB(p, viewProjection);
-//#endif
+#endif
 }

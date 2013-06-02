@@ -53,6 +53,9 @@ public:
     /** Key events (Player 1) */
     bool keyLeft, keyRight, keyUp, keyDown;
     
+    /** Mouse events (Player 2) */
+    bool mouseLeft, mouseRight;
+    
     /** FPS direction in spherical coordinates (Player 2) */
     float theta, phi;
     
@@ -98,6 +101,7 @@ private:
     
     /** Update helpers */
     void HandleKeys(float elapsedSeconds);
+    void HandleMouse(float elapsedSeconds);
     void UpdateObjects(float elapsedSeconds);
     void HandleCollisions();
     void UpdateView(float elapsedSeconds);

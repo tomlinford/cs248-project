@@ -28,13 +28,17 @@ Particle::Particle(glm::vec3 l, glm::vec3 v, glm::vec3 f, float s)
     angleAxis(rand(0, 360), vec3(1, 0, 0));
 }
 
-
 void Particle::Update(float elapsedTime)
 {
     location += velocity * elapsedTime;
     velocity += force * elapsedTime;
     age += elapsedTime;
     scale *= (MAX_LIFETIME - age) / MAX_LIFETIME;
+}
+
+Bullet::Bullet(glm::vec3 l, glm::vec3 v, glm::vec3 c) :
+    Particle(l, v, vec3(0), 1.0), color(c)
+{
 }
 
 ParticleCluster::ParticleCluster(glm::vec3 location, glm::vec3 c)
@@ -219,15 +223,28 @@ void FluidCluster::Draw(const Program& p, const glm::mat4& viewProjection,
 void ParticleSystem::Update(float elapsedTime)
 {
 	for (int i = 0; i < clusters.size(); i++ ) {
-		ParticleCluster &cluster = clusters[i];
-		if (!cluster.Valid()) {
-			clusters.erase(clusters.begin() + i);
-			i--;
-		} else {
+		ParticleCluster& cluster = clusters[i];
+		if (!cluster.Valid())
+			clusters.erase(clusters.begin() + i--);
+		else
 			cluster.Update(elapsedTime - lastTime);
-		}
 	}
+    
+    // Remove expired bullets
+    for (int i = 0; i < bullets.size(); i++) {
+        Bullet& bullet = bullets[i];
+        if (!bullet.Valid())
+            bullets.erase(bullets.begin() + i--);
+        else
+            bullet.Update(elapsedTime - lastTime);
+    }
+    
     lastTime = elapsedTime;
+}
+
+void ParticleSystem::AddBullet(glm::vec3 location, glm::vec3 velocity, glm::vec3 color)
+{
+    bullets.push_back(Bullet(location, velocity, color));
 }
 
 void ParticleSystem::AddExplosionCluster(glm::vec3 location, glm::vec3 color)
@@ -252,4 +269,40 @@ void ParticleSystem::Draw(const Program& p, const glm::mat4& viewProjection,
         ParticleCluster cluster = *it;
         cluster.Draw(p, viewProjection, cameraPos, mode);
     }
+    
+    // Draw bullets
+    if (bullets.size() == 0)
+        return;
+    
+	// pre allocate space for vectors
+	vector<vec3> vertices(bullets.size() * 2);
+	vector<size_t> indices(bullets.size() * 2);
+	
+	// add triangle for each particle
+	for (size_t i = 0; i < bullets.size(); i++) {
+		Bullet bullet = bullets[i];
+        
+		vertices[i * 2] = bullet.location;
+		vertices[i * 2 + 1] = bullet.location - normalize(bullet.velocity);
+		
+		indices[i * 2] = i * 2;
+		indices[i * 2 + 1] = i * 2 + 1;
+	}
+    
+    ArrayBuffer<vec3> ab(vertices);
+    ElementArrayBuffer eab(indices);
+    Model model(ModelBuffer(ab, eab), Material(), Bounds());
+    
+    mat4 M = mat4(1);
+    mat4 MVP = viewProjection * M;
+    
+    p.SetModel(M); // Needed for Phong shading
+    p.SetMVP(MVP);
+    
+    p.SetUniform("baseColor", vec3(1.0, 0.0, 1.0));
+    p.SetUniform("illum", 0);
+    glLineWidth(3.0);
+    model.Draw(p, GL_LINES);
+    
+    model.Delete();
 }

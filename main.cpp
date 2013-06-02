@@ -61,6 +61,29 @@ void GLFWCALL MouseCallback(int x, int y) {
     }
 }
 
+void GLFWCALL MouseButtonCallback(int button, int action)
+{
+    if (button == GLFW_MOUSE_BUTTON_LEFT) {
+        if (action == GLFW_PRESS)
+            scene->mouseLeft = true;
+        else if (action == GLFW_RELEASE)
+            scene->mouseLeft = false;
+        else
+            cerr << "Unsupported mouse action " << endl;
+    }
+    else if (button == GLFW_MOUSE_BUTTON_RIGHT) {
+        if (action == GLFW_PRESS)
+            scene->mouseRight = true;
+        else if (action == GLFW_RELEASE)
+            scene->mouseRight = false;
+        else
+            cerr << "Unsupported mouse action " << endl;
+    }
+    else {
+        cerr << "Unsupported mouse button " << endl;
+    }
+}
+
 void GLFWCALL WindowResizeCallback(int w, int h)
 {
     // Update viewable area
@@ -119,8 +142,8 @@ int main(int argc, char *argv[])
     
     // Choose player
 	Player p;
-	//switch (argv[2][0]) {
-	switch('1') { // TODO: change for final
+	switch (argv[2][0]) {
+	//switch('1') { // TODO: change for final
         case '1':
             p = PLAYER1;
             glfwSetKeyCallback(KeyCallback);
@@ -128,6 +151,7 @@ int main(int argc, char *argv[])
         case '2':
             p = PLAYER2;
             glfwSetMousePosCallback(MouseCallback);
+            glfwSetMouseButtonCallback(MouseButtonCallback);
             break;
 	}
 	scene = new Scene(p);

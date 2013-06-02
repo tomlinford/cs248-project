@@ -64,6 +64,27 @@ void Scene::HandleKeys(float elapsedSeconds)
     shipOffset = glm::clamp(shipOffset, vec2(-MAX_X, -MAX_Y), vec2(MAX_X, MAX_Y));
 }
 
+/** Adds bullets based on mouse presses. */
+void Scene::HandleMouse(float elapsedSeconds)
+{
+    float interval = 3 * (elapsedSeconds - lastTime);
+    
+    if (mouseLeft) {
+        vec3 selected = glm::unProject(vec3(512, 384, 1.0),
+                                       view,
+                                       projection,
+                                       vec4(0, 0, 1024 ,768));
+        
+        cout << "Selected (" << selected.x << ", " << selected.y << ", " << selected.z << ")" << endl;
+        
+        vec3 direction = 20.0f * normalize(selected - level->ship->GetPosition());
+        particle_sys.AddBullet(level->ship->GetPosition(), direction, level->ship->GetColor());
+    }
+    if (mouseRight) {
+        
+    }
+}
+
 /** Updates objects by moving them to their new locations,
  which is a function of the elapsed time. */
 void Scene::UpdateObjects(float elapsedSeconds)
@@ -102,7 +123,7 @@ void Scene::UpdateObjects(float elapsedSeconds)
             shipOffset.x *= -1;
             
             vec2 dir = shipOffset - missileOffset;
-            vec2 offset = 0.001f * dir;
+            vec2 offset = 0.01f * dir;
             missile->SetOffset(missileOffset + offset);
         }
         if (flyable)
@@ -148,7 +169,7 @@ void Scene::HandleCollisions()
         
         // Check ship intersections
         if (level->ship && map->Intersects(*level->ship))
-            particle_sys.AddExplosionCluster(level->ship->GetPosition(), level->ship->GetColor());
+            particle_sys.AddExplosionCluster(level->ship->GetPosition(), map->GetColor());
         
         // Check object collisions
         for (int i = 0; i < level->objects.size(); i++)
@@ -166,7 +187,7 @@ void Scene::HandleCollisions()
             {
                 if (missile)
                 {
-                    //particle_sys.AddExplosionCluster(level->ship->GetPosition(), level->ship->GetColor());
+                    particle_sys.AddExplosionCluster(level->ship->GetPosition(), level->ship->GetColor());
                     //delete level->ship;
                     //level->ship = NULL;
                 }
@@ -178,7 +199,7 @@ void Scene::HandleCollisions()
             
             // Check object-map intersections
             if (obj && map->Intersects(*obj)) {
-                particle_sys.AddExplosionCluster(obj->GetPosition(), obj->GetColor());
+                //particle_sys.AddExplosionCluster(obj->GetPosition(), map->GetColor());
                 //delete obj;
                 //level->objects.erase(level->objects.begin() + i--);
             }
@@ -226,10 +247,15 @@ void Scene::UpdateView(float elapsedSeconds)
     }
 }
 
+/* Updates object positions in world based on elapsed
+ time and performs collision testing on a separate
+ thread */
 void Scene::Update()
 {
     while (true) {
         unique_lock<std::mutex> lock(mutex);
+        
+        // Wait until the level is ready
         while (!level || !level->Ready())
         {
             cond.wait(lock);
@@ -241,7 +267,12 @@ void Scene::Update()
         times = timer->elapsed();
 		float elapsedSeconds = (float)times.wall / pow(10.f, 9.f);
         
-        HandleKeys(elapsedSeconds);
+        // Handle player-specific input
+        if (player == PLAYER1)
+            HandleKeys(elapsedSeconds);
+        else
+            HandleMouse(elapsedSeconds);
+        
         UpdateObjects(elapsedSeconds);
         HandleCollisions();
         UpdateView(elapsedSeconds);
@@ -298,6 +329,8 @@ void Scene::Render()
     // Not currently needed
     // main->SetView(view);
     // main->SetProjection(projection);
+    
+    glLineWidth(2.0f);
     
     // Draw ship
     if (level->ship && frustum->Contains(*level->ship))
