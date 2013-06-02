@@ -30,6 +30,8 @@ public:
     glm::vec3 force;
     glm::quat orientation;
     
+    glm::vec3 o1, o2, o3;
+    
     void Update(float elapsedTime);
     bool Valid() { return (age / lifetime) < 1.0; }
 };

@@ -26,6 +26,11 @@ Particle::Particle(glm::vec3 l, glm::vec3 v, glm::vec3 f, float s)
     orientation = angleAxis(rand(0, 360), vec3(0, 0, 1)) *
     angleAxis(rand(0, 360), vec3(0, 1, 0)) *
     angleAxis(rand(0, 360), vec3(1, 0, 0));
+    
+    // Orient vertices
+    o1 = orientation * vec3(0.2, 0.0, 0.0);
+    o2 = orientation * vec3(0.0, sqrt(3.0) / 5, 0);
+    o3 = orientation * vec3(-0.2, 0.0, 0.0);
 }
 
 void Particle::Update(float elapsedTime)
@@ -88,14 +93,9 @@ void ParticleCluster::Draw(const Program& p, const glm::mat4& viewProjection,
 	for (size_t i = 0; i < particles.size(); i++) {
 		Particle particle = particles[i];
         
-        // Orient vertices
-        vec3 o1 = particle.orientation * vec3(0.2, 0.0, 0.0);
-        vec3 o2 = particle.orientation * vec3(0.0, sqrt(3.0) / 5, 0);
-        vec3 o3 = particle.orientation * vec3(-0.2, 0.0, 0.0);
-        
-        vec3 v1 = particle.location + particle.scale * o1;
-        vec3 v2 = particle.location + particle.scale * o2;
-        vec3 v3 = particle.location + particle.scale * o3;
+        vec3 v1 = particle.location + particle.scale * particle.o1;
+        vec3 v2 = particle.location + particle.scale * particle.o2;
+        vec3 v3 = particle.location + particle.scale * particle.o3;
 
 		vertices[i * 3] = v1;
 		vertices[i * 3 + 1] = v2;
