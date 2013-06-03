@@ -92,7 +92,7 @@ private:
     Program() : id(-1) {}
     
     /** Map of attribute locations */
-    mutable map<string, GLint> locations;
+    mutable map<string, GLint> *locations;
 
     /** id used by OpenGL. */
     GLint id;

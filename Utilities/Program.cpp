@@ -10,6 +10,7 @@ using namespace glm;
 #define ERROR_BUFFER_LENGTH 1024
 
 map<string, GLint> existingPrograms;
+map<GLint, map<string, GLint> *> locationMap;
 
 Shader::Shader(GLenum type, const std::string& filename)
     : id(-1)
@@ -56,6 +57,7 @@ Program::Program(const Shader& vertexShader, const Shader& fragmentShader)
     if (!vertexShader.Valid() || !fragmentShader.Valid()
         || !AttachShader(vertexShader) || !AttachShader(fragmentShader))
         id = -1;
+    locations = new map<string, GLint>();
 }
 
 Program::Program(const std::string& vertexShaderFilename,
@@ -64,6 +66,7 @@ Program::Program(const std::string& vertexShaderFilename,
     string key = vertexShaderFilename + fragmentShaderFilename;
     if (existingPrograms.count(key) > 0) {
         id = existingPrograms[key];
+        locations = locationMap[id];
         return;
     }
     
@@ -73,8 +76,11 @@ Program::Program(const std::string& vertexShaderFilename,
     if (!vertexShader.Valid() || !fragmentShader.Valid()
         || !AttachShader(vertexShader) || !AttachShader(fragmentShader))
         id = -1;
-    else
-        existingPrograms[key ] = id;
+    else {
+        existingPrograms[key] = id;
+        locations = new map<string, GLint>();
+        locationMap[id] = locations;
+    }
 }
 
 
@@ -195,31 +201,34 @@ void Program::SetUniform(const char *name, const Texture *texture, GLenum unit) 
 /* Getters for attribute/uniform locations, for
  users who may want more direct control */
 
-GLint Program::GetAttribLocation(const char *name) const {
-    if (locations.count(string(name)) > 0)
-        return locations[string(name)];
+GLint Program::GetAttribLocation(const char *name) const
+{
+    string key = string(name);
+    if (locations->count(key) > 0)
+        return (*locations)[key];
     
     GLint location = glGetAttribLocation(id, name);
     if (location < 0) {
         cerr << "Attribute " << name << " not found." << endl;
     }
     else {
-        locations[name] = location;
+        (*locations)[key] = location;
     }
     return location;
 }
 
 GLint Program::GetUniformLocation(const char *name) const
 {
-    if (locations.count(string(name)) > 0)
-        return locations[string(name)];
+    string key = string(name);
+    if (locations->count(key) > 0)
+        return (*locations)[key];
     
     GLint location = glGetUniformLocation(id, name);
     if (location < 0) {
         cerr << "Uniform " << name << " not found." << endl;
     }
     else {
-        locations[name] = location;
+        (*locations)[key] = location;
     }
     return location;
 }
