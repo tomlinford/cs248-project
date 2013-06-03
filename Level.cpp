@@ -144,7 +144,7 @@ void Level::DrawMap(const glm::mat4& viewProjection, const glm::vec3& cameraPos,
             count++;
             
     }
-    cout << "Culled " << count << " sub maps " << endl;
+    //cout << "Culled " << count << " sub maps " << endl;
 }
 
 void Level::LoadMaps() {

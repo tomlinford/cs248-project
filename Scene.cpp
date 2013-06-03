@@ -350,8 +350,6 @@ void Scene::Render()
         level->ship->Draw(*main, viewProjection, cameraPosition, GL_LINE_LOOP);
     }
     
-    std::vector<Flyable *> missiles;
-    
     // Draw objects in scene
     for (std::vector<Object *>::iterator it = level->objects.begin();
          it != level->objects.end();
@@ -364,10 +362,6 @@ void Scene::Render()
             obj->Draw(*main, viewProjection, cameraPosition);
             obj->Draw(*main, viewProjection, cameraPosition, GL_LINE_LOOP);
         }
-    }
-    
-    for (int i = 0; i < missiles.size(); i++) {
-        level->objects.push_back(missiles[i]);
     }
     
     // Draw particles
