@@ -69,7 +69,7 @@ bool Object::Intersects(Object& other)
 }
 
 /* Helper function for finding AABB */
-void updateMinMax(vec3& min, vec3& max, vec4& test)
+void updateMinMax(vec3& min, vec3& max, vec4 test)
 {
     if (test.x < min.x)
         min.x = test.x;

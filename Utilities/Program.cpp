@@ -9,6 +9,8 @@ using namespace glm;
 
 #define ERROR_BUFFER_LENGTH 1024
 
+map<string, GLint> existingPrograms;
+
 Shader::Shader(GLenum type, const std::string& filename)
     : id(-1)
 {
@@ -50,7 +52,6 @@ Shader::Shader(GLenum type, const std::string& filename)
 }
 
 Program::Program(const Shader& vertexShader, const Shader& fragmentShader)
-    : id(glCreateProgram())
 {
     if (!vertexShader.Valid() || !fragmentShader.Valid()
         || !AttachShader(vertexShader) || !AttachShader(fragmentShader))
@@ -59,14 +60,21 @@ Program::Program(const Shader& vertexShader, const Shader& fragmentShader)
 
 Program::Program(const std::string& vertexShaderFilename,
 	const std::string& fragmentShaderFilename)
-    //: id(glCreateProgram())
 {
+    string key = vertexShaderFilename + fragmentShaderFilename;
+    if (existingPrograms.count(key) > 0) {
+        id = existingPrograms[key];
+        return;
+    }
+    
 	id = glCreateProgram();
 	Shader vertexShader(GL_VERTEX_SHADER, vertexShaderFilename);
 	Shader fragmentShader(GL_FRAGMENT_SHADER, fragmentShaderFilename);
     if (!vertexShader.Valid() || !fragmentShader.Valid()
         || !AttachShader(vertexShader) || !AttachShader(fragmentShader))
         id = -1;
+    else
+        existingPrograms[key ] = id;
 }
 
 
@@ -188,18 +196,30 @@ void Program::SetUniform(const char *name, const Texture *texture, GLenum unit) 
  users who may want more direct control */
 
 GLint Program::GetAttribLocation(const char *name) const {
+    if (locations.count(string(name)) > 0)
+        return locations[string(name)];
+    
     GLint location = glGetAttribLocation(id, name);
     if (location < 0) {
         cerr << "Attribute " << name << " not found." << endl;
+    }
+    else {
+        locations[name] = location;
     }
     return location;
 }
 
 GLint Program::GetUniformLocation(const char *name) const
 {
+    if (locations.count(string(name)) > 0)
+        return locations[string(name)];
+    
     GLint location = glGetUniformLocation(id, name);
     if (location < 0) {
         cerr << "Uniform " << name << " not found." << endl;
+    }
+    else {
+        locations[name] = location;
     }
     return location;
 }

@@ -3,6 +3,7 @@
 #include "../gl.h"
 
 #include <glm/glm.hpp>
+#include <map>
 #include <string>
 
 #include "Texture.h"
@@ -89,6 +90,9 @@ public:
 
 private:
     Program() : id(-1) {}
+    
+    /** Map of attribute locations */
+    mutable map<string, GLint> locations;
 
     /** id used by OpenGL. */
     GLint id;
