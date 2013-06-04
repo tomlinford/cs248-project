@@ -209,7 +209,7 @@ GLint Program::GetAttribLocation(const char *name) const
     
     GLint location = glGetAttribLocation(id, name);
     if (location < 0) {
-        cerr << "Attribute " << name << " not found." << endl;
+        //cerr << "Attribute " << name << " not found." << endl;
     }
     else {
         (*locations)[key] = location;
@@ -225,7 +225,7 @@ GLint Program::GetUniformLocation(const char *name) const
     
     GLint location = glGetUniformLocation(id, name);
     if (location < 0) {
-        cerr << "Uniform " << name << " not found." << endl;
+        //cerr << "Uniform " << name << " not found." << endl;
     }
     else {
         (*locations)[key] = location;
@@ -233,7 +233,7 @@ GLint Program::GetUniformLocation(const char *name) const
     return location;
 }
 
-// see http://stackoverflow.com/a/4970703
+/* See http://stackoverflow.com/a/4970703 */
 void Program::PrintActiveUniforms() const {
 	cout << "Printing uniforms for program of id " << id << ":" << endl;
 	

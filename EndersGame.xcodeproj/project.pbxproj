@@ -77,6 +77,8 @@
 		7890FC341752CD5000A6E28B /* Frustum.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Frustum.cpp; sourceTree = "<group>"; };
 		7890FC351752CD5000A6E28B /* Frustum.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Frustum.h; sourceTree = "<group>"; };
 		7890FC3717530C7800A6E28B /* Material.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Material.h; sourceTree = "<group>"; };
+		7894BFB1175DD09F00850194 /* mblur.frag */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; path = mblur.frag; sourceTree = "<group>"; };
+		7894BFB2175DD09F00850194 /* mblur.vert */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; path = mblur.vert; sourceTree = "<group>"; };
 		789B1999174638B400C90C56 /* main.frag */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; path = main.frag; sourceTree = "<group>"; };
 		789B199A174638B400C90C56 /* main.vert */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; path = main.vert; sourceTree = "<group>"; };
 		789B19A117463C8800C90C56 /* Object.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Object.cpp; sourceTree = "<group>"; };
@@ -223,6 +225,8 @@
 				789B19B61746417F00C90C56 /* hblur.vert */,
 				789B19B71746417F00C90C56 /* rblur.vert */,
 				789B19B81746417F00C90C56 /* vblur.vert */,
+				7894BFB1175DD09F00850194 /* mblur.frag */,
+				7894BFB2175DD09F00850194 /* mblur.vert */,
 				789B19B91746417F00C90C56 /* velocity.frag */,
 				789B19BA1746417F00C90C56 /* velocity.vert */,
 				786F68091742358200E359E4 /* quad.frag */,

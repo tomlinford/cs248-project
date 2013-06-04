@@ -14,7 +14,7 @@ public:
     Screen();
     ~Screen();
     
-    void Draw(Program& program, glm::mat4& viewProjection);
+    void Draw(Program& program);
     
 private:
     Model *quad;

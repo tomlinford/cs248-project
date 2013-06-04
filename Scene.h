@@ -10,6 +10,7 @@
 #include "Flyable.h"
 
 #include "Utilities/FBO.h"
+#include "Utilities/Screen.h"
 #include "Utilities/Program.h"
 #include "Utilities/Buffer.h"
 #include "Utilities/Model.h"
@@ -46,7 +47,11 @@ public:
     }
     void SetView(glm::mat4 v) { view = v; }
     void SetProjection(glm::mat4 p) { projection = p; }
+    
+    /** Update for FBO */
+    void UpdateFBO(GLuint width, GLuint height);
 
+    /** Ship offset control */
 	glm::vec2 GetShipOffset() { return shipOffset; }
 	void SetShipOffset(glm::vec2 offs) { shipOffset = offs; }
     
@@ -67,6 +72,8 @@ private:
      movement. */
     glm::mat4 view;
     glm::mat4 projection;
+    glm::mat4 viewProjection;
+    glm::mat4 prevViewProjection;
     glm::vec3 cameraPosition;
     glm::vec3 lightPosition;
     
@@ -89,13 +96,27 @@ private:
     boost::timer::cpu_times times;
     float lastTime;
     
-    /** Shaders and FBOs */
+    /** Shaders and FBO stuff */
     Program *main;
     Program *terrain;
+    Program *screenProgram;
+    Program *vblur;
+    Program *hblur;
+    Program *mblur;
+    Program *velocity;
+    Texture *depthTexture;
+    Texture *glowTexture;
+    Texture *hblurTexture;
+    Texture *vblurTexture;
+    Texture *mblurTexture;
+    Texture *sceneTexture;
+    Texture *velocityTexture;
+    Texture *combinedTexture;
     FBO *fbo;
     
     /** Global objects */
     ParticleSystem particle_sys;
+    Screen *screen;
     
     int frames;
     bool updated;
@@ -107,5 +128,11 @@ private:
     void HandleCollisions();
     void UpdateView(float elapsedSeconds);
     void LoadNewObjects();
+    
+    /** Rendering helpers */
+    void RenderGlowMap();
+    void RenderVelocityTexture();
+    void RenderScene();
+    void PostProcess();
 };
 

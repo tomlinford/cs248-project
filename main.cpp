@@ -93,23 +93,23 @@ void GLFWCALL MouseButtonCallback(int button, int action)
 
 void GLFWCALL WindowResizeCallback(int w, int h)
 {
-	// Update viewable area
-	glViewport(0, 0, w, h);
-
-	// Update projection matrix
-	float ratio = (float)w / h;
-	if (scene) {
-		scene->SetProjection(glm::perspective(75.0f,        // Field of view
-			ratio,        // Aspect ratio
-			0.1f,         // Near clipping plane
-			50.0f));     // Far clipping plane
-		scene->SetFrustum(75.0f, ratio, 0.1f, 50.0f);
-	}
-
-	// Update global
-	win_width = w;
-	win_height = h;
-	glfwSetMousePos(win_width / 2, win_height / 2);
+    // Update viewable area
+    glViewport(0, 0, w, h);
+    
+    // Update projection matrix
+    float ratio = (float)w / h;
+    if (scene) {
+        scene->SetProjection(glm::perspective(75.0f,        // Field of view
+                                              ratio,        // Aspect ratio
+                                              0.1f,         // Near clipping plane
+                                              50.0f));     // Far clipping plane
+        scene->SetFrustum(75.0f, ratio, 0.1f, 50.0f);
+        scene->UpdateFBO(w, h);
+    }
+    
+    // Update global
+    win_width = w;
+    win_height = h;
 	TwWindowSize(w, h);
 }
 
@@ -215,15 +215,16 @@ int main(int argc, char *argv[])
 	scene->LoadLevel(level);
 
 	glfwSetWindowTitle("CS248 Project");
-	glfwSetWindowSizeCallback(WindowResizeCallback);
-
-	glEnable(GL_DEPTH_TEST);    // Depth testing
-	glEnable(GL_LINE_SMOOTH);   // Smooth lines
-	glEnable(GL_MULTISAMPLE);   // Multisampling
-	glEnable(GL_TEXTURE_2D);    // Texturing
-
-	// Seed random
-	srand(time(NULL));
+    glfwSetWindowSizeCallback(WindowResizeCallback);
+    
+    glEnable(GL_DEPTH_TEST);    // Depth testing
+    glEnable(GL_LINE_SMOOTH);   // Smooth lines
+    glEnable(GL_MULTISAMPLE);   // Multisampling
+    glEnable(GL_TEXTURE_2D);    // Texturing
+    glLineWidth(2.0f);          // Set line width
+    
+    // Seed random
+    srand(time(NULL));
 
 	double lastTime = glfwGetTime();
 	int nbFrames = 0;

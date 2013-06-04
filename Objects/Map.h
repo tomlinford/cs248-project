@@ -43,7 +43,7 @@ public:
     void SetColor(const glm::vec3& color) { this->color = color; }
 
 	void Draw(const glm::mat4& viewProjection, const glm::vec3& cameraPos,
-              const glm::vec3& lightPos) const;
+              const glm::vec3& lightPos, bool glowMap) const;
 
 	void AddTerrain(float *heightMap, size_t size, int x, int y);
     

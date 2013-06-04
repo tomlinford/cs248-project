@@ -134,11 +134,11 @@ void Level::AddEnemyShip(float timeOffset, glm::vec2 offset) {
 }
 
 void Level::DrawMap(const glm::mat4& viewProjection, const glm::vec3& cameraPos,
-                    const glm::vec3& lightPos, const Frustum& frustum) {
+                    const glm::vec3& lightPos, const Frustum& frustum, bool glowMap) {
 	int count = 0;
     for (Map *map : maps) {
         if (frustum.Contains(*map))
-            map->Draw(viewProjection, cameraPos, lightPos);
+            map->Draw(viewProjection, cameraPos, lightPos, glowMap);
         else
             count++;
             
