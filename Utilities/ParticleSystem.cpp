@@ -87,28 +87,18 @@ void ParticleCluster::Draw(const Program& p, const glm::mat4& viewProjection,
 
 	// pre allocate space for vectors
 	vector<vec3> vertices(particles.size() * 3);
-	vector<size_t> indices(particles.size() * 3);
 	
 	// add triangle for each particle
 	for (size_t i = 0; i < particles.size(); i++) {
-		Particle particle = particles[i];
-        
-        vec3 v1 = particle.location + particle.scale * particle.o1;
-        vec3 v2 = particle.location + particle.scale * particle.o2;
-        vec3 v3 = particle.location + particle.scale * particle.o3;
+		Particle &particle = particles[i];
 
-		vertices[i * 3] = v1;
-		vertices[i * 3 + 1] = v2;
-		vertices[i * 3 + 2] = v3;
-		
-		indices[i * 3] = i * 3;
-		indices[i * 3 + 1] = i * 3 + 1;
-		indices[i * 3 + 2] = i * 3 + 2;
+		vertices[i * 3] = particle.location + particle.scale * particle.o1;
+		vertices[i * 3 + 1] = particle.location + particle.scale * particle.o2;
+		vertices[i * 3 + 2] = particle.location + particle.scale * particle.o3;
 	}
     
     ArrayBuffer<vec3> ab(vertices);
-    ElementArrayBuffer eab(indices);
-    Model model(ModelBuffer(ab, eab), Material(), Bounds());
+	Model model(ModelBuffer(ab, vertices.size() / 3), Material(), Bounds());
     
     mat4 M = mat4(1);
     mat4 MVP = viewProjection * M;
@@ -122,7 +112,7 @@ void ParticleCluster::Draw(const Program& p, const glm::mat4& viewProjection,
         model.Draw(p, GL_TRIANGLES);
     }
     
-    p.SetUniform("baseColor", color);
+	// color has already been set, will have the same color as above
 	p.SetUniform("illum", 0);
 	model.Draw(p, GL_LINE_LOOP);
     

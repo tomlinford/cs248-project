@@ -131,6 +131,17 @@ void ArrayBuffer<T>::Unuse(const Program& program, const char *name) const {
 	glDisableVertexAttribArray(loc);
 }
 
+template <typename T>
+void ArrayBuffer<T>::Draw(GLenum mode, GLsizei count) const {
+	if (mode == GL_LINE_LOOP) {
+        for (int i = 0; i < count; i += 3) {
+            glDrawArrays(mode, i, 3);
+        }
+    } else {
+		glDrawArrays(mode, 0, count);
+	}
+}
+
 ElementArrayBuffer::ElementArrayBuffer(const std::vector<size_t>& data)
 	: DataBuffer<size_t>(data, GL_ELEMENT_ARRAY_BUFFER), size(data.size())
 {
@@ -161,6 +172,7 @@ ModelBuffer::ModelBuffer(const ArrayBuffer<glm::vec3>& vertexBuffer,
 	: vertexBuffer(vertexBuffer), textureBuffer(textureBuffer)
 	, normalBuffer(normalBuffer), elementBuffer(elementBuffer)
 	, hasTextureBuffer(true), hasNormalBuffer(true), valid(true)
+	, hasIndexBuffer(true)
 {
 }
 
@@ -170,6 +182,7 @@ ModelBuffer::ModelBuffer(const ArrayBuffer<glm::vec3>& vertexBuffer,
 	: vertexBuffer(vertexBuffer)
 	, normalBuffer(normalBuffer), elementBuffer(elementBuffer)
 	, hasTextureBuffer(false), hasNormalBuffer(true), valid(true)
+	, hasIndexBuffer(true)
 {
 }
 
@@ -179,6 +192,7 @@ ModelBuffer::ModelBuffer(const ArrayBuffer<glm::vec3>& vertexBuffer,
 	: vertexBuffer(vertexBuffer), textureBuffer(textureBuffer)
 	, elementBuffer(elementBuffer)
 	, hasTextureBuffer(true), hasNormalBuffer(false), valid(true)
+	, hasIndexBuffer(true)
 {
 }
 
@@ -186,6 +200,15 @@ ModelBuffer::ModelBuffer(const ArrayBuffer<glm::vec3>& vertexBuffer,
 	const ElementArrayBuffer& elementBuffer)
 	: vertexBuffer(vertexBuffer), elementBuffer(elementBuffer)
 	, hasTextureBuffer(false), hasNormalBuffer(false), valid(true)
+	, hasIndexBuffer(true)
+{
+}
+
+ModelBuffer::ModelBuffer(const ArrayBuffer<glm::vec3>& vertexBuffer,
+	GLsizei count)
+	: vertexBuffer(vertexBuffer)
+	, hasTextureBuffer(false), hasNormalBuffer(false), valid(true)
+	, hasIndexBuffer(false), count(count)
 {
 }
 
@@ -195,7 +218,8 @@ void ModelBuffer::Delete() {
         textureBuffer.Delete();
     if (hasNormalBuffer)
         normalBuffer.Delete();
-    elementBuffer.Delete();
+	if (hasIndexBuffer)
+		elementBuffer.Delete();
     valid = false;
 }
 
@@ -211,7 +235,10 @@ void ModelBuffer::Draw(const Program& p, GLenum mode) const {
 	if (hasNormalBuffer)
 		normalBuffer.Use(p, "normalCoordinates");
 
-	elementBuffer.Draw(mode);
+	if (hasIndexBuffer)
+		elementBuffer.Draw(mode);
+	else
+		vertexBuffer.Draw(mode, count);
 }
 
 template class ArrayBuffer<float>;

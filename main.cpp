@@ -169,8 +169,18 @@ int main(int argc, char *argv[])
     // Seed random
     srand(time(NULL));
 
+	double lastTime = glfwGetTime();
+	int nbFrames = 0;
+
 	// Main render loop
 	while(glfwGetWindowParam(GLFW_OPENED)) {
+		double currentTime = glfwGetTime();
+		nbFrames++;
+		if ( currentTime - lastTime >= 1.0 ){
+			cout << nbFrames << " fps" << endl;
+			 nbFrames = 0;
+			 lastTime += 1.0;
+		}
         scene->Render();
 		glfwSwapBuffers();
 	}
