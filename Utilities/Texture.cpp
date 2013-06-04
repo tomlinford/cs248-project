@@ -5,14 +5,14 @@ using namespace::std;
 #define DEFAULT_HEIGHT 512
 #define DEFAULT_WIDTH 512
 
-Texture::Texture(GLenum format)
+Texture::Texture(GLenum format) :
+    Texture(DEFAULT_WIDTH, DEFAULT_HEIGHT, format)
 {
-    Texture(DEFAULT_WIDTH, DEFAULT_HEIGHT, format);
 }
 
-Texture::Texture(GLuint width, GLuint height, GLenum format)
+Texture::Texture(GLuint width, GLuint height, GLenum format) :
+    Texture(width, height, format, NULL)
 {
-    Texture(width, height, format, NULL);
 }
 
 Texture::Texture(GLuint width, GLuint height, GLenum format, GLfloat data[])
@@ -29,6 +29,7 @@ Texture::Texture(GLuint width, GLuint height, GLenum format, GLfloat data[])
 Texture::Texture(string filename)
 {
     bitmap = new Bitmap();
+    glGenTextures(1, &id);
     LoadTexFile((char *)filename.c_str());
     width = bitmap->width;
     height = bitmap->height;

@@ -233,7 +233,7 @@ GLint Program::GetUniformLocation(const char *name) const
     return location;
 }
 
-// see http://stackoverflow.com/a/4970703
+/* See http://stackoverflow.com/a/4970703 */
 void Program::PrintActiveUniforms() const {
 	cout << "Printing uniforms for program of id " << id << ":" << endl;
 	

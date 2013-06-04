@@ -10,6 +10,7 @@
 #include "Flyable.h"
 
 #include "Utilities/FBO.h"
+#include "Utilities/Screen.h"
 #include "Utilities/Program.h"
 #include "Utilities/Buffer.h"
 #include "Utilities/Model.h"
@@ -46,7 +47,11 @@ public:
     }
     void SetView(glm::mat4 v) { view = v; }
     void SetProjection(glm::mat4 p) { projection = p; }
+    
+    /** Update for FBO */
+    void UpdateFBO(GLuint width, GLuint height);
 
+    /** Ship offset control */
 	glm::vec2 GetShipOffset() { return shipOffset; }
 	void SetShipOffset(glm::vec2 offs) { shipOffset = offs; }
     
@@ -89,10 +94,12 @@ private:
     boost::timer::cpu_times times;
     float lastTime;
     
-    /** Shaders and FBOs */
-    Program *main;
-    Program *terrain;
+    /** Shaders and FBO stuff */
+    Program *main, *terrain, *screenProgram;
+    Screen *screen;
     FBO *fbo;
+    Texture *depthTexture;
+    Texture *glowTexture;
     
     /** Global objects */
     ParticleSystem particle_sys;
@@ -107,5 +114,10 @@ private:
     void HandleCollisions();
     void UpdateView(float elapsedSeconds);
     void LoadNewObjects();
+    
+    /** Rendering helpers */
+    void RenderGlowMap();
+    void RenderScene();
+    void PostProcess();
 };
 

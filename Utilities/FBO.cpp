@@ -66,12 +66,13 @@ void FBO::CheckStatus()
             
         case GL_FRAMEBUFFER_UNSUPPORTED:
             /* Choose different formats */
-            printf("Framebuffer unsupported\n");
+            cerr << "Framebuffer unsupported\n" << endl;
             break;
             
         default:
             /* Programming error; will fail on all hardware */
-            printf("Framebuffer error\n");
+            cerr << "Framebuffer error\n" << endl;
+            cerr << "Did you attach a texture?" << endl;
             exit(-1);
     }
 }

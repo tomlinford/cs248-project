@@ -20,10 +20,17 @@ Scene::Scene(Player p) : particle_sys()
 {
     player = p;
     theta = phi = 0.0f;
+    
     frustum = new Frustum();
     main = new Program("Shaders/main.vert", "Shaders/main.frag");
+    screenProgram = new Program("Shaders/quad.vert", "Shaders/quad.frag");
+    
     level = NULL;
     timer = NULL;
+    fbo = NULL;
+    screen = NULL;
+    depthTexture = NULL;
+    glowTexture = NULL;
 
 	keyLeft = false;
 	keyRight = false;
@@ -53,6 +60,31 @@ void Scene::LoadLevel(Level *l)
 	level->Load();
     cond.notify_all();
     particle_sys.AddBulletCluster(level->ship->GetBulletCluster());
+}
+
+
+void Scene::UpdateFBO(GLuint width, GLuint height)
+{
+    unique_lock<std::mutex> lock(mutex);
+    
+    if (depthTexture)
+        delete depthTexture;
+    depthTexture = new Texture(width, height, GL_DEPTH_COMPONENT);
+    
+    if (glowTexture)
+        delete glowTexture;
+    glowTexture = new Texture(width, height, GL_RGBA);
+    
+    if (fbo)
+        delete fbo;
+    fbo = new FBO(width, height);
+    
+    if (screen)
+        delete screen;
+    screen = new Screen();
+    
+    fbo->SetColorTexture(glowTexture, GL_COLOR_ATTACHMENT0);
+    fbo->SetDepthTexture(depthTexture);
 }
 
 /* Scene update functions below */
@@ -313,19 +345,54 @@ void Scene::LoadNewObjects()
 
 /* Rendering functions below */
 
-void Scene::Render()
+void Scene::RenderGlowMap()
 {
-	if (!timer) return;
-    unique_lock<std::mutex> lock(mutex);
-    
-    LoadNewObjects();
-    
-    ::count++;
+    fbo->Use();
     
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     
     // Maps have their own shader program for vertex displacement
-	level->DrawMap(projection * view, cameraPosition, lightPosition, *frustum);
+	level->DrawMap(projection * view, cameraPosition, lightPosition, *frustum, true);
+    
+    mat4 viewProjection = projection * view;
+    
+    main->Use();
+    main->SetUniform("illum", 0);
+    main->SetUniform("lightPosition", lightPosition);
+    main->SetUniform("cameraPosition", cameraPosition);
+    
+    glLineWidth(2.0f);
+    
+    // Draw ship
+    if (level->ship && frustum->Contains(*level->ship))
+    {
+        level->ship->Draw(*main, viewProjection, cameraPosition, GL_LINE_LOOP);
+    }
+    
+    // Draw objects in scene
+    for (std::vector<Object *>::iterator it = level->objects.begin();
+         it != level->objects.end();
+         it++)
+    {
+        Object *obj = *it;
+        if (frustum->Contains(*obj))
+            obj->Draw(*main, viewProjection, cameraPosition, GL_LINE_LOOP);
+    }
+    
+    // Draw particles
+    particle_sys.Draw(*main, viewProjection, cameraPosition, true);
+    
+    main->Unuse();
+    
+    fbo->Unuse();
+}
+
+void Scene::RenderScene()
+{
+    /* glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    
+    // Maps have their own shader program for vertex displacement
+	level->DrawMap(projection * view, cameraPosition, lightPosition, *frustum, false);
     
     mat4 viewProjection = projection * view;
     
@@ -362,7 +429,31 @@ void Scene::Render()
     }
     
     // Draw particles
-    particle_sys.Draw(*main, viewProjection, cameraPosition);
+    particle_sys.Draw(*main, viewProjection, cameraPosition, false);
     
-    main->Unuse();
+    main->Unuse(); */
+}
+
+void Scene::PostProcess()
+{
+    screenProgram->Use();
+    screenProgram->SetUniform("scene", glowTexture, GL_TEXTURE0);
+    
+    screen->Draw(*screenProgram);
+    
+    screenProgram->Unuse();
+}
+
+void Scene::Render()
+{
+	if (!timer) return;
+    unique_lock<std::mutex> lock(mutex);
+    
+    LoadNewObjects();
+    
+    ::count++;
+    
+    RenderGlowMap();
+    RenderScene();
+    PostProcess();
 }

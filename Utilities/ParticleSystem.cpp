@@ -80,7 +80,7 @@ void ParticleCluster::Update(float elapsedTime)
 
 // Generates and draws particle buffer
 void ParticleCluster::Draw(const Program& p, const glm::mat4& viewProjection,
-                          const glm::vec3& cameraPos, GLenum mode)
+                          const glm::vec3& cameraPos, bool glowMap)
 {
     if (particles.size() == 0)
         return;
@@ -116,9 +116,11 @@ void ParticleCluster::Draw(const Program& p, const glm::mat4& viewProjection,
     p.SetModel(M); // Needed for Phong shading
     p.SetMVP(MVP);
     
-    p.SetUniform("baseColor", color);
-    p.SetUniform("illum", 1);
-    model.Draw(p, GL_TRIANGLES);
+    if (!glowMap) {
+        p.SetUniform("baseColor", color);
+        p.SetUniform("illum", 1);
+        model.Draw(p, GL_TRIANGLES);
+    }
     
     p.SetUniform("baseColor", color);
 	p.SetUniform("illum", 0);
@@ -164,7 +166,7 @@ void BulletCluster::AddBullet(glm::vec3 l, glm::vec3 v)
 }
 
 void BulletCluster::Draw(const Program& p, const glm::mat4& viewProjection,
-                  const glm::vec3& cameraPos, GLenum mode)
+                  const glm::vec3& cameraPos)
 {
     lock_guard<std::mutex> lock(mutex);
     
@@ -245,13 +247,13 @@ bool ParticleSystem::Intersects(Object *object)
 }
 
 void ParticleSystem::Draw(const Program& p, const glm::mat4& viewProjection,
-          const glm::vec3& cameraPos, GLenum mode)
+          const glm::vec3& cameraPos, bool glowMap)
 {
     for (std::vector<ParticleCluster *>::iterator it = clusters.begin();
          it != clusters.end();
          it++)
     {
         ParticleCluster *cluster = *it;
-        cluster->Draw(p, viewProjection, cameraPos, mode);
+        cluster->Draw(p, viewProjection, cameraPos, glowMap);
     }
 }

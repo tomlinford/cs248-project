@@ -97,12 +97,12 @@ void GLFWCALL WindowResizeCallback(int w, int h)
                                               0.1f,         // Near clipping plane
                                               50.0f));     // Far clipping plane
         scene->SetFrustum(75.0f, ratio, 0.1f, 50.0f);
+        scene->UpdateFBO(w, h);
     }
     
     // Update global
     win_width = w;
     win_height = h;
-    glfwSetMousePos(win_width / 2, win_height / 2);
 }
 
 #pragma GCC diagnostic ignored "-Wdeprecated-declarations"

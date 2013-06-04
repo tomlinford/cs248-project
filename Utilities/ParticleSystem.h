@@ -52,7 +52,7 @@ public:
     virtual void Update(float elapsedTime);
     virtual bool Valid() { return particles.size() > 0; }
     virtual void Draw(const Program& p, const glm::mat4& viewProjection,
-                      const glm::vec3& cameraPos, GLenum mode = GL_TRIANGLES);
+                      const glm::vec3& cameraPos, bool glowMap);
 
 protected:
     std::mutex mutex;
@@ -72,7 +72,7 @@ public:
     virtual bool Intersects(Object *object);
     virtual bool Valid() { return true; }
     virtual void Draw(const Program& p, const glm::mat4& viewProjection,
-                      const glm::vec3& cameraPos, GLenum mode = GL_TRIANGLES);
+                      const glm::vec3& cameraPos);
 };
 
 /** A particle system is made up of a bunch of particle clusters, each
@@ -86,7 +86,7 @@ public:
     void AddBulletCluster(BulletCluster *cluster);
     void AddExplosionCluster(glm::vec3 location, glm::vec3 color);
     void Draw(const Program& p, const glm::mat4& viewProjection,
-              const glm::vec3& cameraPos, GLenum mode = GL_TRIANGLES);
+              const glm::vec3& cameraPos, bool glowMap);
     
 private:
     std::vector<ParticleCluster *> clusters;
