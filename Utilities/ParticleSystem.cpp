@@ -91,14 +91,10 @@ void ParticleCluster::Draw(const Program& p, const glm::mat4& viewProjection,
 	// add triangle for each particle
 	for (size_t i = 0; i < particles.size(); i++) {
 		Particle &particle = particles[i];
-        
-        vec3 v1 = particle.location + particle.scale * particle.o1;
-        vec3 v2 = particle.location + particle.scale * particle.o2;
-        vec3 v3 = particle.location + particle.scale * particle.o3;
 
-		vertices[i * 3] = v1;
-		vertices[i * 3 + 1] = v2;
-		vertices[i * 3 + 2] = v3;
+		vertices[i * 3] = particle.location + particle.scale * particle.o1;
+		vertices[i * 3 + 1] = particle.location + particle.scale * particle.o2;
+		vertices[i * 3 + 2] = particle.location + particle.scale * particle.o3;
 	}
     
     ArrayBuffer<vec3> ab(vertices);
@@ -114,7 +110,7 @@ void ParticleCluster::Draw(const Program& p, const glm::mat4& viewProjection,
     p.SetUniform("illum", 1);
     model.Draw(p, GL_TRIANGLES);
     
-    p.SetUniform("baseColor", color);
+	// color has already been set, will have the same color as above
 	p.SetUniform("illum", 0);
 	model.Draw(p, GL_LINE_LOOP);
     

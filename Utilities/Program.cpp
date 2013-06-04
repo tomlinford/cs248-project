@@ -204,7 +204,7 @@ void Program::SetUniform(const char *name, const Texture *texture, GLenum unit) 
 GLint Program::GetAttribLocation(const char *name) const
 {
     string key = string(name);
-    if (locations->count(key) > 0)
+    if (locations->find(key) != locations->end())
         return (*locations)[key];
     
     GLint location = glGetAttribLocation(id, name);
@@ -220,7 +220,7 @@ GLint Program::GetAttribLocation(const char *name) const
 GLint Program::GetUniformLocation(const char *name) const
 {
     string key = string(name);
-    if (locations->count(key) > 0)
+    if (locations->find(key) != locations->end())
         return (*locations)[key];
     
     GLint location = glGetUniformLocation(id, name);
