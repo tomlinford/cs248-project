@@ -21,15 +21,6 @@ uniform sampler2D velocityTexture;
 /* Interpolated texture positions from vertex shader */
 varying vec2 texturePosition;
 
-float gaussianWeight(vec2 position, vec2 center, float numSamples)
-{
-    float sigma = 0.84089642; // Standard variation
-    float coefficient = 1.0 / (2 * M_PI * pow(sigma, 2));
-    float x_exponent = -pow(position.x - center.x, 2) / (2 * pow(sigma, 2));
-    float y_exponent = -pow(position.y - center.y, 2) / (2 * pow(sigma, 2));
-    return coefficient * sigma * exp(x_exponent + y_exponent);
-}
-
 void main()
 {
     // Calculate the motion vector for this pixel

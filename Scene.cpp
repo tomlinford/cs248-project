@@ -392,8 +392,6 @@ void Scene::RenderGlowMap()
     main->SetUniform("lightPosition", lightPosition);
     main->SetUniform("cameraPosition", cameraPosition);
     
-    glLineWidth(2.0f);
-    
     // Draw ship
     if (level->ship && frustum->Contains(*level->ship))
     {
@@ -423,33 +421,9 @@ void Scene::RenderVelocityTexture()
     
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     
-    // Maps have their own shader program for vertex displacement
-	level->DrawMap(viewProjection, cameraPosition, lightPosition, *frustum, false);
-    
     velocity->Use();
     velocity->SetUniform("previousVP", prevViewProjection);
     velocity->SetUniform("currentVP", viewProjection);
-    
-    // Draw ship
-    if (level->ship && frustum->Contains(*level->ship))
-    {
-        level->ship->Draw(*velocity, viewProjection, cameraPosition);
-        level->ship->Draw(*velocity, viewProjection, cameraPosition, GL_LINE_LOOP);
-    }
-    
-    // Draw objects in scene
-    for (std::vector<Object *>::iterator it = level->objects.begin();
-         it != level->objects.end();
-         it++)
-    {
-        Object *obj = *it;
-        if (frustum->Contains(*obj))
-        {
-            main->SetUniform("illum", 1);
-            obj->Draw(*velocity, viewProjection, cameraPosition);
-            obj->Draw(*velocity, viewProjection, cameraPosition, GL_LINE_LOOP);
-        }
-    }
     
     // Draw particles
     particle_sys.Draw(*velocity, viewProjection, cameraPosition, false);
@@ -504,7 +478,7 @@ void Scene::RenderScene()
 
 void Scene::PostProcess()
 {
-    // Velocity texture for motion blur
+    // Motion blur
     mblur->Use();
     fbo->SetColorTexture(mblurTexture, GL_COLOR_ATTACHMENT5);
     fbo->SetDrawTarget(GL_COLOR_ATTACHMENT5);
@@ -515,21 +489,11 @@ void Scene::PostProcess()
     screen->Draw(*mblur);
     mblur->Unuse();
     
-    // Combine scene and post-process texture
-    screenProgram->Use();
-    fbo->SetColorTexture(combinedTexture, GL_COLOR_ATTACHMENT6);
-    fbo->SetDrawTarget(GL_COLOR_ATTACHMENT6);
-    screenProgram->SetUniform("scene", sceneTexture, GL_TEXTURE0);
-    screenProgram->SetUniform("postProcess", mblurTexture, GL_TEXTURE1);
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    screen->Draw(*screenProgram);
-    screenProgram->Unuse();
-    
     // Horizontal blur
     hblur->Use();
     fbo->SetColorTexture(hblurTexture, GL_COLOR_ATTACHMENT1);
     fbo->SetDrawTarget(GL_COLOR_ATTACHMENT1);
-    hblur->SetUniform("colorTexture", mblurTexture, GL_TEXTURE0);
+    hblur->SetUniform("colorTexture", glowTexture, GL_TEXTURE0);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     screen->Draw(*hblur);
     hblur->Unuse();
@@ -547,7 +511,7 @@ void Scene::PostProcess()
     
     screenProgram->Use();
     screenProgram->SetUniform("scene", mblurTexture, GL_TEXTURE0);
-    screenProgram->SetUniform("postProcess", hblurTexture, GL_TEXTURE1);
+    screenProgram->SetUniform("postProcess", vblurTexture, GL_TEXTURE1);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     screen->Draw(*screenProgram);
     screenProgram->Unuse();
