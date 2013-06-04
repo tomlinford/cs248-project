@@ -26,7 +26,13 @@ static bool operator<(const VertexIndex& l, const VertexIndex& r) {
 /** Parses a single face element */
 void parseFaceElement(const string& str, size_t& v, size_t& t, size_t& n)
 {
+	// Microsoft doesn't let you build for release if you're not using the safe
+	// stdio functins
+#ifdef _WIN32
+    int components = sscanf_s(str.c_str(), "%lu/%lu/%lu", &v, &t, &n);
+#else
     int components = sscanf(str.c_str(), "%lu/%lu/%lu", &v, &t, &n);
+#endif
     
     // Vertex, texture, and normal indices all present
     if (components == 3) {

@@ -49,7 +49,13 @@ bool Bitmap::loadBMP(char *file) {
     }
 
     //open the file for reading in binary mode
-    in=fopen(file,"rb");
+	// Microsoft doesn't let you build for release if you're not using the safe
+	// stdio functins
+#ifdef _WIN32
+    fopen_s(&in, file, "rb");
+#else
+    in = fopen(file, "rb");
+#endif
 
     //if the file does not exist return in error
     if(in==NULL) {

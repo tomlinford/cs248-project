@@ -175,14 +175,6 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <Object Include="..\Models\cube.obj">
-      <Filter>Models</Filter>
-    </Object>
-    <Object Include="..\Models\ship.obj">
-      <Filter>Models</Filter>
-    </Object>
-  </ItemGroup>
-  <ItemGroup>
     <None Include="..\Shaders\hblur.vert">
       <Filter>Shaders</Filter>
     </None>
@@ -239,5 +231,13 @@
     <Text Include="..\cs248-project.sublime-project">
       <Filter>Extra</Filter>
     </Text>
+  </ItemGroup>
+  <ItemGroup>
+    <Object Include="..\Models\cube.obj">
+      <Filter>Models</Filter>
+    </Object>
+    <Object Include="..\Models\ship.obj">
+      <Filter>Models</Filter>
+    </Object>
   </ItemGroup>
 </Project>

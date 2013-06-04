@@ -23,11 +23,14 @@ const (
 
 // size parameters
 const (
-	kSize        = 1024 // size of total map
-	kDeg         = 16   // number of times to subdivide each side
-	kEasyShips   = 20
-	kMediumShips = 40
-	kHardShips   = 60
+	kSize          = 1024 // size of total map
+	kDeg           = 16   // number of times to subdivide each side
+	kEasyShips     = 20
+	kMediumShips   = 40
+	kHardShips     = 60
+	kEasySpheres   = 1
+	kMediumSpheres = 2
+	kHardSpheres   = 3
 )
 
 // commands
@@ -38,6 +41,7 @@ const (
 	READY      = "ready"
 	START      = "start"
 	ENEMY_SHIP = "enemy_ship"
+	SPHERE     = "sphere"
 )
 
 var (
@@ -52,7 +56,8 @@ func init() {
 		for {
 			maps, p := genTerrainMap(kSize)
 			ships := genShips(kEasyShips)
-			easyLevelChan <- &Level{maps, p, ships}
+			spheres := genSpheres(kEasySpheres, p)
+			easyLevelChan <- &Level{maps, p, ships, spheres}
 		}
 	}()
 	mediumLevelChan = make(chan *Level, 2)
@@ -60,7 +65,8 @@ func init() {
 		for {
 			maps, p := genTerrainMap(kSize)
 			ships := genShips(kMediumShips)
-			mediumLevelChan <- &Level{maps, p, ships}
+			spheres := genSpheres(kMediumSpheres, p)
+			mediumLevelChan <- &Level{maps, p, ships, spheres}
 		}
 	}()
 	hardLevelChan = make(chan *Level, 2)
@@ -68,16 +74,18 @@ func init() {
 		for {
 			maps, p := genTerrainMap(kSize)
 			ships := genShips(kHardShips)
-			hardLevelChan <- &Level{maps, p, ships}
+			spheres := genSpheres(kHardSpheres, p)
+			hardLevelChan <- &Level{maps, p, ships, spheres}
 		}
 	}()
 }
 
 // represents a struct containing terrainMaps and a path
 type Level struct {
-	maps  []terrainMap
-	p     path
-	ships []ship
+	maps    []terrainMap
+	p       path
+	ships   []ship
+	spheres []sphere
 }
 
 func GetLevel(d Difficulty) (l *Level) {
@@ -137,6 +145,20 @@ func genShips(numShips int) []ship {
 		ships[i].timeOffset = rand.Float32() * 70
 	}
 	return ships
+}
+
+type sphere struct {
+	location vec3
+	radius   float32
+}
+
+func genSpheres(numSpheres int, p path) []sphere {
+	spheres := make([]sphere, numSpheres)
+	for i := range spheres {
+		spheres[i].location = p.arr[rand.Intn(len(p.arr))]
+		spheres[i].radius = 20
+	}
+	return spheres
 }
 
 // samples a slice in groups of size step and averages out the

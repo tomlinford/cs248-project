@@ -35,6 +35,7 @@ const static string END = "end";
 const static string KEY = "key";
 const static string BULLET = "bullet";
 const static string ENEMY_SHIP = "enemy_ship";
+const static string SPHERE = "sphere";
 
 // function template
 static void listenFunc();
@@ -110,6 +111,21 @@ static void parseEnemyShip(boost::asio::ip::tcp::iostream& ns, string& line) {
 	level->AddEnemyShip(timeOffset, offset);
 }
 
+/** Parses power-up/power-down sphere data from server.
+
+ Format:
+ sphere
+ [location (vec3)] [radius]
+ */
+static void parseSphere(boost::asio::ip::tcp::iostream& ns, string& line) {
+	getline(ns, line);
+	stringstream ss(line);
+	float radius;
+	vec3 loc;
+	ss >> loc.x >> loc.y >> loc.z >> radius;
+	// TODO: let the Scene or Level know
+}
+
 static void listenFunc() {
 	boost::asio::ip::tcp::iostream ns(ip.c_str(), port);
 	nsp = &ns;
@@ -131,6 +147,8 @@ static void listenFunc() {
             parsePath(ns, line);
 		} else if (line == ENEMY_SHIP) {
 			parseEnemyShip(ns, line);
+		} else if (line == SPHERE) {
+			parseSphere(ns, line);
 		} else if (line == DONE) {
             cout << "Ready!" << endl;
 			break;
