@@ -19,6 +19,6 @@ void Model::Draw(const Program& p, GLenum mode) const
     
     /* Draw bounding box */
     
-    p.SetUniform("illum", 0);
-    p.SetUniform("baseColor", vec3(1.0));
+    //p.SetUniform("illum", 0);
+    //p.SetUniform("baseColor", vec3(1.0));
 }

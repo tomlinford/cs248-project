@@ -87,11 +87,10 @@ void ParticleCluster::Draw(const Program& p, const glm::mat4& viewProjection,
 
 	// pre allocate space for vectors
 	vector<vec3> vertices(particles.size() * 3);
-	vector<size_t> indices(particles.size() * 3);
 	
 	// add triangle for each particle
 	for (size_t i = 0; i < particles.size(); i++) {
-		Particle particle = particles[i];
+		Particle &particle = particles[i];
         
         vec3 v1 = particle.location + particle.scale * particle.o1;
         vec3 v2 = particle.location + particle.scale * particle.o2;
@@ -100,15 +99,10 @@ void ParticleCluster::Draw(const Program& p, const glm::mat4& viewProjection,
 		vertices[i * 3] = v1;
 		vertices[i * 3 + 1] = v2;
 		vertices[i * 3 + 2] = v3;
-		
-		indices[i * 3] = i * 3;
-		indices[i * 3 + 1] = i * 3 + 1;
-		indices[i * 3 + 2] = i * 3 + 2;
 	}
     
     ArrayBuffer<vec3> ab(vertices);
-    ElementArrayBuffer eab(indices);
-    Model model(ModelBuffer(ab, eab), Material(), Bounds());
+	Model model(ModelBuffer(ab, vertices.size() / 3), Material(), Bounds());
     
     mat4 M = mat4(1);
     mat4 MVP = viewProjection * M;

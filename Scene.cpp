@@ -343,7 +343,9 @@ void Scene::Render()
     // Draw ship
     if (level->ship && frustum->Contains(*level->ship))
     {
+        main->SetUniform("illum", 1);
         level->ship->Draw(*main, viewProjection, cameraPosition);
+		main->SetUniform("illum", 0);
         level->ship->Draw(*main, viewProjection, cameraPosition, GL_LINE_LOOP);
     }
     
@@ -357,6 +359,7 @@ void Scene::Render()
         {
             main->SetUniform("illum", 1);
             obj->Draw(*main, viewProjection, cameraPosition);
+			main->SetUniform("illum", 0);
             obj->Draw(*main, viewProjection, cameraPosition, GL_LINE_LOOP);
         }
     }

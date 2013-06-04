@@ -60,6 +60,7 @@ public:
 	ArrayBuffer() {}
 	void Use(const Program& program, const char *name) const;
 	void Unuse(const Program& program, const char *name) const;
+	void Draw(GLenum mode, GLsizei count) const;
 
 protected:
 	GLsizei vertexSize;
@@ -89,13 +90,16 @@ public:
 		const ElementArrayBuffer& elementBuffer);
 	ModelBuffer(const ArrayBuffer<glm::vec3>& vertexBuffer,
 		const ElementArrayBuffer& elementBuffer);
+	ModelBuffer(const ArrayBuffer<glm::vec3>& vertexBuffer,
+		GLsizei count);
 
 	void Draw(const Program& p, GLenum mode) const;
     void Delete();
 
 private:
     bool valid;
-	const bool hasTextureBuffer, hasNormalBuffer;
+	const bool hasTextureBuffer, hasNormalBuffer, hasIndexBuffer;
+	GLsizei count;
 	ArrayBuffer<glm::vec3> vertexBuffer;
 	ArrayBuffer<glm::vec2> textureBuffer;
 	ArrayBuffer<glm::vec3> normalBuffer;
