@@ -16,15 +16,6 @@ Level::Level() : ready(false)
 {
     ship = new Ship("Models/ship.obj");
     ship->SetColor(vec3(0.0, 0.9, 0.0));
-    
-    // Random objects
-    for (int i = 0; i < 40; i++) {
-        Ship *ship = new Ship("Models/ship.obj");
-        ship->SetColor(vec3(0.9, 0.0, 0.0));
-        ship->SetTimeOffset(rand2(0, 70));
-        ship->SetOffset(vec2(rand2(-2.4, 2.4), rand2(-1.8, 1.8)));
-        objects.push_back(ship);
-    }
 }
 
 Level::~Level()
@@ -132,6 +123,14 @@ void Level::SetLevel(float *terrainMap, size_t size, int x, int y) {
 	mapLoaders.push_back(mapLoader);
     
 	cond.notify_all();
+}
+
+void Level::AddEnemyShip(float timeOffset, glm::vec2 offset) {
+	Ship *ship = new Ship("Models/ship.obj");
+    ship->SetColor(vec3(0.9, 0.0, 0.0));
+    ship->SetTimeOffset(timeOffset);
+    ship->SetOffset(offset);
+    objects.push_back(ship);
 }
 
 void Level::DrawMap(const glm::mat4& viewProjection, const glm::vec3& cameraPos,

@@ -21,6 +21,7 @@ static string player;
 const static char *port = "1338";
 
 // pointer to active network stream and associated lock
+typedef boost::asio::ip::tcp::iostream nstream;
 static boost::asio::ip::tcp::iostream *nsp;
 static mutex nspMutex;
 
@@ -33,6 +34,7 @@ const static string START = "start";
 const static string END = "end";
 const static string KEY = "key";
 const static string BULLET = "bullet";
+const static string ENEMY_SHIP = "enemy_ship";
 
 // function template
 static void listenFunc();
@@ -93,6 +95,21 @@ static void parsePath(boost::asio::ip::tcp::iostream& ns, string& line) {
     level->SetControlPoints(points, num);
 }
 
+/** Parses enemy ship data from server.
+
+ Format:
+ enemy_ship
+ [timeOffset] [offset (vec2)]
+ */
+static void parseEnemyShip(boost::asio::ip::tcp::iostream& ns, string& line) {
+	getline(ns, line);
+	stringstream ss(line);
+	float timeOffset;
+	vec2 offset;
+	ss >> timeOffset >> offset.x >> offset.y;
+	level->AddEnemyShip(timeOffset, offset);
+}
+
 static void listenFunc() {
 	boost::asio::ip::tcp::iostream ns(ip.c_str(), port);
 	nsp = &ns;
@@ -112,6 +129,8 @@ static void listenFunc() {
 			parseTerrain(ns, line);
 		} else if (line == PATH) {
             parsePath(ns, line);
+		} else if (line == ENEMY_SHIP) {
+			parseEnemyShip(ns, line);
 		} else if (line == DONE) {
             cout << "Ready!" << endl;
 			break;

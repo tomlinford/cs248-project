@@ -96,8 +96,7 @@ func main() {
 			player = strings.TrimSpace(player)
 			if lastLevel == nil || player == "1" ||
 				(len(player) == 2 && player[1] == 's') {
-				// the "<-" operator receives a value from a channel
-				lastLevel = level.GetLevel()
+				lastLevel = level.GetLevel(level.HARD)
 				lastServer = new(server)
 				lastServer.l = lastLevel
 			}

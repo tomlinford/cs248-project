@@ -11,45 +11,85 @@ import (
 	"math/rand"
 )
 
+// define difficulty type
+type Difficulty int
+
+// levels of difficulty
+const (
+	EASY Difficulty = iota
+	MEDIUM
+	HARD
+)
+
 // size parameters
 const (
-	kSize = 1024 // size of total map
-	kDeg  = 16   // number of times to subdivide each side
+	kSize        = 1024 // size of total map
+	kDeg         = 16   // number of times to subdivide each side
+	kEasyShips   = 20
+	kMediumShips = 40
+	kHardShips   = 60
 )
 
 // commands
 const (
-	TERRAIN = "terrain"
-	PATH    = "path"
-	DONE    = "done"
-	READY   = "ready"
-	START   = "start"
+	TERRAIN    = "terrain"
+	PATH       = "path"
+	DONE       = "done"
+	READY      = "ready"
+	START      = "start"
+	ENEMY_SHIP = "enemy_ship"
 )
 
 var (
-	levelChan chan *Level
+	easyLevelChan   chan *Level
+	mediumLevelChan chan *Level
+	hardLevelChan   chan *Level
 )
 
 func init() {
-	levelChan = make(chan *Level, 5)
+	easyLevelChan = make(chan *Level, 5)
 	go func() {
 		for {
 			maps, p := genTerrainMap(kSize)
-			fmt.Println("Level generated")
-			levelChan <- &Level{maps, p}
+			ships := genShips(kEasyShips)
+			easyLevelChan <- &Level{maps, p, ships}
+		}
+	}()
+	mediumLevelChan = make(chan *Level, 5)
+	go func() {
+		for {
+			maps, p := genTerrainMap(kSize)
+			ships := genShips(kMediumShips)
+			mediumLevelChan <- &Level{maps, p, ships}
+		}
+	}()
+	hardLevelChan = make(chan *Level, 5)
+	go func() {
+		for {
+			maps, p := genTerrainMap(kSize)
+			ships := genShips(kHardShips)
+			hardLevelChan <- &Level{maps, p, ships}
 		}
 	}()
 }
 
 // represents a struct containing terrainMaps and a path
 type Level struct {
-	maps []terrainMap
-	p    path
+	maps  []terrainMap
+	p     path
+	ships []ship
 }
 
-func GetLevel() *Level {
-	l := <-levelChan
-	return l
+func GetLevel(d Difficulty) (l *Level) {
+	switch d {
+	case EASY:
+		return <-easyLevelChan
+	case MEDIUM:
+		return <-mediumLevelChan
+	case HARD:
+		return <-hardLevelChan
+	}
+	return
 }
 
 func (l *Level) WriteData(wr *bufio.Writer) {
@@ -69,6 +109,10 @@ func (l *Level) WriteData(wr *bufio.Writer) {
 			io.Copy(wr, buf)
 		}
 	}
+	for _, s := range l.ships {
+		fmt.Fprintln(wr, ENEMY_SHIP)
+		fmt.Fprintln(wr, s.timeOffset, s.offset.x, s.offset.y)
+	}
 	fmt.Fprintln(wr, PATH)
 	pathArr := sampleArr(p.arr, 14) // TODO: change to 14 * 4
 	fmt.Fprintln(wr, len(pathArr))
@@ -78,6 +122,21 @@ func (l *Level) WriteData(wr *bufio.Writer) {
 	fmt.Fprintln(wr, DONE)
 	wr.Flush()
 	fmt.Println("Finished sending Level over network")
+}
+
+type ship struct {
+	timeOffset float32
+	offset     vec2
+}
+
+func genShips(numShips int) []ship {
+	ships := make([]ship, numShips)
+	for i := range ships {
+		ships[i].offset.x = randFloat32() * 2.4
+		ships[i].offset.y = randFloat32() * 1.8
+		ships[i].timeOffset = rand.Float32() * 70
+	}
+	return ships
 }
 
 // samples a slice in groups of size step and averages out the
@@ -265,6 +324,10 @@ func randFloat32() float32 {
 
 type vec3 struct {
 	x, y, z float32
+}
+
+type vec2 struct {
+	x, y float32
 }
 
 func (v vec3) distanceTo(o vec3) float32 {
