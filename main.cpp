@@ -164,6 +164,7 @@ int main(int argc, char *argv[])
     glEnable(GL_LINE_SMOOTH);   // Smooth lines
     glEnable(GL_MULTISAMPLE);   // Multisampling
     glEnable(GL_TEXTURE_2D);    // Texturing
+    glLineWidth(2.0f);          // Set line width
     
     // Seed random
     srand(time(NULL));

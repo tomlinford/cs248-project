@@ -18,7 +18,7 @@ void FBO::Use()
     glBindFramebuffer(GL_FRAMEBUFFER, id);
     
     // Check status
-    CheckStatus();
+    // CheckStatus();
     
     // Default: set draw buffer to Color Attachment 0
     GLenum target = GL_COLOR_ATTACHMENT0;
@@ -37,16 +37,12 @@ void FBO::Unuse()
 
 void FBO::SetColorTexture(Texture *texture, GLenum target)
 {
-    glBindFramebuffer(GL_FRAMEBUFFER, id);
     glFramebufferTexture2D(GL_FRAMEBUFFER, target, GL_TEXTURE_2D, texture->GetID(), 0);
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
 void FBO::SetDepthTexture(Texture *texture)
 {
-    glBindFramebuffer(GL_FRAMEBUFFER, id);
     glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, texture->GetID(), 0);
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
 void FBO::SetRenderBuffer(RenderBuffer *renderBuffer)

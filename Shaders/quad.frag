@@ -5,6 +5,7 @@
 #version 120
 
 uniform sampler2D scene;
+uniform sampler2D postProcess;
 
 /* Interpolated vertex position from vertex shader */
 varying vec2 texturePosition;
@@ -12,6 +13,7 @@ varying vec2 texturePosition;
 void main() 
 {
     // Output vertex color from texture
-    gl_FragColor = texture2D(scene, texturePosition);
-    gl_FragColor = vec4(1.0, 0.0, 1.0, 1.0);
+    vec4 sceneColor = texture2D(scene, texturePosition);
+    vec4 postProcessColor = texture2D(postProcess, texturePosition);
+    gl_FragColor = sceneColor + postProcessColor;
 }

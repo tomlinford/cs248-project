@@ -72,7 +72,7 @@ public:
     virtual bool Intersects(Object *object);
     virtual bool Valid() { return true; }
     virtual void Draw(const Program& p, const glm::mat4& viewProjection,
-                      const glm::vec3& cameraPos);
+                      const glm::vec3& cameraPos, bool glowMap);
 };
 
 /** A particle system is made up of a bunch of particle clusters, each

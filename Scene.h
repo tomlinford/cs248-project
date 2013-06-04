@@ -72,6 +72,8 @@ private:
      movement. */
     glm::mat4 view;
     glm::mat4 projection;
+    glm::mat4 viewProjection;
+    glm::mat4 prevViewProjection;
     glm::vec3 cameraPosition;
     glm::vec3 lightPosition;
     
@@ -95,14 +97,26 @@ private:
     float lastTime;
     
     /** Shaders and FBO stuff */
-    Program *main, *terrain, *screenProgram;
-    Screen *screen;
-    FBO *fbo;
+    Program *main;
+    Program *terrain;
+    Program *screenProgram;
+    Program *vblur;
+    Program *hblur;
+    Program *mblur;
+    Program *velocity;
     Texture *depthTexture;
     Texture *glowTexture;
+    Texture *hblurTexture;
+    Texture *vblurTexture;
+    Texture *mblurTexture;
+    Texture *sceneTexture;
+    Texture *velocityTexture;
+    Texture *combinedTexture;
+    FBO *fbo;
     
     /** Global objects */
     ParticleSystem particle_sys;
+    Screen *screen;
     
     int frames;
     bool updated;
@@ -117,6 +131,7 @@ private:
     
     /** Rendering helpers */
     void RenderGlowMap();
+    void RenderVelocityTexture();
     void RenderScene();
     void PostProcess();
 };

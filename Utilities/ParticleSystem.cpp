@@ -166,7 +166,7 @@ void BulletCluster::AddBullet(glm::vec3 l, glm::vec3 v)
 }
 
 void BulletCluster::Draw(const Program& p, const glm::mat4& viewProjection,
-                  const glm::vec3& cameraPos)
+                  const glm::vec3& cameraPos, bool glowMap)
 {
     lock_guard<std::mutex> lock(mutex);
     

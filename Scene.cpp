@@ -24,6 +24,10 @@ Scene::Scene(Player p) : particle_sys()
     frustum = new Frustum();
     main = new Program("Shaders/main.vert", "Shaders/main.frag");
     screenProgram = new Program("Shaders/quad.vert", "Shaders/quad.frag");
+    vblur = new Program("Shaders/vblur.vert", "Shaders/blur.frag");
+    hblur = new Program("Shaders/hblur.vert", "Shaders/blur.frag");
+    mblur = new Program("Shaders/mblur.vert", "Shaders/mblur.frag");
+    velocity = new Program("Shaders/velocity.vert", "Shaders/velocity.frag");
     
     level = NULL;
     timer = NULL;
@@ -31,6 +35,12 @@ Scene::Scene(Player p) : particle_sys()
     screen = NULL;
     depthTexture = NULL;
     glowTexture = NULL;
+    vblurTexture = NULL;
+    hblurTexture = NULL;
+    mblurTexture = NULL;
+    velocityTexture = NULL;
+    combinedTexture = NULL;
+    sceneTexture = NULL;
 
 	keyLeft = false;
 	keyRight = false;
@@ -75,6 +85,30 @@ void Scene::UpdateFBO(GLuint width, GLuint height)
         delete glowTexture;
     glowTexture = new Texture(width, height, GL_RGBA);
     
+    if (hblurTexture)
+        delete hblurTexture;
+    hblurTexture = new Texture(width, height, GL_RGBA);
+    
+    if (vblurTexture)
+        delete vblurTexture;
+    vblurTexture = new Texture(width, height, GL_RGBA);
+    
+    if (mblurTexture)
+        delete mblurTexture;
+    mblurTexture = new Texture(width, height, GL_RGBA);
+    
+    if (velocityTexture)
+        delete velocityTexture;
+    velocityTexture = new Texture(width, height, GL_RGBA);
+    
+    if (combinedTexture)
+        delete combinedTexture;
+    combinedTexture = new Texture(width, height, GL_RGBA);
+    
+    if (sceneTexture)
+        delete sceneTexture;
+    sceneTexture = new Texture(width, height, GL_RGBA);
+    
     if (fbo)
         delete fbo;
     fbo = new FBO(width, height);
@@ -82,9 +116,6 @@ void Scene::UpdateFBO(GLuint width, GLuint height)
     if (screen)
         delete screen;
     screen = new Screen();
-    
-    fbo->SetColorTexture(glowTexture, GL_COLOR_ATTACHMENT0);
-    fbo->SetDepthTexture(depthTexture);
 }
 
 /* Scene update functions below */
@@ -348,13 +379,13 @@ void Scene::LoadNewObjects()
 void Scene::RenderGlowMap()
 {
     fbo->Use();
+    fbo->SetColorTexture(glowTexture, GL_COLOR_ATTACHMENT0);
+    fbo->SetDepthTexture(depthTexture);
     
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     
     // Maps have their own shader program for vertex displacement
 	level->DrawMap(projection * view, cameraPosition, lightPosition, *frustum, true);
-    
-    mat4 viewProjection = projection * view;
     
     main->Use();
     main->SetUniform("illum", 0);
@@ -383,29 +414,63 @@ void Scene::RenderGlowMap()
     particle_sys.Draw(*main, viewProjection, cameraPosition, true);
     
     main->Unuse();
+}
+
+void Scene::RenderVelocityTexture()
+{
+    fbo->SetColorTexture(velocityTexture, GL_COLOR_ATTACHMENT4);
+    fbo->SetDrawTarget(GL_COLOR_ATTACHMENT4);
     
-    fbo->Unuse();
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    
+    // Maps have their own shader program for vertex displacement
+	level->DrawMap(viewProjection, cameraPosition, lightPosition, *frustum, false);
+    
+    velocity->Use();
+    velocity->SetUniform("previousVP", prevViewProjection);
+    velocity->SetUniform("currentVP", viewProjection);
+    
+    // Draw ship
+    if (level->ship && frustum->Contains(*level->ship))
+    {
+        level->ship->Draw(*velocity, viewProjection, cameraPosition);
+        level->ship->Draw(*velocity, viewProjection, cameraPosition, GL_LINE_LOOP);
+    }
+    
+    // Draw objects in scene
+    for (std::vector<Object *>::iterator it = level->objects.begin();
+         it != level->objects.end();
+         it++)
+    {
+        Object *obj = *it;
+        if (frustum->Contains(*obj))
+        {
+            main->SetUniform("illum", 1);
+            obj->Draw(*velocity, viewProjection, cameraPosition);
+            obj->Draw(*velocity, viewProjection, cameraPosition, GL_LINE_LOOP);
+        }
+    }
+    
+    // Draw particles
+    particle_sys.Draw(*velocity, viewProjection, cameraPosition, false);
+    
+    velocity->Unuse();
 }
 
 void Scene::RenderScene()
 {
-    /* glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    fbo->SetColorTexture(sceneTexture, GL_COLOR_ATTACHMENT3);
+    fbo->SetDrawTarget(GL_COLOR_ATTACHMENT3);
+    
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     
     // Maps have their own shader program for vertex displacement
-	level->DrawMap(projection * view, cameraPosition, lightPosition, *frustum, false);
-    
-    mat4 viewProjection = projection * view;
+	level->DrawMap(viewProjection, cameraPosition, lightPosition, *frustum, false);
     
     main->Use();
     main->SetUniform("illum", 1);
     main->SetUniform("lightPosition", lightPosition);
     main->SetUniform("cameraPosition", cameraPosition);
-    
-    // Not currently needed
-    // main->SetView(view);
-    // main->SetProjection(projection);
-    
-    glLineWidth(2.0f);
     
     // Draw ship
     if (level->ship && frustum->Contains(*level->ship))
@@ -431,16 +496,57 @@ void Scene::RenderScene()
     // Draw particles
     particle_sys.Draw(*main, viewProjection, cameraPosition, false);
     
-    main->Unuse(); */
+    main->Unuse();
 }
 
 void Scene::PostProcess()
 {
+    // Velocity texture for motion blur
+    mblur->Use();
+    fbo->SetColorTexture(mblurTexture, GL_COLOR_ATTACHMENT5);
+    fbo->SetDrawTarget(GL_COLOR_ATTACHMENT5);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    mblur->SetUniform("sceneColorTexture", sceneTexture, GL_TEXTURE0);
+    mblur->SetUniform("sceneDepthTexture", depthTexture, GL_TEXTURE1);
+    mblur->SetUniform("velocityTexture", velocityTexture, GL_TEXTURE2);
+    screen->Draw(*mblur);
+    mblur->Unuse();
+    
+    // Combine scene and post-process texture
     screenProgram->Use();
-    screenProgram->SetUniform("scene", glowTexture, GL_TEXTURE0);
-    
+    fbo->SetColorTexture(combinedTexture, GL_COLOR_ATTACHMENT6);
+    fbo->SetDrawTarget(GL_COLOR_ATTACHMENT6);
+    screenProgram->SetUniform("scene", sceneTexture, GL_TEXTURE0);
+    screenProgram->SetUniform("postProcess", mblurTexture, GL_TEXTURE1);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     screen->Draw(*screenProgram);
+    screenProgram->Unuse();
     
+    // Horizontal blur
+    hblur->Use();
+    fbo->SetColorTexture(hblurTexture, GL_COLOR_ATTACHMENT1);
+    fbo->SetDrawTarget(GL_COLOR_ATTACHMENT1);
+    hblur->SetUniform("colorTexture", mblurTexture, GL_TEXTURE0);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    screen->Draw(*hblur);
+    hblur->Unuse();
+    
+    // Vertical blur
+    vblur->Use();
+    fbo->SetColorTexture(vblurTexture, GL_COLOR_ATTACHMENT2);
+    fbo->SetDrawTarget(GL_COLOR_ATTACHMENT2);
+    hblur->SetUniform("colorTexture", hblurTexture, GL_TEXTURE0);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    screen->Draw(*vblur);
+    vblur->Unuse();
+    
+    fbo->Unuse();
+    
+    screenProgram->Use();
+    screenProgram->SetUniform("scene", mblurTexture, GL_TEXTURE0);
+    screenProgram->SetUniform("postProcess", hblurTexture, GL_TEXTURE1);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    screen->Draw(*screenProgram);
     screenProgram->Unuse();
 }
 
@@ -453,7 +559,12 @@ void Scene::Render()
     
     ::count++;
     
+    viewProjection = projection * view;
+    
     RenderGlowMap();
+    RenderVelocityTexture();
     RenderScene();
     PostProcess();
+    
+    prevViewProjection = viewProjection;
 }
