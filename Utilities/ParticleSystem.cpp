@@ -113,6 +113,7 @@ void ParticleCluster::Draw(const Program& p, const glm::mat4& viewProjection,
     }
     
 	// color has already been set, will have the same color as above
+    p.SetUniform("baseColor", color);
 	p.SetUniform("illum", 0);
 	model.Draw(p, GL_LINE_LOOP);
     

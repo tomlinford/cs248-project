@@ -44,7 +44,7 @@ void main()
         final_color = ambient + diffuse;
         final_color += cameraPosition * 0.0000000000001;
     } else {
-        final_color = vec3(0.0, 0.7, 0.9);
+        final_color = vec3(0.0, 0.4, 0.5);
     }
     
     // Attenuation factor

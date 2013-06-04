@@ -160,11 +160,11 @@ int main(int argc, char *argv[])
 	glfwSetWindowTitle("CS248 Project");
     glfwSetWindowSizeCallback(WindowResizeCallback);
     
-    glEnable(GL_DEPTH_TEST);    // Depth testing
-    glEnable(GL_LINE_SMOOTH);   // Smooth lines
-    glEnable(GL_MULTISAMPLE);   // Multisampling
-    glEnable(GL_TEXTURE_2D);    // Texturing
-    glLineWidth(2.0f);          // Set line width
+    glEnable(GL_DEPTH_TEST);        // Depth testing
+    glEnable(GL_LINE_SMOOTH);       // Smooth lines
+    glEnable(GL_POLYGON_SMOOTH);    // Smooth polygons
+    glEnable(GL_MULTISAMPLE);       // Multisampling
+    glEnable(GL_TEXTURE_2D);        // Texturing
     
     // Seed random
     srand(time(NULL));

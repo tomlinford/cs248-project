@@ -150,7 +150,7 @@ void Level::DrawMap(const glm::mat4& viewProjection, const glm::vec3& cameraPos,
 void Level::LoadMaps() {
 	for (MapLoader &mapLoader : mapLoaders) {
         Map *newMap = new Map(mapLoader.terrainMap, mapLoader.size, mapLoader.x, mapLoader.y);
-        newMap->SetColor(vec3(0.0, 0.4, 0.5));
+        newMap->SetColor(vec3(0.0, 0.16, 0.2));
         maps.push_back(newMap);
         mapLoader.needsToLoad = false;
         
