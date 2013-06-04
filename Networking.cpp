@@ -39,7 +39,7 @@ const static string ENEMY_SHIP = "enemy_ship";
 // function template
 static void listenFunc();
 
-extern void Init(Scene *currScene, Level *currentLevel, std::string ip_addr, char *p) {
+extern void Init(Scene *currScene, Level *currentLevel, std::string ip_addr, const char *p) {
 	scene = currScene;
 	level = currentLevel;
 	ip = ip_addr;
@@ -196,11 +196,6 @@ extern void AddBullet(glm::vec3 position, glm::vec3 velocity) {
 	(*nsp) << BULLET << " ";
 	(*nsp) << position.x << " " << position.y << " " << position.z << " ";
 	(*nsp) << velocity.x << " " << velocity.y << " " << velocity.z << endl;
-}
-
-extern void EndOfGame() {
-	lock_guard<mutex> lock(nspMutex);
-	(*nsp) << END << endl;
 }
 
 };
