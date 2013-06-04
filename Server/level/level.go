@@ -47,7 +47,7 @@ var (
 )
 
 func init() {
-	easyLevelChan = make(chan *Level, 5)
+	easyLevelChan = make(chan *Level, 2)
 	go func() {
 		for {
 			maps, p := genTerrainMap(kSize)
@@ -55,7 +55,7 @@ func init() {
 			easyLevelChan <- &Level{maps, p, ships}
 		}
 	}()
-	mediumLevelChan = make(chan *Level, 5)
+	mediumLevelChan = make(chan *Level, 2)
 	go func() {
 		for {
 			maps, p := genTerrainMap(kSize)
@@ -63,7 +63,7 @@ func init() {
 			mediumLevelChan <- &Level{maps, p, ships}
 		}
 	}()
-	hardLevelChan = make(chan *Level, 5)
+	hardLevelChan = make(chan *Level, 2)
 	go func() {
 		for {
 			maps, p := genTerrainMap(kSize)

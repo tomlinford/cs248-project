@@ -127,7 +127,7 @@ int main(int argc, char *argv[])
 	}
 
 	// using opengl version 2.1
-	glfwOpenWindowHint(GLFW_FSAA_SAMPLES, 2);
+	//glfwOpenWindowHint(GLFW_FSAA_SAMPLES, 2);
 	glfwOpenWindowHint(GLFW_OPENGL_VERSION_MAJOR, 2);
 	glfwOpenWindowHint(GLFW_OPENGL_VERSION_MINOR, 1);
 
@@ -217,11 +217,11 @@ int main(int argc, char *argv[])
 	glfwSetWindowTitle("CS248 Project");
     glfwSetWindowSizeCallback(WindowResizeCallback);
     
-    glEnable(GL_DEPTH_TEST);        // Depth testing
-    glEnable(GL_LINE_SMOOTH);       // Smooth lines
-    glEnable(GL_POLYGON_SMOOTH);    // Smooth polygons
-    glEnable(GL_MULTISAMPLE);       // Multisampling
-    glEnable(GL_TEXTURE_2D);        // Texturing
+    glEnable(GL_DEPTH_TEST);    // Depth testing
+    glEnable(GL_LINE_SMOOTH);   // Smooth lines
+    //glEnable(GL_MULTISAMPLE);   // Multisampling
+    glEnable(GL_TEXTURE_2D);    // Texturing
+    glLineWidth(2.0f);          // Set line width
     
     // Seed random
     srand(time(NULL));
@@ -243,8 +243,7 @@ int main(int argc, char *argv[])
 		glfwSwapBuffers();
 	}
 	TwTerminate();
-
-
 	glfwTerminate();
+	//Networking::EndOfGame();
 	return 0;
 }

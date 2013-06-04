@@ -7,6 +7,7 @@ import (
 	"./level"
 	"bufio"
 	"fmt"
+	"io"
 	"math/rand"
 	"net"
 	"runtime"
@@ -116,6 +117,7 @@ func main() {
 				lastServer.run()
 			}
 		}()
+		runtime.GC()
 	}
 }
 
@@ -168,11 +170,11 @@ func (s *server) addClient(conn net.Conn, rd *bufio.Reader, wr *bufio.Writer, is
 // main running method for server
 func (s *server) run() {
 	if s.one != nil {
-		go copyToWriter(s.one.outChan, s.one.wr)
+		go copyToWriter(s.one.conn, s.one.outChan, s.one.wr)
 		go copyToChan(s.one.rd, s.oneToServer)
 	}
 	if s.two != nil {
-		go copyToWriter(s.two.outChan, s.two.wr)
+		go copyToWriter(s.two.conn, s.two.outChan, s.two.wr)
 		go copyToChan(s.two.rd, s.twoToServer)
 	}
 
@@ -185,6 +187,12 @@ func (s *server) run() {
 				if s.two != nil {
 					s.two.outChan <- line
 				}
+			case END:
+				if s.two != nil {
+					s.two.outChan <- line
+				}
+				s.one.outChan <- line
+				return
 			}
 		case line = <-s.twoToServer:
 			switch strings.Split(line, " ")[0] {
@@ -192,18 +200,25 @@ func (s *server) run() {
 				if s.one != nil {
 					s.one.outChan <- line
 				}
+			case END:
+				if s.one != nil {
+					s.one.outChan <- line
+				}
+				s.two.outChan <- line
+				return
 			}
 		}
 	}
 }
 
-func copyToWriter(ch chan string, wr *bufio.Writer) {
+func copyToWriter(conn net.Conn, ch chan string, wr *bufio.Writer) {
 	for {
 		command := <-ch
 		fmt.Fprintln(wr, command)
 		wr.Flush()
 		if command == END {
-			return
+			conn.Close()
+			break
 		}
 	}
 }
@@ -211,8 +226,12 @@ func copyToWriter(ch chan string, wr *bufio.Writer) {
 func copyToChan(rd *bufio.Reader, ch chan string) {
 	for {
 		str, err := rd.ReadString('\n')
-		if err != nil {
+		if err == io.EOF {
+			ch <- END
+			break
+		} else if err != nil {
 			fmt.Println("Error copying to chan from stream")
+			ch <- END
 			break
 		}
 		str = strings.TrimSpace(str)

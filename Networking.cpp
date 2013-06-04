@@ -179,6 +179,8 @@ static void listenFunc() {
 			ss >> position.x >> position.y >> position.z;
 			ss >> velocity.x >> velocity.y >> velocity.z;
 			level->ship->AddBullet(position, velocity);
+		} else if (header == END) {
+			glfwCloseWindow();
 		}
 	}
 }
@@ -194,6 +196,11 @@ extern void AddBullet(glm::vec3 position, glm::vec3 velocity) {
 	(*nsp) << BULLET << " ";
 	(*nsp) << position.x << " " << position.y << " " << position.z << " ";
 	(*nsp) << velocity.x << " " << velocity.y << " " << velocity.z << endl;
+}
+
+extern void EndOfGame() {
+	lock_guard<mutex> lock(nspMutex);
+	(*nsp) << END << endl;
 }
 
 };
