@@ -433,11 +433,9 @@ void Scene::RenderGlowMap()
     }
     
     // Draw objects in scene
-    for (std::vector<Object *>::iterator it = level->objects.begin();
-         it != level->objects.end();
-         it++)
+    for (int i = 0; i < level->objects.size(); i++)
     {
-        Object *obj = *it;
+        Object *obj = level->objects[i];
         if (frustum->Contains(*obj))
             obj->Draw(*main, viewProjection, cameraPosition, GL_LINE_LOOP);
     }
@@ -481,11 +479,9 @@ void Scene::RenderScene()
     }
     
     // Draw objects in scene
-    for (std::vector<Object *>::iterator it = level->objects.begin();
-         it != level->objects.end();
-         it++)
+    for (int i = 0; i < level->objects.size(); i++)
     {
-        Object *obj = *it;
+        Object *obj = level->objects[i];
         if (frustum->Contains(*obj))
         {
             main->SetUniform("illum", 1);
