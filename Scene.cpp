@@ -126,7 +126,7 @@ void Scene::HandleKeys(float elapsedSeconds)
     float interval = 3 * (elapsedSeconds - lastTime);
     if (level->sphere &&
         level->ship &&
-        distance(level->ship->GetPosition(), level->sphere->GetPosition()) < level->sphere->GetScale())
+        glm::distance(level->ship->GetPosition(), level->sphere->GetPosition()) < level->sphere->GetScale())
     {
         interval *= -1.0;
     }
@@ -159,7 +159,7 @@ void Scene::HandleMouse(float elapsedSeconds)
         
         for (int i = 0; i < level->objects.size(); i++) {
             Object *obj = level->objects[i];
-            if (distance(obj->GetPosition(), level->ship->GetPosition()) < 30) {
+            if (glm::distance(obj->GetPosition(), level->ship->GetPosition()) < 30) {
                 particle_sys.AddBolt(level->ship->GetPosition(), obj->GetPosition());
                 particle_sys.AddExplosionCluster(obj->GetPosition(), obj->GetColor());
                 delete obj;
