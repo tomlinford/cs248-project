@@ -28,9 +28,9 @@ const (
 	kEasyShips     = 20
 	kMediumShips   = 40
 	kHardShips     = 60
-	kEasySpheres   = 1
-	kMediumSpheres = 2
-	kHardSpheres   = 3
+	kEasyTurrets   = 10
+	kMediumTurrets = 10
+	kHardTurrets   = 10
 )
 
 // commands
@@ -41,7 +41,7 @@ const (
 	READY      = "ready"
 	START      = "start"
 	ENEMY_SHIP = "enemy_ship"
-	SPHERE     = "sphere"
+	TURRET     = "turret"
 )
 
 var (
@@ -56,7 +56,7 @@ func init() {
 		for {
 			maps, p := genTerrainMap(kSize)
 			ships := genShips(kEasyShips)
-			spheres := genSpheres(kEasySpheres, p)
+			spheres := genTurrets(kEasyTurrets, p)
 			easyLevelChan <- &Level{maps, p, ships, spheres}
 		}
 	}()
@@ -65,7 +65,7 @@ func init() {
 		for {
 			maps, p := genTerrainMap(kSize)
 			ships := genShips(kMediumShips)
-			spheres := genSpheres(kMediumSpheres, p)
+			spheres := genTurrets(kMediumTurrets, p)
 			mediumLevelChan <- &Level{maps, p, ships, spheres}
 		}
 	}()
@@ -74,7 +74,7 @@ func init() {
 		for {
 			maps, p := genTerrainMap(kSize)
 			ships := genShips(kHardShips)
-			spheres := genSpheres(kHardSpheres, p)
+			spheres := genTurrets(kHardTurrets, p)
 			hardLevelChan <- &Level{maps, p, ships, spheres}
 		}
 	}()
@@ -148,9 +148,8 @@ func genShips(numShips int) []ship {
 	return ships
 }
 
-type sphere struct {
+type turret struct {
 	location vec3
-	radius   float32
 }
 
 func genSpheres(numSpheres int, p path) []sphere {

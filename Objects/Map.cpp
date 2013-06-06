@@ -122,7 +122,6 @@ void Map::Draw(const glm::mat4& viewProjection, const glm::vec3& cameraPos, cons
 	p.SetModel(M);
     p.SetUniform("baseColor", color);
     p.SetUniform("lightPosition", lightPos);
-    p.SetUniform("cameraPosition", cameraPos);
 	p.SetUniform("heightField", &heightField, GL_TEXTURE0);
     
     if (hasControlField) {

@@ -14,7 +14,7 @@ uniform int illum;
 uniform vec3 fieldPosition;
 
 /* Camera position */
-uniform vec3 cameraPosition;
+// uniform vec3 cameraPosition;
 
 /* Light position in camera space */
 uniform vec3 lightPosition;
@@ -38,8 +38,8 @@ void main()
         // Camera position
         vec3 N = normalize(cross(dFdx(vertexPosition), dFdy(vertexPosition)));
         vec3 L = normalize(lightPosition - vertexPosition);
-        vec3 V = normalize(vertexPosition - cameraPosition);
-        vec3 H = normalize(L - V);
+        // vec3 V = normalize(vertexPosition - cameraPosition);
+        // vec3 H = normalize(L - V);
 
         // Calculate ambient
         vec3 ambient = ambientColor;
@@ -50,7 +50,6 @@ void main()
         
         // Calculate final color
         final_color = ambient + diffuse;
-        final_color += cameraPosition * 0.0000000000001;
     } else {
         vec3 color = vec3(0.0, 0.4, 0.5);
         if (distance(vertexPosition, fieldPosition) < 75.0) {
