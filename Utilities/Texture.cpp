@@ -5,14 +5,28 @@ using namespace::std;
 #define DEFAULT_HEIGHT 512
 #define DEFAULT_WIDTH 512
 
-Texture::Texture(GLenum format) :
-    Texture(DEFAULT_WIDTH, DEFAULT_HEIGHT, format)
+// this is ugly, but necessary because VC++ doesn't support calling
+// other constructors yet
+Texture::Texture(GLenum format)
 {
+    Texture::width = DEFAULT_WIDTH;
+    Texture::height = DEFAULT_HEIGHT;
+    Texture::format = format;
+    glGenTextures(1, &id);
+    Texture::data = NULL;
+    bitmap = NULL;
+    Bind();
 }
 
-Texture::Texture(GLuint width, GLuint height, GLenum format) :
-    Texture(width, height, format, NULL)
+Texture::Texture(GLuint width, GLuint height, GLenum format)
 {
+    Texture::width = width;
+    Texture::height = height;
+    Texture::format = format;
+    glGenTextures(1, &id);
+    Texture::data = NULL;
+    bitmap = NULL;
+    Bind();
 }
 
 Texture::Texture(GLuint width, GLuint height, GLenum format, GLfloat data[])

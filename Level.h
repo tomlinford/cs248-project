@@ -58,6 +58,9 @@ public:
 	/* This will be called from another thread, so Level will have to hold onto this */
 	void SetLevel(float *terrainMap, size_t size, int x, int y);
 
+	// gets called from Networking
+	void AddEnemyShip(float timeOffset, glm::vec2 offset);
+
 	/** This will be called from the main thread, so the Level will load the map if necessary */
 	void DrawMap(const glm::mat4& viewProjection, const glm::vec3& cameraPos,
                  const glm::vec3& lightPos, const Frustum& frustrum, bool glowMap);

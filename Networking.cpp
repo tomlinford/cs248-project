@@ -21,6 +21,7 @@ static string player;
 const static char *port = "1338";
 
 // pointer to active network stream and associated lock
+typedef boost::asio::ip::tcp::iostream nstream;
 static boost::asio::ip::tcp::iostream *nsp;
 static mutex nspMutex;
 
@@ -33,11 +34,13 @@ const static string START = "start";
 const static string END = "end";
 const static string KEY = "key";
 const static string BULLET = "bullet";
+const static string ENEMY_SHIP = "enemy_ship";
+const static string SPHERE = "sphere";
 
 // function template
 static void listenFunc();
 
-extern void Init(Scene *currScene, Level *currentLevel, std::string ip_addr, char *p) {
+extern void Init(Scene *currScene, Level *currentLevel, std::string ip_addr, const char *p) {
 	scene = currScene;
 	level = currentLevel;
 	ip = ip_addr;
@@ -93,6 +96,36 @@ static void parsePath(boost::asio::ip::tcp::iostream& ns, string& line) {
     level->SetControlPoints(points, num);
 }
 
+/** Parses enemy ship data from server.
+
+ Format:
+ enemy_ship
+ [timeOffset] [offset (vec2)]
+ */
+static void parseEnemyShip(boost::asio::ip::tcp::iostream& ns, string& line) {
+	getline(ns, line);
+	stringstream ss(line);
+	float timeOffset;
+	vec2 offset;
+	ss >> timeOffset >> offset.x >> offset.y;
+	level->AddEnemyShip(timeOffset, offset);
+}
+
+/** Parses power-up/power-down sphere data from server.
+
+ Format:
+ sphere
+ [location (vec3)] [radius]
+ */
+static void parseSphere(boost::asio::ip::tcp::iostream& ns, string& line) {
+	getline(ns, line);
+	stringstream ss(line);
+	float radius;
+	vec3 loc;
+	ss >> loc.x >> loc.y >> loc.z >> radius;
+	// TODO: let the Scene or Level know
+}
+
 static void listenFunc() {
 	boost::asio::ip::tcp::iostream ns(ip.c_str(), port);
 	nsp = &ns;
@@ -112,6 +145,10 @@ static void listenFunc() {
 			parseTerrain(ns, line);
 		} else if (line == PATH) {
             parsePath(ns, line);
+		} else if (line == ENEMY_SHIP) {
+			parseEnemyShip(ns, line);
+		} else if (line == SPHERE) {
+			parseSphere(ns, line);
 		} else if (line == DONE) {
             cout << "Ready!" << endl;
 			break;
@@ -160,6 +197,8 @@ static void listenFunc() {
 			ss >> position.x >> position.y >> position.z;
 			ss >> velocity.x >> velocity.y >> velocity.z;
 			level->ship->AddBullet(position, velocity);
+		} else if (header == END) {
+			glfwCloseWindow();
 		}
 	}
 }

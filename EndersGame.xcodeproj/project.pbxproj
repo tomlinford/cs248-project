@@ -16,6 +16,7 @@
 		783D3D161749DCB100C79047 /* libboost_system-mt.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 783D3D141749DCB100C79047 /* libboost_system-mt.dylib */; };
 		783D3D3B1749F28E00C79047 /* libboost_timer-mt.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 783D3D391749F28D00C79047 /* libboost_timer-mt.a */; };
 		783D3D3C1749F28E00C79047 /* libboost_timer-mt.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 783D3D3A1749F28D00C79047 /* libboost_timer-mt.dylib */; };
+		7865252717610E71002AE042 /* libAntTweakBar.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 7865252617610E71002AE042 /* libAntTweakBar.dylib */; };
 		786F67FE17422A5E00E359E4 /* RenderBuffer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 786F67FC17422A5E00E359E4 /* RenderBuffer.cpp */; };
 		786F680117422A6F00E359E4 /* FBO.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 786F67FF17422A6F00E359E4 /* FBO.cpp */; };
 		786F6805174232C800E359E4 /* Screen.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 786F6803174232C800E359E4 /* Screen.cpp */; };
@@ -63,6 +64,7 @@
 		783D3D381749ED1900C79047 /* terrain.vert */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; path = terrain.vert; sourceTree = "<group>"; };
 		783D3D391749F28D00C79047 /* libboost_timer-mt.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libboost_timer-mt.a"; path = "../../../../../../../opt/local/lib/libboost_timer-mt.a"; sourceTree = "<group>"; };
 		783D3D3A1749F28D00C79047 /* libboost_timer-mt.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libboost_timer-mt.dylib"; path = "../../../../../../../opt/local/lib/libboost_timer-mt.dylib"; sourceTree = "<group>"; };
+		7865252617610E71002AE042 /* libAntTweakBar.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libAntTweakBar.dylib; path = ../../../../../../../usr/lib/libAntTweakBar.dylib; sourceTree = "<group>"; };
 		786F67EF1742259B00E359E4 /* Program.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Program.cpp; sourceTree = "<group>"; };
 		786F67F01742259B00E359E4 /* Program.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Program.h; sourceTree = "<group>"; };
 		786F67FC17422A5E00E359E4 /* RenderBuffer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = RenderBuffer.cpp; sourceTree = "<group>"; };
@@ -126,6 +128,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				7865252717610E71002AE042 /* libAntTweakBar.dylib in Frameworks */,
 				782C9C0217421A0300C1B104 /* OpenGL.framework in Frameworks */,
 				782C9BF6174216EA00C1B104 /* Cocoa.framework in Frameworks */,
 				783346C9173B6FA80036E30F /* ApplicationServices.framework in Frameworks */,
@@ -144,6 +147,7 @@
 		08FB7794FE84155DC02AAC07 /* Assignment1 */ = {
 			isa = PBXGroup;
 			children = (
+				7865252617610E71002AE042 /* libAntTweakBar.dylib */,
 				783D3D391749F28D00C79047 /* libboost_timer-mt.a */,
 				783D3D3A1749F28D00C79047 /* libboost_timer-mt.dylib */,
 				783D3D131749DCB100C79047 /* libboost_system-mt.a */,
