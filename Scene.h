@@ -8,6 +8,7 @@
 
 #include "Level.h"
 #include "Flyable.h"
+#include "Turret.h"
 
 #include "Utilities/FBO.h"
 #include "Utilities/Screen.h"

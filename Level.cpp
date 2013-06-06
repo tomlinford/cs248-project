@@ -23,12 +23,15 @@ Level::Level() : ready(false)
     sphere->SetScale(75.0f);
     
     // Random turrets
+    // (Take this out)
     for (int i = 0; i < 20; i++)
     {
-        Object *turret = new Object("Models/turret.obj");
+        Turret *turret = new Turret("Models/turret.obj");
         turret->SetColor(vec3(0.9, 0.7, 0.5));
-        turret->SetPosition(vec3(150, i * 2, 150));
-        turret->SetScale(10.0);
+        turret->SetPosition(vec3(rand2(0, 300),
+                                 0,
+                                 rand2(0, 300)));
+        turret->SetScale(5.0);
         objects.push_back(turret);
     }
 }

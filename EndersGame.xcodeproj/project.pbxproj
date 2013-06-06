@@ -17,6 +17,7 @@
 		783D3D3B1749F28E00C79047 /* libboost_timer-mt.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 783D3D391749F28D00C79047 /* libboost_timer-mt.a */; };
 		783D3D3C1749F28E00C79047 /* libboost_timer-mt.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 783D3D3A1749F28D00C79047 /* libboost_timer-mt.dylib */; };
 		7865252717610E71002AE042 /* libAntTweakBar.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 7865252617610E71002AE042 /* libAntTweakBar.dylib */; };
+		7865252A176136DE002AE042 /* Turret.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 78652528176136DE002AE042 /* Turret.cpp */; };
 		786F67FE17422A5E00E359E4 /* RenderBuffer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 786F67FC17422A5E00E359E4 /* RenderBuffer.cpp */; };
 		786F680117422A6F00E359E4 /* FBO.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 786F67FF17422A6F00E359E4 /* FBO.cpp */; };
 		786F6805174232C800E359E4 /* Screen.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 786F6803174232C800E359E4 /* Screen.cpp */; };
@@ -65,6 +66,8 @@
 		783D3D391749F28D00C79047 /* libboost_timer-mt.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libboost_timer-mt.a"; path = "../../../../../../../opt/local/lib/libboost_timer-mt.a"; sourceTree = "<group>"; };
 		783D3D3A1749F28D00C79047 /* libboost_timer-mt.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libboost_timer-mt.dylib"; path = "../../../../../../../opt/local/lib/libboost_timer-mt.dylib"; sourceTree = "<group>"; };
 		7865252617610E71002AE042 /* libAntTweakBar.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libAntTweakBar.dylib; path = ../../../../../../../usr/lib/libAntTweakBar.dylib; sourceTree = "<group>"; };
+		78652528176136DE002AE042 /* Turret.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Turret.cpp; sourceTree = "<group>"; };
+		78652529176136DE002AE042 /* Turret.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Turret.h; sourceTree = "<group>"; };
 		786F67EF1742259B00E359E4 /* Program.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Program.cpp; sourceTree = "<group>"; };
 		786F67F01742259B00E359E4 /* Program.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Program.h; sourceTree = "<group>"; };
 		786F67FC17422A5E00E359E4 /* RenderBuffer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = RenderBuffer.cpp; sourceTree = "<group>"; };
@@ -254,6 +257,8 @@
 				789B19A517463D1B00C90C56 /* Flyable.h */,
 				78E54B161746F85800BFC6B3 /* Map.cpp */,
 				78E54B171746F85800BFC6B3 /* Map.h */,
+				78652528176136DE002AE042 /* Turret.cpp */,
+				78652529176136DE002AE042 /* Turret.h */,
 			);
 			path = Objects;
 			sourceTree = "<group>";
@@ -344,6 +349,7 @@
 				78E54B181746F85800BFC6B3 /* Map.cpp in Sources */,
 				78C3DD141749C01E0030CEDD /* Networking.cpp in Sources */,
 				7890FC361752CD5000A6E28B /* Frustum.cpp in Sources */,
+				7865252A176136DE002AE042 /* Turret.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

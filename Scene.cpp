@@ -70,6 +70,12 @@ void Scene::LoadLevel(Level *l)
 	level->Load();
     cond.notify_all();
     particle_sys.AddBulletCluster(level->ship->GetBulletCluster());
+    for (int i = 0; i < level->objects.size(); i++) {
+        Turret *turret = dynamic_cast<Turret *>(level->objects[i]);
+        if (turret) {
+            particle_sys.AddBulletCluster(turret->GetBulletCluster());
+        }
+    }
 }
 
 
@@ -203,6 +209,7 @@ void Scene::UpdateObjects(float elapsedSeconds)
 		Object *obj = level->objects[i];
         Flyable *flyable = dynamic_cast<Flyable *>(obj);
         Missile *missile = dynamic_cast<Missile *>(obj);
+        Turret *turret = dynamic_cast<Turret *>(obj);
         
         if (missile && level->ship)
         {
@@ -230,6 +237,15 @@ void Scene::UpdateObjects(float elapsedSeconds)
             {
                 flyable->SetDirection(direction);
                 flyable->SetPosition(position);
+            }
+        }
+        if (turret && level->ship) {
+            vec3 turretPos = turret->GetPosition();
+            vec3 shipPos = level->ship->GetPosition();
+            float distance = fabs(glm::distance(shipPos, turretPos));
+            if (distance < 100) {
+                vec3 dir = normalize(shipPos - turretPos);
+                turret->AddBullet(turretPos, 20.0f * dir);
             }
         }
     }
@@ -274,10 +290,10 @@ void Scene::HandleCollisions(float elapsedSeconds)
 
 		// Check object-bullet intersections
 		if (particle_sys.Intersects(obj)) {
-			particle_sys.AddExplosionCluster(obj->GetPosition(), obj->GetColor());
-			delete obj;
-			obj = NULL;
-			level->objects.erase(level->objects.begin() + i--);
+			//particle_sys.AddExplosionCluster(obj->GetPosition(), obj->GetColor());
+			//delete obj;
+			//obj = NULL;
+			//level->objects.erase(level->objects.begin() + i--);
 			continue;
 		}
 
@@ -290,11 +306,11 @@ void Scene::HandleCollisions(float elapsedSeconds)
 				level->ship->AddDamage(0.5);
 			}
             else {
-                particle_sys.AddExplosionCluster(obj->GetPosition(), obj->GetColor());
-                level->ship->AddDamage(0.2);
-                delete obj;
-                obj = NULL;
-                level->objects.erase(level->objects.begin() + i--);
+                //particle_sys.AddExplosionCluster(obj->GetPosition(), obj->GetColor());
+                //level->ship->AddDamage(0.2);
+                //delete obj;
+                //obj = NULL;
+                //level->objects.erase(level->objects.begin() + i--);
                 continue;
             }
 		}
@@ -302,9 +318,9 @@ void Scene::HandleCollisions(float elapsedSeconds)
     
     // Delete ship?
     if (level->ship && level->ship->GetHealth() < 0) {
-        particle_sys.AddExplosionCluster(level->ship->GetPosition(), level->ship->GetColor());
+        /*particle_sys.AddExplosionCluster(level->ship->GetPosition(), level->ship->GetColor());
         delete level->ship;
-        level->ship = NULL;
+        level->ship = NULL;*/
     }
     else if (level->ship) {
         cout << "Ship health: " << level->ship->GetHealth() << endl;
