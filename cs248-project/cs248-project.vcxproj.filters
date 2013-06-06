@@ -96,6 +96,9 @@
     <ClCompile Include="..\Utilities\Frustum.cpp">
       <Filter>Utilities</Filter>
     </ClCompile>
+    <ClCompile Include="..\Objects\Turret.cpp">
+      <Filter>Objects</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\gl.h">
@@ -172,6 +175,9 @@
     </ClInclude>
     <ClInclude Include="..\Utilities\Frustum.h">
       <Filter>Utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Objects\Turret.h">
+      <Filter>Objects</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

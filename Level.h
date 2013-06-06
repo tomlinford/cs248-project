@@ -11,6 +11,7 @@
 #include "Object.h"
 #include "Flyable.h"
 #include "Map.h"
+#include "Turret.h"
 
 #include "Utilities/Frustum.h"
 

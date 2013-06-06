@@ -17,6 +17,7 @@
     <ClCompile Include="..\Objects\Flyable.cpp" />
     <ClCompile Include="..\Objects\Map.cpp" />
     <ClCompile Include="..\Objects\Object.cpp" />
+    <ClCompile Include="..\Objects\Turret.cpp" />
     <ClCompile Include="..\Scene.cpp" />
     <ClCompile Include="..\Utilities\Bitmap.cpp" />
     <ClCompile Include="..\Utilities\FBO.cpp" />
@@ -40,6 +41,7 @@
     <ClInclude Include="..\Objects\Flyable.h" />
     <ClInclude Include="..\Objects\Map.h" />
     <ClInclude Include="..\Objects\Object.h" />
+    <ClInclude Include="..\Objects\Turret.h" />
     <ClInclude Include="..\Scene.h" />
     <ClInclude Include="..\Utilities\Bitmap.h" />
     <ClInclude Include="..\Utilities\Buffer.h" />
