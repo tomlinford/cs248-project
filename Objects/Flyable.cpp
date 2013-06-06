@@ -51,12 +51,14 @@ Missile::Missile(const string& filename) : Flyable(filename)
 
 Ship::Ship(Model *model) : Flyable(model)
 {
+    scale = 0.7;
     health = 10;
     cluster = new BulletCluster();
 }
 
 Ship::Ship(const string& filename) : Flyable(filename)
 {
+    scale = 0.7;
     health = 10;
     cluster = new BulletCluster();
 }

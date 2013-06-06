@@ -37,8 +37,18 @@ public:
     {
         position = p;
         M = glm::translate(glm::mat4(1), position) *
-            glm::mat4_cast(orientation);
+            glm::mat4_cast(orientation) *
+            glm::scale(glm::mat4(1), glm::vec3(scale));
     };
+    
+    /** Scale */
+    virtual float GetScale() { return scale; }
+    virtual void SetScale(float s) {
+        scale = s;
+        M = glm::translate(glm::mat4(1), position) *
+            glm::mat4_cast(orientation) *
+            glm::scale(glm::mat4(1), glm::vec3(scale));
+    }
     
     /** Orientation (rotation) in model space */
     virtual glm::quat GetOrientation() { return orientation; };
@@ -46,7 +56,8 @@ public:
     {
         orientation = o;
         M = glm::translate(glm::mat4(1), position) *
-            glm::mat4_cast(orientation);
+            glm::mat4_cast(orientation) *
+            glm::scale(glm::mat4(1), glm::vec3(scale));
     };
     
     /** Returns the object's model matrix */

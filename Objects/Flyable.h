@@ -72,6 +72,7 @@ public:
     /** Accessors for health */
     float GetHealth() { return health; }
     void SetHealth(float h) { health = h; }
+    void AddDamage(float damage) { health -= damage; }
     
 protected:
     float health;

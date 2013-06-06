@@ -125,6 +125,10 @@ void Map::Draw(const glm::mat4& viewProjection, const glm::vec3& cameraPos, cons
     p.SetUniform("cameraPosition", cameraPos);
 	p.SetUniform("heightField", &heightField, GL_TEXTURE0);
     
+    if (hasControlField) {
+        p.SetUniform("fieldPosition", controlFieldPosition);
+    }
+    
 	p.SetUniform("illum", 0);
     glLineWidth(2.0f);
     lines->Draw(p, GL_LINES);

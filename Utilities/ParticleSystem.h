@@ -60,6 +60,22 @@ protected:
     std::vector<glm::vec3> particleVertices;
     std::vector<float> particleIndices;
     glm::vec3 color;
+    
+    Model *model;
+};
+
+/* Represents a lightning bolt */
+class Bolt : public ParticleCluster
+{
+public:
+    Bolt(glm::vec3 s, glm::vec3 e);
+    virtual void Update(float elapsedTime);
+    virtual bool Valid();
+    virtual void Draw(const Program& p, const glm::mat4& viewProjection,
+                  const glm::vec3& cameraPos, bool glowMap);
+    
+private:
+    void GenKeyPoints(glm::vec3 s, glm::vec3 e, float maxOffset, int depth);
 };
 
 /** A bullet cluster is a permanent cluster that belongs to
@@ -85,6 +101,7 @@ public:
     void Update(float elapsedTime);
     void AddBulletCluster(BulletCluster *cluster);
     void AddExplosionCluster(glm::vec3 location, glm::vec3 color);
+    void AddBolt(glm::vec3 start, glm::vec3 end);
     void Draw(const Program& p, const glm::mat4& viewProjection,
               const glm::vec3& cameraPos, bool glowMap);
     

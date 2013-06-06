@@ -124,6 +124,12 @@ void Scene::UpdateFBO(GLuint width, GLuint height)
 void Scene::HandleKeys(float elapsedSeconds)
 {
     float interval = 3 * (elapsedSeconds - lastTime);
+    if (level->sphere &&
+        level->ship &&
+        distance(level->ship->GetPosition(), level->sphere->GetPosition()) < level->sphere->GetScale())
+    {
+        interval *= -1.0;
+    }
     
     if (keyLeft)
         shipOffset.x -= interval;
@@ -147,9 +153,20 @@ void Scene::HandleMouse(float elapsedSeconds)
                                        view,
                                        projection,
                                        vec4(0, 0, 1024 ,768));
-        vec3 velocity = normalize(selected - level->ship->GetPosition());
+        /*vec3 velocity = normalize(selected - level->ship->GetPosition());
         level->ship->AddBullet(level->ship->GetPosition() + velocity, 20.0f * velocity);
-		Networking::AddBullet(level->ship->GetPosition() + velocity, 20.0f * velocity);
+		Networking::AddBullet(level->ship->GetPosition() + velocity, 20.0f * velocity);*/
+        
+        for (int i = 0; i < level->objects.size(); i++) {
+            Object *obj = level->objects[i];
+            if (distance(obj->GetPosition(), level->ship->GetPosition()) < 30) {
+                particle_sys.AddBolt(level->ship->GetPosition(), obj->GetPosition());
+                particle_sys.AddExplosionCluster(obj->GetPosition(), obj->GetColor());
+                delete obj;
+                obj = NULL;
+                level->objects.erase(level->objects.begin() + i--);
+            }
+        }
     }
     if (mouseRight && level->ship) {
         
@@ -223,7 +240,7 @@ void Scene::UpdateObjects(float elapsedSeconds)
  determine which objects to remove from the scene, and
  whether to add particle effects at the location of
  collision. */
-void Scene::HandleCollisions()
+void Scene::HandleCollisions(float elapsedSeconds)
 {
 	// Check map collision
 	for (int i = 0; i < level->maps.size(); i++)
@@ -236,9 +253,13 @@ void Scene::HandleCollisions()
 			continue;
 
 		// Check ship intersections
-		if (level->ship && map->Intersects(*level->ship))
+		if (level->ship && map->Intersects(*level->ship)) {
 			particle_sys.AddExplosionCluster(level->ship->GetPosition(), map->GetColor());
+            level->ship->AddDamage(0.001 * elapsedSeconds);
+        }
 	}
+    
+    // Check object collisions
 	for (int i = 0; i < level->objects.size(); i++)
 	{
 		Object *obj = level->objects[i];
@@ -263,17 +284,29 @@ void Scene::HandleCollisions()
 		{
 			if (missile)
 			{
-				particle_sys.AddExplosionCluster(level->ship->GetPosition(), level->ship->GetColor());
-				//delete level->ship;
-				//level->ship = NULL;
+                particle_sys.AddExplosionCluster(level->ship->GetPosition(), missile->GetColor());
+				level->ship->AddDamage(0.5);
 			}
-			particle_sys.AddExplosionCluster(obj->GetPosition(), obj->GetColor());
-			delete obj;
-			obj = NULL;
-			level->objects.erase(level->objects.begin() + i--);
-			continue;
+            else {
+                particle_sys.AddExplosionCluster(obj->GetPosition(), obj->GetColor());
+                level->ship->AddDamage(0.2);
+                delete obj;
+                obj = NULL;
+                level->objects.erase(level->objects.begin() + i--);
+                continue;
+            }
 		}
 	}
+    
+    // Delete ship?
+    if (level->ship && level->ship->GetHealth() < 0) {
+        particle_sys.AddExplosionCluster(level->ship->GetPosition(), level->ship->GetColor());
+        delete level->ship;
+        level->ship = NULL;
+    }
+    else if (level->ship) {
+        cout << "Ship health: " << level->ship->GetHealth() << endl;
+    }
 }
 
 /** Updates the player views, which depends on the
@@ -345,7 +378,7 @@ void Scene::Update()
 		}
         
         UpdateObjects(elapsedSeconds);
-        HandleCollisions();
+        HandleCollisions(elapsedSeconds);
         UpdateView(elapsedSeconds);
         
         lastTime = elapsedSeconds;
@@ -378,10 +411,6 @@ void Scene::LoadNewObjects()
 
 void Scene::RenderGlowMap()
 {
-    fbo->Use();
-    fbo->SetColorTexture(glowTexture, GL_COLOR_ATTACHMENT0);
-    fbo->SetDepthTexture(depthTexture);
-    
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     
     // Maps have their own shader program for vertex displacement
@@ -391,6 +420,11 @@ void Scene::RenderGlowMap()
     main->SetUniform("illum", 0);
     main->SetUniform("lightPosition", lightPosition);
     main->SetUniform("cameraPosition", cameraPosition);
+    
+    if (level->sphere && frustum->Contains(*level->sphere))
+    {
+        level->sphere->Draw(*main, viewProjection, cameraPosition, GL_LINE_LOOP);
+    }
     
     // Draw ship
     if (level->ship && frustum->Contains(*level->ship))
@@ -412,39 +446,30 @@ void Scene::RenderGlowMap()
     particle_sys.Draw(*main, viewProjection, cameraPosition, true);
     
     main->Unuse();
-}
-
-void Scene::RenderVelocityTexture()
-{
-    fbo->SetColorTexture(velocityTexture, GL_COLOR_ATTACHMENT4);
-    fbo->SetDrawTarget(GL_COLOR_ATTACHMENT4);
     
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    
-    velocity->Use();
-    velocity->SetUniform("previousVP", prevViewProjection);
-    velocity->SetUniform("currentVP", viewProjection);
-    
-    // Draw particles
-    particle_sys.Draw(*velocity, viewProjection, cameraPosition, false);
-    
-    velocity->Unuse();
+    glBindTexture(GL_TEXTURE_2D, glowTexture->GetID());
+    glCopyTexImage2D(GL_TEXTURE_2D, 0, glowTexture->GetFormat(), 0, 0, glowTexture->GetWidth(), glowTexture->GetHeight(), 0);
 }
 
 void Scene::RenderScene()
 {
-    fbo->SetColorTexture(sceneTexture, GL_COLOR_ATTACHMENT3);
-    fbo->SetDrawTarget(GL_COLOR_ATTACHMENT3);
-    
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     
     // Maps have their own shader program for vertex displacement
 	level->DrawMap(viewProjection, cameraPosition, lightPosition, *frustum, false);
     
     main->Use();
-    main->SetUniform("illum", 1);
     main->SetUniform("lightPosition", lightPosition);
     main->SetUniform("cameraPosition", cameraPosition);
+    
+    // Draw sphere
+    if (level->sphere && frustum->Contains(*level->sphere)) {
+        main->SetUniform("illum", 1);
+        level->sphere->Draw(*main, viewProjection, cameraPosition);
+        main->SetUniform("illum", 0);
+        level->sphere->Draw(*main, viewProjection, cameraPosition, GL_LINE_LOOP);
+        main->SetUniform("fieldPosition", level->sphere->GetPosition());
+    }
     
     // Draw ship
     if (level->ship && frustum->Contains(*level->ship))
@@ -474,14 +499,38 @@ void Scene::RenderScene()
     particle_sys.Draw(*main, viewProjection, cameraPosition, false);
     
     main->Unuse();
+    
+    glBindTexture(GL_TEXTURE_2D, sceneTexture->GetID());
+    glCopyTexImage2D(GL_TEXTURE_2D, 0, sceneTexture->GetFormat(), 0, 0, sceneTexture->GetWidth(), sceneTexture->GetHeight(), 0);
+    
+    glBindTexture(GL_TEXTURE_2D, depthTexture->GetID());
+    glCopyTexImage2D(GL_TEXTURE_2D, 0, depthTexture->GetFormat(), 0, 0, depthTexture->GetWidth(), depthTexture->GetHeight(), 0);
+}
+
+void Scene::RenderVelocityTexture()
+{
+    fbo->Use();
+    fbo->SetColorTexture(velocityTexture, GL_COLOR_ATTACHMENT2);
+    fbo->SetDrawTarget(GL_COLOR_ATTACHMENT2);
+    
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    
+    velocity->Use();
+    velocity->SetUniform("previousVP", prevViewProjection);
+    velocity->SetUniform("currentVP", viewProjection);
+    
+    // Draw particles
+    particle_sys.Draw(*velocity, viewProjection, cameraPosition, false);
+    
+    velocity->Unuse();
 }
 
 void Scene::PostProcess()
 {
     // Motion blur
+    fbo->SetColorTexture(mblurTexture, GL_COLOR_ATTACHMENT3);
+    fbo->SetDrawTarget(GL_COLOR_ATTACHMENT3);
     mblur->Use();
-    fbo->SetColorTexture(mblurTexture, GL_COLOR_ATTACHMENT5);
-    fbo->SetDrawTarget(GL_COLOR_ATTACHMENT5);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     mblur->SetUniform("sceneColorTexture", sceneTexture, GL_TEXTURE0);
     mblur->SetUniform("sceneDepthTexture", depthTexture, GL_TEXTURE1);
@@ -490,25 +539,26 @@ void Scene::PostProcess()
     mblur->Unuse();
     
     // Horizontal blur
+    fbo->SetColorTexture(hblurTexture, GL_COLOR_ATTACHMENT0);
+    fbo->SetDrawTarget(GL_COLOR_ATTACHMENT0);
     hblur->Use();
-    fbo->SetColorTexture(hblurTexture, GL_COLOR_ATTACHMENT1);
-    fbo->SetDrawTarget(GL_COLOR_ATTACHMENT1);
     hblur->SetUniform("colorTexture", glowTexture, GL_TEXTURE0);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     screen->Draw(*hblur);
     hblur->Unuse();
     
     // Vertical blur
+    fbo->SetColorTexture(vblurTexture, GL_COLOR_ATTACHMENT5);
+    fbo->SetDrawTarget(GL_COLOR_ATTACHMENT5);
     vblur->Use();
-    fbo->SetColorTexture(vblurTexture, GL_COLOR_ATTACHMENT2);
-    fbo->SetDrawTarget(GL_COLOR_ATTACHMENT2);
-    hblur->SetUniform("colorTexture", hblurTexture, GL_TEXTURE0);
+    vblur->SetUniform("colorTexture", hblurTexture, GL_TEXTURE0);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     screen->Draw(*vblur);
     vblur->Unuse();
     
     fbo->Unuse();
     
+    // Draw to screen
     screenProgram->Use();
     screenProgram->SetUniform("scene", mblurTexture, GL_TEXTURE0);
     screenProgram->SetUniform("postProcess", vblurTexture, GL_TEXTURE1);
@@ -529,8 +579,8 @@ void Scene::Render()
     viewProjection = projection * view;
     
     RenderGlowMap();
-    RenderVelocityTexture();
     RenderScene();
+    RenderVelocityTexture();
     PostProcess();
     
     prevViewProjection = viewProjection;

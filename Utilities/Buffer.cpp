@@ -156,8 +156,9 @@ void ElementArrayBuffer::Draw(GLenum mode) const {
 	DataBuffer<size_t>::Bind();
     if (mode == GL_LINE_LOOP)
     {
-        for (int i = 0; i < size; i += 3) {
+        for (GLint i = 0; i < size; i += 3) {
             glDrawElements(mode, 3, dataType, reinterpret_cast<void *>(i));
+            //cout << "i is " << i << endl;
         }
     }
 	else {

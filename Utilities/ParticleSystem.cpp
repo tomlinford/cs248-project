@@ -44,6 +44,7 @@ void Particle::Update(float elapsedTime)
 ParticleCluster::ParticleCluster(glm::vec3 location, glm::vec3 c)
 {
     color = c;
+    model = NULL;
     
     for (int i = 0; i < PARTICLES_PER_CLUSTER; i++)
     {
@@ -76,6 +77,12 @@ void ParticleCluster::Update(float elapsedTime)
             particle.Update(elapsedTime);
         }
     }
+    
+    if (model) {
+        //model->Delete();
+        delete model;
+        model = NULL;
+    }
 }
 
 // Generates and draws particle buffer
@@ -84,21 +91,24 @@ void ParticleCluster::Draw(const Program& p, const glm::mat4& viewProjection,
 {
     if (particles.size() == 0)
         return;
-
-	// pre allocate space for vectors
-	vector<vec3> vertices(particles.size() * 3);
-	
-	// add triangle for each particle
-	for (size_t i = 0; i < particles.size(); i++) {
-		Particle &particle = particles[i];
-
-		vertices[i * 3] = particle.location + particle.scale * particle.o1;
-		vertices[i * 3 + 1] = particle.location + particle.scale * particle.o2;
-		vertices[i * 3 + 2] = particle.location + particle.scale * particle.o3;
-	}
     
-    ArrayBuffer<vec3> ab(vertices);
-	Model model(ModelBuffer(ab, vertices.size() / 3), Material(), Bounds());
+    if (!model) {
+        // pre allocate space for vectors
+        vector<vec3> vertices(particles.size() * 3);
+        
+        // add triangle for each particle
+        for (size_t i = 0; i < particles.size(); i++) {
+            Particle &particle = particles[i];
+            
+            vertices[i * 3] = particle.location + particle.scale * particle.o1;
+            vertices[i * 3 + 1] = particle.location + particle.scale * particle.o2;
+            vertices[i * 3 + 2] = particle.location + particle.scale * particle.o3;
+        }
+        
+        ArrayBuffer<vec3> ab(vertices);
+        
+        model = new Model(ModelBuffer(ab, vertices.size() / 3), Material(), Bounds());
+    }
     
     mat4 M = mat4(1);
     mat4 MVP = viewProjection * M;
@@ -109,15 +119,79 @@ void ParticleCluster::Draw(const Program& p, const glm::mat4& viewProjection,
     if (!glowMap) {
         p.SetUniform("baseColor", color);
         p.SetUniform("illum", 1);
-        model.Draw(p, GL_TRIANGLES);
+        model->Draw(p, GL_TRIANGLES);
     }
     
 	// color has already been set, will have the same color as above
     p.SetUniform("baseColor", color);
 	p.SetUniform("illum", 0);
-	model.Draw(p, GL_LINE_LOOP);
+	model->Draw(p, GL_LINE_LOOP);
+}
+
+Bolt::Bolt(glm::vec3 s, glm::vec3 e) {
+    color = vec3(1.0);
+    model = NULL;
     
-    model.Delete();
+    particles.push_back(Particle(s, vec3(0), vec3(0), 1.0));
+    GenKeyPoints(s, e, 5.0, 10);
+    particles.push_back(Particle(e, vec3(0), vec3(0), 1.0));
+}
+
+void Bolt::GenKeyPoints(glm::vec3 s, glm::vec3 e, float maxOffset, int depth) {
+    if (depth == 0)
+        return;
+    
+    vec3 mid = (s + e) / 2.0f + vec3(rand(-maxOffset, maxOffset),
+                                     rand(-maxOffset, maxOffset),
+                                     rand(-maxOffset, maxOffset));
+    
+    GenKeyPoints(s, mid, maxOffset / 2, depth - 1);
+    particles.push_back(Particle(mid, vec3(0), vec3(0), 1.0));
+    GenKeyPoints(mid, e, maxOffset / 2, depth - 1);
+}
+
+void Bolt::Update(float elapsedTime) {
+    color -= vec3(elapsedTime);
+}
+
+bool Bolt::Valid() {
+    return color.x > 0.0f;
+}
+
+void Bolt::Draw(const Program& p, const glm::mat4& viewProjection,
+                const glm::vec3& cameraPos, bool glowMap) {
+    lock_guard<std::mutex> lock(mutex);
+    
+    // Draw lightning bolt
+    if (particles.size() == 0)
+        return;
+    
+    if (!model) {
+        // pre allocate space for vectors
+        vector<vec3> vertices(particles.size());
+        vector<size_t> indices(particles.size());
+        
+        // add vertex for each key point
+        for (size_t i = 0; i < particles.size(); i++) {
+            Particle keyPoint = particles[i];
+            
+            vertices[i] = keyPoint.location;
+            indices[i] = i;
+        }
+        
+        ArrayBuffer<vec3> ab(vertices);
+        ElementArrayBuffer eab(indices);
+        model = new Model(ModelBuffer(ab, eab), Material(), Bounds());
+    }
+    
+    mat4 MVP = viewProjection;
+    
+    p.SetMVP(MVP);
+    
+    p.SetUniform("baseColor", color);
+    p.SetUniform("illum", 0);
+    glLineWidth(3.0);
+    model->Draw(p, GL_LINE_STRIP);
 }
 
 bool BulletCluster::Intersects(Object *object)
@@ -165,37 +239,39 @@ void BulletCluster::Draw(const Program& p, const glm::mat4& viewProjection,
     if (particles.size() == 0)
         return;
     
-	// pre allocate space for vectors
-	vector<vec3> vertices(particles.size() * 2);
-	vector<size_t> indices(particles.size() * 2);
-	
-	// add triangle for each particle
-	for (size_t i = 0; i < particles.size(); i++) {
-		Particle bullet = particles[i];
+    if (!model) {
+        // pre allocate space for vectors
+        vector<vec3> vertices(particles.size() * 2);
+        vector<size_t> indices(particles.size() * 2);
         
-		vertices[i * 2] = bullet.location;
-		vertices[i * 2 + 1] = bullet.location - normalize(bullet.velocity);
-		
-		indices[i * 2] = i * 2;
-		indices[i * 2 + 1] = i * 2 + 1;
-	}
+        // add triangle for each particle
+        for (size_t i = 0; i < particles.size(); i++) {
+            Particle bullet = particles[i];
+            
+            vertices[i * 2] = bullet.location;
+            vertices[i * 2 + 1] = bullet.location - normalize(bullet.velocity);
+            
+            indices[i * 2] = i * 2;
+            indices[i * 2 + 1] = i * 2 + 1;
+        }
+        
+        ArrayBuffer<vec3> ab(vertices);
+        ElementArrayBuffer eab(indices);
+        model = new Model(ModelBuffer(ab, eab), Material(), Bounds());
+    }
     
-    ArrayBuffer<vec3> ab(vertices);
-    ElementArrayBuffer eab(indices);
-    Model model(ModelBuffer(ab, eab), Material(), Bounds());
+    mat4 MVP = viewProjection;
     
-    mat4 M = mat4(1);
-    mat4 MVP = viewProjection * M;
-    
-    p.SetModel(M); // Needed for Phong shading
     p.SetMVP(MVP);
     
     p.SetUniform("baseColor", color);
     p.SetUniform("illum", 0);
-    glLineWidth(3.0);
-    model.Draw(p, GL_LINES);
     
-    model.Delete();
+    if (glowMap)
+        glLineWidth(10.0);
+    else
+        glLineWidth(3.0);
+    model->Draw(p, GL_LINES);
 }
 
 void ParticleSystem::Update(float elapsedTime)
@@ -222,6 +298,11 @@ void ParticleSystem::AddExplosionCluster(glm::vec3 location, glm::vec3 color)
 {
     ParticleCluster *cluster = new ParticleCluster(location, color);
     clusters.push_back(cluster);
+}
+
+void ParticleSystem::AddBolt(glm::vec3 start, glm::vec3 end)
+{
+    clusters.push_back(new Bolt(start, end));
 }
 
 bool ParticleSystem::Intersects(Object *object)

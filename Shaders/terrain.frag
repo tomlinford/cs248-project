@@ -10,6 +10,9 @@ uniform vec3 baseColor;
  */
 uniform int illum;
 
+/* Force field position */
+uniform vec3 fieldPosition;
+
 /* Camera position */
 uniform vec3 cameraPosition;
 
@@ -23,12 +26,17 @@ void main()
 {
     vec3 final_color;
     if (illum > 0) {
+        vec3 color = baseColor;
+        if (distance(vertexPosition, fieldPosition) < 75.0) {
+            color += vec3(baseColor.z, 0.0, 0.0);
+        }
+
         // Calculate colors
-        vec3 ambientColor = 0.3 * baseColor;
-        vec3 diffuseColor = baseColor;
+        vec3 ambientColor = 0.3 * color;
+        vec3 diffuseColor = color;
         
         // Camera position
-        vec3 N = normalize(cross(dFdx(vertexPosition), dFdy(vertexPosition)));
+        vec3 N = normalize(-cross(dFdx(vertexPosition), dFdy(vertexPosition)));
         vec3 L = normalize(lightPosition - vertexPosition);
         vec3 V = normalize(vertexPosition - cameraPosition);
         vec3 H = normalize(L - V);
@@ -44,12 +52,16 @@ void main()
         final_color = ambient + diffuse;
         final_color += cameraPosition * 0.0000000000001;
     } else {
-        final_color = vec3(0.0, 0.4, 0.5);
+        vec3 color = vec3(0.0, 0.4, 0.5);
+        if (distance(vertexPosition, fieldPosition) < 75.0) {
+            color += vec3(color.z, 0.0, 1.0);
+        }
+
+        final_color = color;
     }
     
     // Attenuation factor
     float distance = length(vertexPosition - lightPosition);
     float attenuation = ((ATTENUATION_DISTANCE - distance) / ATTENUATION_DISTANCE);
-    // gl_FragColor = vec4(final_color, 1.0);
     gl_FragColor = vec4(final_color, 1.0) * attenuation;
 }

@@ -74,6 +74,7 @@ public:
     float totalTime;
     std::vector<Map *> maps;
     Ship *ship;
+    Object *sphere;
     std::vector<Object *> objects;
     std::vector<ControlPoint> path;
 

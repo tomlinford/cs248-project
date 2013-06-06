@@ -39,6 +39,12 @@ public:
     /** Returns the map's bounds */
     virtual Bounds GetBounds() const { return bounds; }
     
+    /* Sets the field position */
+    void SetControlFieldPosition(glm::vec3 pos) {
+        controlFieldPosition = pos;
+        hasControlField = true;
+    }
+    
     /** Sets the map's color */
     void SetColor(const glm::vec3& color) { this->color = color; }
 
@@ -51,6 +57,9 @@ private:
     Texture heightField;
 	Program p;
     Bounds bounds;
+    
+    bool hasControlField;
+    glm::vec3 controlFieldPosition;
     
     ModelBuffer *triangles;
 	ModelBuffer *lines;

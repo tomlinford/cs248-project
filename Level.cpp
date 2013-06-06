@@ -17,6 +17,11 @@ Level::Level() : ready(false)
     ship = new Ship("Models/ship.obj");
     ship->SetColor(vec3(0.0, 0.9, 0.0));
     
+    sphere = new Object("Models/icosphere.obj");
+    sphere->SetColor(vec3(1.0, 0.0, 1.0));
+    sphere->SetPosition(vec3(150, 0, 150));
+    sphere->SetScale(75.0f);
+    
     // Random objects
     for (int i = 0; i < 40; i++) {
         Ship *ship = new Ship("Models/ship.obj");
@@ -150,7 +155,11 @@ void Level::DrawMap(const glm::mat4& viewProjection, const glm::vec3& cameraPos,
 void Level::LoadMaps() {
 	for (MapLoader &mapLoader : mapLoaders) {
         Map *newMap = new Map(mapLoader.terrainMap, mapLoader.size, mapLoader.x, mapLoader.y);
-        newMap->SetColor(vec3(0.0, 0.16, 0.2));
+        newMap->SetColor(vec3(0.0, 0.20, 0.25));
+        
+        if (sphere)
+            newMap->SetControlFieldPosition(sphere->GetPosition());
+        
         maps.push_back(newMap);
         mapLoader.needsToLoad = false;
         

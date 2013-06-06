@@ -125,7 +125,7 @@ private:
     void HandleKeys(float elapsedSeconds);
     void HandleMouse(float elapsedSeconds);
     void UpdateObjects(float elapsedSeconds);
-    void HandleCollisions();
+    void HandleCollisions(float elapsedSeconds);
     void UpdateView(float elapsedSeconds);
     void LoadNewObjects();
     
