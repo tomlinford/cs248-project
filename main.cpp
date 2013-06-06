@@ -6,9 +6,9 @@
 #include <glm/glm.hpp>
 #include <time.h>
 #include <AntTweakBar.h>
-#include <FTGL/ftgl.h>
 
 #include "Scene.h"
+#include "HUD.h"
 #include "Level.h"
 #include "Networking.h"
 
@@ -20,6 +20,7 @@ using namespace glm;
 #endif
 
 static Scene *scene;
+static HUD *hud;
 static bool readyToStart(false);
 static float win_width, win_height;
 static string currPlayer, ipAddress;
@@ -115,6 +116,10 @@ void GLFWCALL WindowResizeCallback(int w, int h)
 		scene->SetFrustum(75.0f, ratio, 0.1f, 50.0f);
 		scene->UpdateFBO(w, h);
 	}
+    if (hud) {
+        hud->SetWidth(w);
+        hud->SetHeight(h);
+    }
 
 	// Update global
 	win_width = w;
@@ -156,8 +161,10 @@ static void loadScene() {
 		break;
 	}
 	scene = new Scene(p);
+    hud = new HUD();
 	Networking::Init(scene, level, ipAddress, currPlayer.c_str());
 	scene->LoadLevel(level);
+    hud->LoadLevel(level);
 	WindowResizeCallback(win_width, win_height);
 }
 
@@ -232,9 +239,6 @@ int main(int argc, char *argv[])
 	double lastTime = glfwGetTime();
 	int nbFrames = 0;
 
-	FTGLPixmapFont font("01 Digitall.ttf");
-	font.FaceSize(72);
-
 	// Main render loop
 	while(glfwGetWindowParam(GLFW_OPENED)) {
 		double currentTime = glfwGetTime();
@@ -244,11 +248,13 @@ int main(int argc, char *argv[])
 			nbFrames = 0;
 			lastTime += 1.0;
 		}
-		if (scene) scene->Render();
+		if (scene) {
+            scene->Render();
+            hud->Render();
+        }
 		else if (readyToStart) loadScene();
-		TwDraw();
-		font.Render("Hello World", -1, FTPoint(0, font.Ascender()));
-		font.Render("another");
+        
+        TwDraw();
 		glfwSwapBuffers();
 	}
 	TwTerminate();

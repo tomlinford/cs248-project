@@ -18,6 +18,9 @@
 		783D3D3C1749F28E00C79047 /* libboost_timer-mt.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 783D3D3A1749F28D00C79047 /* libboost_timer-mt.dylib */; };
 		7865252717610E71002AE042 /* libAntTweakBar.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 7865252617610E71002AE042 /* libAntTweakBar.dylib */; };
 		7865252A176136DE002AE042 /* Turret.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 78652528176136DE002AE042 /* Turret.cpp */; };
+		786525371761492C002AE042 /* libfreetype.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 786525351761492C002AE042 /* libfreetype.a */; };
+		786525381761492C002AE042 /* libftgl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 786525361761492C002AE042 /* libftgl.a */; };
+		7865253B17614BB7002AE042 /* HUD.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7865253917614BB7002AE042 /* HUD.cpp */; };
 		786F67FE17422A5E00E359E4 /* RenderBuffer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 786F67FC17422A5E00E359E4 /* RenderBuffer.cpp */; };
 		786F680117422A6F00E359E4 /* FBO.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 786F67FF17422A6F00E359E4 /* FBO.cpp */; };
 		786F6805174232C800E359E4 /* Screen.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 786F6803174232C800E359E4 /* Screen.cpp */; };
@@ -68,6 +71,10 @@
 		7865252617610E71002AE042 /* libAntTweakBar.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libAntTweakBar.dylib; path = ../../../../../../../usr/lib/libAntTweakBar.dylib; sourceTree = "<group>"; };
 		78652528176136DE002AE042 /* Turret.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Turret.cpp; sourceTree = "<group>"; };
 		78652529176136DE002AE042 /* Turret.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Turret.h; sourceTree = "<group>"; };
+		786525351761492C002AE042 /* libfreetype.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libfreetype.a; path = ../../../../../../../opt/local/lib/libfreetype.a; sourceTree = "<group>"; };
+		786525361761492C002AE042 /* libftgl.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libftgl.a; path = ../../../../../../../opt/local/lib/libftgl.a; sourceTree = "<group>"; };
+		7865253917614BB7002AE042 /* HUD.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = HUD.cpp; sourceTree = "<group>"; };
+		7865253A17614BB7002AE042 /* HUD.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HUD.h; sourceTree = "<group>"; };
 		786F67EF1742259B00E359E4 /* Program.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Program.cpp; sourceTree = "<group>"; };
 		786F67F01742259B00E359E4 /* Program.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Program.h; sourceTree = "<group>"; };
 		786F67FC17422A5E00E359E4 /* RenderBuffer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = RenderBuffer.cpp; sourceTree = "<group>"; };
@@ -141,6 +148,8 @@
 				783D3D0F1749DC1400C79047 /* libboost_thread-mt.dylib in Frameworks */,
 				783D3D151749DCB100C79047 /* libboost_system-mt.a in Frameworks */,
 				783D3D161749DCB100C79047 /* libboost_system-mt.dylib in Frameworks */,
+				786525371761492C002AE042 /* libfreetype.a in Frameworks */,
+				786525381761492C002AE042 /* libftgl.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -150,6 +159,8 @@
 		08FB7794FE84155DC02AAC07 /* Assignment1 */ = {
 			isa = PBXGroup;
 			children = (
+				786525351761492C002AE042 /* libfreetype.a */,
+				786525361761492C002AE042 /* libftgl.a */,
 				7865252617610E71002AE042 /* libAntTweakBar.dylib */,
 				783D3D391749F28D00C79047 /* libboost_timer-mt.a */,
 				783D3D3A1749F28D00C79047 /* libboost_timer-mt.dylib */,
@@ -181,6 +192,8 @@
 				78B1A9FF1742DF2E003E5C24 /* Scene.h */,
 				78E54B121746F0ED00BFC6B3 /* Level.cpp */,
 				78E54B131746F0ED00BFC6B3 /* Level.h */,
+				7865253917614BB7002AE042 /* HUD.cpp */,
+				7865253A17614BB7002AE042 /* HUD.h */,
 			);
 			name = Source;
 			sourceTree = "<group>";
@@ -350,6 +363,7 @@
 				78C3DD141749C01E0030CEDD /* Networking.cpp in Sources */,
 				7890FC361752CD5000A6E28B /* Frustum.cpp in Sources */,
 				7865252A176136DE002AE042 /* Turret.cpp in Sources */,
+				7865253B17614BB7002AE042 /* HUD.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -366,7 +380,11 @@
 				GCC_MODEL_TUNING = G5;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PREPROCESSOR_DEFINITIONS = "";
-				HEADER_SEARCH_PATHS = /usr/include;
+				HEADER_SEARCH_PATHS = (
+					/usr/include,
+					/opt/local/include,
+					/opt/local/include/freetype2,
+				);
 				INSTALL_PATH = "$(HOME)/bin";
 				LIBRARY_SEARCH_PATHS = (
 					/usr/lib,
@@ -387,7 +405,11 @@
 				GCC_MODEL_TUNING = G5;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PREPROCESSOR_DEFINITIONS = "";
-				HEADER_SEARCH_PATHS = /usr/include;
+				HEADER_SEARCH_PATHS = (
+					/usr/include,
+					/opt/local/include,
+					/opt/local/include/freetype2,
+				);
 				INSTALL_PATH = "$(HOME)/bin";
 				LIBRARY_SEARCH_PATHS = (
 					/usr/lib,

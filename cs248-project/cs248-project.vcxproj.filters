@@ -99,6 +99,9 @@
     <ClCompile Include="..\Objects\Turret.cpp">
       <Filter>Objects</Filter>
     </ClCompile>
+    <ClCompile Include="..\HUD.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\gl.h">
@@ -178,6 +181,9 @@
     </ClInclude>
     <ClInclude Include="..\Objects\Turret.h">
       <Filter>Objects</Filter>
+    </ClInclude>
+    <ClInclude Include="..\HUD.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

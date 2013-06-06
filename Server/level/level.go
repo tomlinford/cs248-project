@@ -173,17 +173,17 @@ func genTurrets(numTurrents int, p path, tm terrainMap) []turret {
 	turrets := make([]turret, numTurrents)
 	for i := range turrets {
 		turrets[i].location = p.arr[rand.Intn(len(p.arr))]
-		// fmt.Println(turrets[i].location.y)
-		// if i%2 == 0 {
-		for tm.averageHeight(turrets[i].location.x, turrets[i].location.y+.2) < turrets[i].location.z &&
-			turrets[i].location.y < 10 {
+		turrets[i].location.z -= .45
+		if i%2 == 0 {
+			// for tm.averageHeight(turrets[i].location.x, turrets[i].location.y+.2) < turrets[i].location.z &&
+			// 	turrets[i].location.y < 10 {
 			// fmt.Println("adjusting y location")
-			turrets[i].location.y += 0.02
+			// 	turrets[i].location.y += 0.02
+			// }
+			turrets[i].location.y += .3
+		} else {
+			turrets[i].location.y -= float32(.3)
 		}
-		turrets[i].location.z -= .4
-		// } else {
-		// 	turrets[i].location.z -= float32(.1)
-		// }
 	}
 	return turrets
 }
