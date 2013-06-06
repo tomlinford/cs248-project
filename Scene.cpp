@@ -146,17 +146,18 @@ void Scene::HandleKeys(float elapsedSeconds)
 /** Adds bullets based on mouse presses. */
 void Scene::HandleMouse(float elapsedSeconds)
 {
-    float interval = 3 * (elapsedSeconds - lastTime);
+    vec3 selected = glm::unProject(vec3(512, 384, 1.0),
+                                   view,
+                                   projection,
+                                   vec4(0, 0, 1024 ,768));
     
     if (mouseLeft && level->ship) {
-        vec3 selected = glm::unProject(vec3(512, 384, 1.0),
-                                       view,
-                                       projection,
-                                       vec4(0, 0, 1024 ,768));
-        /*vec3 velocity = normalize(selected - level->ship->GetPosition());
+        vec3 velocity = normalize(selected - level->ship->GetPosition());
         level->ship->AddBullet(level->ship->GetPosition() + velocity, 20.0f * velocity);
-		Networking::AddBullet(level->ship->GetPosition() + velocity, 20.0f * velocity);*/
-        
+		Networking::AddBullet(level->ship->GetPosition() + velocity, 20.0f * velocity);
+    }
+    else if (mouseRight && level->ship) {
+        bool zap;
         for (int i = 0; i < level->objects.size(); i++) {
             Object *obj = level->objects[i];
             if (distance(obj->GetPosition(), level->ship->GetPosition()) < 30) {
@@ -165,11 +166,12 @@ void Scene::HandleMouse(float elapsedSeconds)
                 delete obj;
                 obj = NULL;
                 level->objects.erase(level->objects.begin() + i--);
+                zap = true;
             }
         }
-    }
-    if (mouseRight && level->ship) {
         
+        if (!zap)
+            particle_sys.AddBolt(level->ship->GetPosition(), selected);
     }
 }
 

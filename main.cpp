@@ -169,7 +169,7 @@ int main(int argc, char *argv[])
 	}
 
 	// using opengl version 2.1
-	//glfwOpenWindowHint(GLFW_FSAA_SAMPLES, 2);
+	glfwOpenWindowHint(GLFW_FSAA_SAMPLES, 2);
 	glfwOpenWindowHint(GLFW_OPENGL_VERSION_MAJOR, 2);
 	glfwOpenWindowHint(GLFW_OPENGL_VERSION_MINOR, 1);
 
@@ -221,7 +221,7 @@ int main(int argc, char *argv[])
 
 	glEnable(GL_DEPTH_TEST);    // Depth testing
 	glEnable(GL_LINE_SMOOTH);   // Smooth lines
-	//glEnable(GL_MULTISAMPLE);   // Multisampling
+	glEnable(GL_MULTISAMPLE);   // Multisampling
 	glEnable(GL_TEXTURE_2D);    // Texturing
 	glLineWidth(2.0f);          // Set line width
 
