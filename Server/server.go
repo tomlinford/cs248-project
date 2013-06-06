@@ -183,29 +183,29 @@ func (s *server) run() {
 		select {
 		case line = <-s.oneToServer:
 			switch strings.Split(line, " ")[0] {
-			case KEY:
-				if s.two != nil {
-					s.two.outChan <- line
-				}
 			case END:
 				if s.two != nil {
 					s.two.outChan <- line
 				}
 				s.one.outChan <- line
 				return
+			default:
+				if s.two != nil {
+					s.two.outChan <- line
+				}
 			}
 		case line = <-s.twoToServer:
 			switch strings.Split(line, " ")[0] {
-			case BULLET:
-				if s.one != nil {
-					s.one.outChan <- line
-				}
 			case END:
 				if s.one != nil {
 					s.one.outChan <- line
 				}
 				s.two.outChan <- line
 				return
+			default:
+				if s.one != nil {
+					s.one.outChan <- line
+				}
 			}
 		}
 	}

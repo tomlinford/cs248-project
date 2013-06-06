@@ -141,8 +141,9 @@ func genShips(numShips int) []ship {
 	ships := make([]ship, numShips)
 	for i := range ships {
 		ships[i].offset.x = randFloat32() * 2.4
-		ships[i].offset.y = randFloat32() * 1.8
-		ships[i].timeOffset = rand.Float32() * 70
+		// ships[i].offset.y = randFloat32() * 1.8
+		ships[i].offset.y = rand.Float32() * 3.6
+		ships[i].timeOffset = rand.Float32()*140 - 70
 	}
 	return ships
 }

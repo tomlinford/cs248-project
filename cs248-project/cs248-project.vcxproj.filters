@@ -239,5 +239,8 @@
     <Object Include="..\Models\ship.obj">
       <Filter>Models</Filter>
     </Object>
+    <Object Include="..\Models\icosphere.obj">
+      <Filter>Models</Filter>
+    </Object>
   </ItemGroup>
 </Project>

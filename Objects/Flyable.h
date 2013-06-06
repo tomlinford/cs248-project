@@ -21,7 +21,7 @@ public:
     
     /** Set offset */
     virtual glm::vec2 GetOffset() { return offset; }
-    virtual void SetOffset(glm::vec2 o) { offset = o; }
+    virtual void SetOffset(glm::vec2 o) { offset = o; oldOffset = o; }
     
     /** Set time offset */
     virtual float GetTimeOffset() { return timeOffset; }
@@ -39,6 +39,7 @@ protected:
     float speed;
     float timeOffset;
     glm::vec2 offset;
+	glm::vec2 oldOffset;
     glm::vec3 direction;
 };
 

@@ -169,7 +169,7 @@ int main(int argc, char *argv[])
 	}
 
 	// using opengl version 2.1
-	//glfwOpenWindowHint(GLFW_FSAA_SAMPLES, 2);
+	glfwOpenWindowHint(GLFW_FSAA_SAMPLES, 2);
 	glfwOpenWindowHint(GLFW_OPENGL_VERSION_MAJOR, 2);
 	glfwOpenWindowHint(GLFW_OPENGL_VERSION_MINOR, 1);
 

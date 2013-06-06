@@ -54,6 +54,9 @@ public:
     /** Ship offset control */
 	glm::vec2 GetShipOffset() { return shipOffset; }
 	void SetShipOffset(glm::vec2 offs) { shipOffset = offs; }
+
+	/** Lightning effects */
+	void AddLightning();
     
     /** Key events (Player 1) */
     bool keyLeft, keyRight, keyUp, keyDown;

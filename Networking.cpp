@@ -36,6 +36,7 @@ const static string KEY = "key";
 const static string BULLET = "bullet";
 const static string ENEMY_SHIP = "enemy_ship";
 const static string SPHERE = "sphere";
+const static string LIGHTNING = "lightning";
 
 // function template
 static void listenFunc();
@@ -123,7 +124,7 @@ static void parseSphere(boost::asio::ip::tcp::iostream& ns, string& line) {
 	float radius;
 	vec3 loc;
 	ss >> loc.x >> loc.y >> loc.z >> radius;
-	// TODO: let the Scene or Level know
+	// this goes unused
 }
 
 static void listenFunc() {
@@ -170,6 +171,7 @@ static void listenFunc() {
 			std::this_thread::sleep_for(std::chrono::milliseconds(5));
 
 		getline(ns, line);
+		cout << line << endl;
 		if (line == END) break;
 
 		stringstream ss(line); string header;
@@ -197,6 +199,8 @@ static void listenFunc() {
 			ss >> position.x >> position.y >> position.z;
 			ss >> velocity.x >> velocity.y >> velocity.z;
 			level->ship->AddBullet(position, velocity);
+		} else if (header == LIGHTNING) {
+			scene->AddLightning();
 		} else if (header == END) {
 			glfwCloseWindow();
 		}
@@ -214,6 +218,11 @@ extern void AddBullet(glm::vec3 position, glm::vec3 velocity) {
 	(*nsp) << BULLET << " ";
 	(*nsp) << position.x << " " << position.y << " " << position.z << " ";
 	(*nsp) << velocity.x << " " << velocity.y << " " << velocity.z << endl;
+}
+
+extern void AddLightning() {
+	lock_guard<mutex> lock(nspMutex);
+	(*nsp) << LIGHTNING << endl;
 }
 
 };
