@@ -231,7 +231,7 @@ int main(int argc, char *argv[])
 
 	double lastTime = glfwGetTime();
 	int nbFrames = 0;
-	
+
 	FTGLPixmapFont font("01 Digitall.ttf");
 	font.FaceSize(72);
 

@@ -54,27 +54,27 @@ func init() {
 	easyLevelChan = make(chan *Level, 2)
 	go func() {
 		for {
-			maps, p := genTerrainMap(kSize)
+			maps, p, tm := genTerrainMap(kSize)
 			ships := genShips(kEasyShips)
-			spheres := genTurrets(kEasyTurrets, p)
+			spheres := genTurrets(kEasyTurrets, p, tm)
 			easyLevelChan <- &Level{maps, p, ships, spheres}
 		}
 	}()
 	mediumLevelChan = make(chan *Level, 2)
 	go func() {
 		for {
-			maps, p := genTerrainMap(kSize)
+			maps, p, tm := genTerrainMap(kSize)
 			ships := genShips(kMediumShips)
-			spheres := genTurrets(kMediumTurrets, p)
+			spheres := genTurrets(kMediumTurrets, p, tm)
 			mediumLevelChan <- &Level{maps, p, ships, spheres}
 		}
 	}()
 	hardLevelChan = make(chan *Level, 2)
 	go func() {
 		for {
-			maps, p := genTerrainMap(kSize)
+			maps, p, tm := genTerrainMap(kSize)
 			ships := genShips(kHardShips)
-			spheres := genTurrets(kHardTurrets, p)
+			spheres := genTurrets(kHardTurrets, p, tm)
 			hardLevelChan <- &Level{maps, p, ships, spheres}
 		}
 	}()
@@ -85,7 +85,7 @@ type Level struct {
 	maps    []terrainMap
 	p       path
 	ships   []ship
-	spheres []sphere
+	turrets []turret
 }
 
 func GetLevel(d Difficulty) (l *Level) {
@@ -121,6 +121,10 @@ func (l *Level) WriteData(wr *bufio.Writer) {
 		fmt.Fprintln(wr, ENEMY_SHIP)
 		fmt.Fprintln(wr, s.timeOffset, s.offset.x, s.offset.y)
 	}
+	for _, t := range l.turrets {
+		fmt.Fprintln(wr, TURRET)
+		fmt.Fprintln(wr, t.location.x, t.location.y, t.location.z)
+	}
 	fmt.Fprintln(wr, PATH)
 	pathArr := sampleArr(p.arr, 14) // TODO: change to 14 * 4
 	fmt.Fprintln(wr, len(pathArr))
@@ -152,13 +156,36 @@ type turret struct {
 	location vec3
 }
 
-func genSpheres(numSpheres int, p path) []sphere {
-	spheres := make([]sphere, numSpheres)
-	for i := range spheres {
-		spheres[i].location = p.arr[rand.Intn(len(p.arr))]
-		spheres[i].radius = 20
+func (tm *terrainMap) averageHeight(xf, yf float32) float32 {
+	x := int(xf)
+	y := int(yf)
+	s := xf - float32(x)
+	t := yf - float32(y)
+	v0 := tm.get(x, y)
+	v1 := tm.get(x+1, y)
+	v2 := tm.get(x, y+1)
+	v3 := tm.get(x+1, y+1)
+	return bilerp(s, t, v0, v1, v2, v3)
+}
+
+func genTurrets(numTurrents int, p path, tm terrainMap) []turret {
+	// fmt.Println("generating turrets")
+	turrets := make([]turret, numTurrents)
+	for i := range turrets {
+		turrets[i].location = p.arr[rand.Intn(len(p.arr))]
+		// fmt.Println(turrets[i].location.y)
+		// if i%2 == 0 {
+		for tm.averageHeight(turrets[i].location.x, turrets[i].location.y+.2) < turrets[i].location.z &&
+			turrets[i].location.y < 10 {
+			// fmt.Println("adjusting y location")
+			turrets[i].location.y += 0.02
+		}
+		turrets[i].location.z -= .4
+		// } else {
+		// 	turrets[i].location.z -= float32(.1)
+		// }
 	}
-	return spheres
+	return turrets
 }
 
 // samples a slice in groups of size step and averages out the
@@ -195,7 +222,7 @@ func canyon(d float64) float32 {
 }
 
 // terrain map generation, with mutliple return values
-func genTerrainMap(size int) ([]terrainMap, path) {
+func genTerrainMap(size int) ([]terrainMap, path, terrainMap) {
 	// declares a terrainMap on the stack
 	tm := terrainMap{make([]float32, size*size, size*size), size}
 	tm.initialize()
@@ -228,7 +255,7 @@ func genTerrainMap(size int) ([]terrainMap, path) {
 		p.arr[i].y /= float32((kSize - 1) / kDeg)
 	}
 	maps := tm.subdivide(kDeg)
-	return maps, p
+	return maps, p, tm
 }
 
 // a height map is represented by a slice of heights

@@ -21,19 +21,9 @@ Level::Level() : ready(false)
     sphere->SetColor(vec3(1.0, 0.0, 1.0));
     sphere->SetPosition(vec3(150, 0, 150));
     sphere->SetScale(75.0f);
-    
-    // Random turrets
-    // (Take this out)
-    for (int i = 0; i < 20; i++)
-    {
-        Turret *turret = new Turret("Models/turret.obj");
-        turret->SetColor(vec3(0.9, 0.7, 0.5));
-        turret->SetPosition(vec3(rand2(0, 300),
-                                 0,
-                                 rand2(0, 300)));
-        turret->SetScale(5.0);
-        objects.push_back(turret);
-    }
+
+	// prefetch turret obj file and associated buffer
+	Object turret("Models/turret.obj");
 }
 
 Level::~Level()
