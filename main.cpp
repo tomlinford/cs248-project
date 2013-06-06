@@ -6,6 +6,7 @@
 #include <glm/glm.hpp>
 #include <time.h>
 #include <AntTweakBar.h>
+#include <FTGL/ftgl.h>
 
 #include "Scene.h"
 #include "Level.h"
@@ -221,7 +222,7 @@ int main(int argc, char *argv[])
 
 	glEnable(GL_DEPTH_TEST);    // Depth testing
 	glEnable(GL_LINE_SMOOTH);   // Smooth lines
-	//glEnable(GL_MULTISAMPLE);   // Multisampling
+	glEnable(GL_MULTISAMPLE);   // Multisampling
 	glEnable(GL_TEXTURE_2D);    // Texturing
 	glLineWidth(2.0f);          // Set line width
 
@@ -230,6 +231,9 @@ int main(int argc, char *argv[])
 
 	double lastTime = glfwGetTime();
 	int nbFrames = 0;
+	
+	FTGLPixmapFont font("01 Digitall.ttf");
+	font.FaceSize(72);
 
 	// Main render loop
 	while(glfwGetWindowParam(GLFW_OPENED)) {
@@ -243,6 +247,8 @@ int main(int argc, char *argv[])
 		if (scene) scene->Render();
 		else if (readyToStart) loadScene();
 		TwDraw();
+		font.Render("Hello World", -1, FTPoint(0, font.Ascender()));
+		font.Render("another");
 		glfwSwapBuffers();
 	}
 	TwTerminate();

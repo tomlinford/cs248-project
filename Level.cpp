@@ -21,6 +21,16 @@ Level::Level() : ready(false)
     sphere->SetColor(vec3(1.0, 0.0, 1.0));
     sphere->SetPosition(vec3(150, 0, 150));
     sphere->SetScale(75.0f);
+    
+    // Random turrets
+    for (int i = 0; i < 20; i++)
+    {
+        Object *turret = new Object("Models/turret.obj");
+        turret->SetColor(vec3(0.9, 0.7, 0.5));
+        turret->SetPosition(vec3(150, i * 2, 150));
+        turret->SetScale(10.0);
+        objects.push_back(turret);
+    }
 }
 
 Level::~Level()
@@ -70,6 +80,9 @@ vec3 Level::GetPosition(Direction direction, float time)
     if (direction == BACKWARD)
         time = totalTime - time;
     
+    if (time > totalTime)
+        time = totalTime - 10;
+    
     int i = 0;
     while (i < path.size() && path[i].time < time)
         i++;
@@ -86,6 +99,7 @@ vec3 Level::GetPosition(Direction direction, float time)
     }
     
     // Send to origin if we fail (for debugging)
+    cerr << "Could not calculate direction for time " << time << endl;
     return vec3(0.0);
 }
 
@@ -93,6 +107,9 @@ glm::vec3 Level::GetDirection(Direction direction, float time)
 {
     if (direction == BACKWARD)
         time = totalTime - time;
+    
+    if (time > totalTime)
+        time = totalTime - 10;
     
     int i = 0;
     while (i < path.size() && path[i].time < time)
@@ -114,6 +131,7 @@ glm::vec3 Level::GetDirection(Direction direction, float time)
     }
     
     // Set to no direction if we fail
+    cerr << "Could not calculate direction for time " << time << endl;
     return vec3(0.0);
 }
 
