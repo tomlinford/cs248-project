@@ -27,13 +27,15 @@ void HUD::Render()
     level.append(toString(0));
     font->Render(level.c_str(), -1, FTPoint(padding, height - padding - font->Ascender()));
     
-    string health = "HEALTH: ";
-    health.append(toString(HUD::level->ship->GetHealth()));
-    FTBBox box = font->BBox(health.c_str(), -1, FTPoint(0, 0), FTPoint(0, 0));
-    font->Render(health.c_str(), -1, FTPoint(width - 2 * padding - box.Upper().X(), height - padding - font->Ascender()));
+    if (HUD::level->ship) {
+        string health = "HEALTH: ";
+        health.append(toString(HUD::level->ship->GetHealth()));
+        FTBBox box = font->BBox(health.c_str(), -1, FTPoint(0, 0), FTPoint(0, 0));
+        font->Render(health.c_str(), -1, FTPoint(width - 2 * padding - box.Upper().X(), height - padding - font->Ascender()));
+    }
     
     string score = "SCORE: ";
     score.append(toString(0));
-    box = font->BBox(score.c_str(), -1, FTPoint(0, 0), FTPoint(0, 0));
+    FTBBox box = font->BBox(score.c_str(), -1, FTPoint(0, 0), FTPoint(0, 0));
     font->Render(score.c_str(), -1, FTPoint(width / 2 - box.Upper().X() / 2, height - padding - font->Ascender()));
 }

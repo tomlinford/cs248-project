@@ -1,7 +1,6 @@
 #include "Scene.h"
 
 #include <sstream>
-#include <thread>
 #include <boost/asio.hpp>
 
 #include "Networking.h"
@@ -21,6 +20,8 @@ Scene::Scene(Player p) : particle_sys()
 {
 	player = p;
 	theta = phi = 0.0f;
+    
+    gameOver = false;
 
 	frustum = new Frustum();
 	main = new Program("Shaders/main.vert", "Shaders/main.frag");
@@ -51,12 +52,15 @@ Scene::Scene(Player p) : particle_sys()
 	mouseRight = false;
 
 	// Spawn update thread
-	thread updateThread(&Scene::Update, this);
+    updateThread = thread(&Scene::Update, this);
 	updateThread.detach();
 }
 
 Scene::~Scene()
 {
+    finished = true;
+    updateThread.join();
+    
 	if (main)
 		delete main;
 	if (level)
@@ -354,14 +358,14 @@ void Scene::HandleCollisions(float elapsedSeconds)
 				}
 			}
 			else {
-				//particle_sys.AddExplosionCluster(obj->GetPosition(), obj->GetColor());
+				particle_sys.AddExplosionCluster(obj->GetPosition(), obj->GetColor());
 				if (player == PLAYER1) {
 					level->ship->AddDamage(0.2);
 					Networking::SetHealth(level->ship->GetHealth());
 				}
-				//delete obj;
-				//obj = NULL;
-				//level->objects.erase(level->objects.begin() + i--);
+				delete obj;
+				obj = NULL;
+				level->objects.erase(level->objects.begin() + i--);
 				continue;
 			}
 		}
@@ -369,9 +373,10 @@ void Scene::HandleCollisions(float elapsedSeconds)
 
 	// Delete ship?
 	if (level->ship && level->ship->GetHealth() < 0) {
-		/*particle_sys.AddExplosionCluster(level->ship->GetPosition(), level->ship->GetColor());
+		particle_sys.AddExplosionCluster(level->ship->GetPosition(), level->ship->GetColor());
 		delete level->ship;
-		level->ship = NULL;*/
+		level->ship = NULL;
+        gameOver = true;
 	}
 	else if (level->ship) {
 		cout << "Ship health: " << level->ship->GetHealth() << endl;
@@ -423,7 +428,7 @@ time and performs collision testing on a separate
 thread */
 void Scene::Update()
 {
-	while (true) {
+	while (!finished) {
 		unique_lock<std::mutex> lock(mutex);
 
 		// Wait until the level is ready

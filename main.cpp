@@ -22,10 +22,12 @@ using namespace glm;
 #define M_PI 3.14159265359
 #endif
 
-static Menu *menu;
+static Menu *menu, *start;
 static Scene *scene;
 static HUD *hud;
 
+bool netInit;
+bool finished;
 bool gaming;
 
 static bool readyToStart(false);
@@ -33,11 +35,6 @@ static float win_width, win_height;
 static string currPlayer, ipAddress;
 
 void GLFWCALL KeyCallback(int key, int action) {
-	if (key == GLFW_KEY_ESC) {
-		glfwCloseWindow();
-		return;
-	}
-
 	if (scene && currPlayer[0] == '1') {
 		switch(key) {
             case GLFW_KEY_ESC:
@@ -132,6 +129,10 @@ void GLFWCALL WindowResizeCallback(int w, int h)
         menu->SetWidth(w);
         menu->SetHeight(h);
     }
+    if (start) {
+        start->SetWidth(w);
+        start->SetHeight(h);
+    }
 
 	// Update global
 	win_width = w;
@@ -190,7 +191,7 @@ void StartGame(void *data)
     // Choose player
 	Player p;
 	switch (currPlayer[0]) {
-            //switch('1') { // TODO: change for final
+    //switch('1') { // TODO: change for final
         case '1':
             p = PLAYER1;
             break;
@@ -199,10 +200,14 @@ void StartGame(void *data)
             break;
 	}
     
-	scene = new Scene(p);
-    hud = new HUD();
+    if (!scene)
+        scene = new Scene(p);
     
-	Networking::Init(scene, level, ipAddress, currPlayer.c_str());
+    if (!hud)
+        hud = new HUD();
+    
+    // TODO: Fix forever loop to support restarting game
+    Networking::Init(scene, level, ipAddress, currPlayer.c_str());
     
 	scene->LoadLevel(level);
     hud->LoadLevel(level);
@@ -210,13 +215,57 @@ void StartGame(void *data)
     WindowResizeCallback(win_width, win_height);
 }
 
-void InitMenu()
+void Exit(void *data)
+{
+    if (scene)
+        delete scene;
+    if (hud)
+        delete hud;
+    if (menu)
+        delete menu;
+    
+    finished = true;
+}
+
+void SetServerIP(void *data)
+{
+    cout << "Set server ip " << endl;
+}
+
+void SetPlayer(void *data)
+{
+    cout << "Set player " << endl;
+}
+
+void LoadStartMenu(void *data)
+{
+    menu->PushMenu(start);
+}
+
+void CreateStartMenu()
+{
+    string *options = new string[4];
+    menuFunc *functions = new menuFunc[4];
+    
+    options[0] = "SERVER IP";
+    functions[0] = SetServerIP;
+    
+    options[1] = "PLAYER";
+    functions[1] = SetPlayer;
+    
+    options[2] = "CONNECT";
+    functions[2] = StartGame;
+    
+    start = new Menu(options, functions, 4);
+}
+
+void CreateMainMenu()
 {
     string *options = new string[4];
     menuFunc *functions = new menuFunc[4];
     
     options[0] = "NEW GAME";
-    functions[0] = StartGame;
+    functions[0] = LoadStartMenu;
     
     options[1] = "HIGH SCORES";
     functions[1] = NULL;
@@ -225,7 +274,7 @@ void InitMenu()
     functions[2] = NULL;
     
     options[3] = "EXIT";
-    functions[3] = NULL;
+    functions[3] = Exit;
     
     menu = new Menu(options, functions, 4);
 }
@@ -264,7 +313,8 @@ int main(int argc, char *argv[])
     ipAddress = argv[1];
 	currPlayer = argv[2];
 
-    InitMenu();
+    CreateMainMenu();
+    CreateStartMenu();
     
 	// Initialize AntTweakBar
 	TwInit(TW_OPENGL, NULL);
@@ -315,23 +365,28 @@ int main(int argc, char *argv[])
 			nbFrames = 0;
 			lastTime += 1.0;
 		}
-		if (scene) {
+		/*if (scene) {
             scene->Render();
             hud->Render();
         }
 		else if (readyToStart) {
 			loadScene();
-		}
+		}*/
         
-        /*if (gaming) {
+        if (finished) {
+            break;
+        }
+        
+        if (gaming) {
             scene->Render();
             hud->Render();
+            gaming = !scene->gameOver;
         }
         else {
             menu->Render();
-        }*/
+        }
         
-        TwDraw();
+        //TwDraw();
 		glfwSwapBuffers();
 	}
 	TwTerminate();

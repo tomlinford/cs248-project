@@ -2,6 +2,7 @@
 
 #include "gl.h"
 
+#include <thread>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <boost/timer/timer.hpp>
@@ -68,6 +69,9 @@ public:
     /** FPS direction in spherical coordinates (Player 2) */
     float theta, phi;
     
+    /** Game over? */
+    bool gameOver;
+    
 private:
     /** View matrices. These should be
      player-specific. The camera for player 1
@@ -80,6 +84,10 @@ private:
     glm::mat4 prevViewProjection;
     glm::vec3 cameraPosition;
     glm::vec3 lightPosition;
+    
+    /* Separate update thread */
+    thread updateThread;
+    bool finished;
     
     /* Level loading synchronization */
     std::condition_variable cond;
