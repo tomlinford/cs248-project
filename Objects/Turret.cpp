@@ -2,12 +2,16 @@
 
 Turret::Turret(Model *model) : Object(model)
 {
+    health = 10.0;
     cluster = new BulletCluster();
+    cluster->SetOwner(this);
 }
 
 Turret::Turret(const string& filename) : Object(filename)
 {
+    health = 10.0;
     cluster = new BulletCluster();
+    cluster->SetOwner(this);
 }
 
 void Turret::SetColor(glm::vec3 c) {

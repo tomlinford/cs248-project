@@ -34,5 +34,6 @@ void HUD::Render()
     
     string score = "SCORE: ";
     score.append(toString(0));
-    font->Render(score.c_str(), -1, FTPoint(5, 5));
+    box = font->BBox(score.c_str(), -1, FTPoint(0, 0), FTPoint(0, 0));
+    font->Render(score.c_str(), -1, FTPoint(width / 2 - box.Upper().X() / 2, height - padding - font->Ascender()));
 }

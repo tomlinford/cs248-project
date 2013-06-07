@@ -9,6 +9,11 @@ public:
     Turret(Model *m);
     Turret(const string& filename);
     
+    /** Accessors for health */
+    float GetHealth() { return health; }
+    void SetHealth(float h) { health = h; }
+    void AddDamage(float damage) { health -= damage; }
+    
     /** Override set color to update bullet cluster color
          as well */
     virtual void SetColor(glm::vec3 c);
@@ -21,4 +26,5 @@ public:
     
 private:
     BulletCluster *cluster;
+    float health;
 };

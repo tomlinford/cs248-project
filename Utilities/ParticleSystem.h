@@ -64,7 +64,8 @@ protected:
     Model *model;
 };
 
-/* Represents a lightning bolt */
+/* Represents a lightning bolt. Generated using midpoint
+ displacement algorithm, given the start and end points. */
 class Bolt : public ParticleCluster
 {
 public:
@@ -84,11 +85,17 @@ private:
 class BulletCluster : public ParticleCluster
 {
 public:
+    BulletCluster();
+    
     void AddBullet(glm::vec3 l, glm::vec3 v);
+    void SetOwner(Object *o) { owner = o; };
     virtual bool Intersects(Object *object);
     virtual bool Valid() { return true; }
     virtual void Draw(const Program& p, const glm::mat4& viewProjection,
                       const glm::vec3& cameraPos, bool glowMap);
+    
+private:
+    Object *owner;
 };
 
 /** A particle system is made up of a bunch of particle clusters, each

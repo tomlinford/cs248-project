@@ -21,6 +21,7 @@
 		786525371761492C002AE042 /* libfreetype.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 786525351761492C002AE042 /* libfreetype.a */; };
 		786525381761492C002AE042 /* libftgl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 786525361761492C002AE042 /* libftgl.a */; };
 		7865253B17614BB7002AE042 /* HUD.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7865253917614BB7002AE042 /* HUD.cpp */; };
+		7865253F1761A696002AE042 /* Menu.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7865253D1761A696002AE042 /* Menu.cpp */; };
 		786F67FE17422A5E00E359E4 /* RenderBuffer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 786F67FC17422A5E00E359E4 /* RenderBuffer.cpp */; };
 		786F680117422A6F00E359E4 /* FBO.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 786F67FF17422A6F00E359E4 /* FBO.cpp */; };
 		786F6805174232C800E359E4 /* Screen.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 786F6803174232C800E359E4 /* Screen.cpp */; };
@@ -75,6 +76,8 @@
 		786525361761492C002AE042 /* libftgl.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libftgl.a; path = ../../../../../../../opt/local/lib/libftgl.a; sourceTree = "<group>"; };
 		7865253917614BB7002AE042 /* HUD.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = HUD.cpp; sourceTree = "<group>"; };
 		7865253A17614BB7002AE042 /* HUD.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HUD.h; sourceTree = "<group>"; };
+		7865253D1761A696002AE042 /* Menu.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Menu.cpp; sourceTree = "<group>"; };
+		7865253E1761A696002AE042 /* Menu.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Menu.h; sourceTree = "<group>"; };
 		786F67EF1742259B00E359E4 /* Program.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Program.cpp; sourceTree = "<group>"; };
 		786F67F01742259B00E359E4 /* Program.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Program.h; sourceTree = "<group>"; };
 		786F67FC17422A5E00E359E4 /* RenderBuffer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = RenderBuffer.cpp; sourceTree = "<group>"; };
@@ -194,6 +197,8 @@
 				78E54B131746F0ED00BFC6B3 /* Level.h */,
 				7865253917614BB7002AE042 /* HUD.cpp */,
 				7865253A17614BB7002AE042 /* HUD.h */,
+				7865253D1761A696002AE042 /* Menu.cpp */,
+				7865253E1761A696002AE042 /* Menu.h */,
 			);
 			name = Source;
 			sourceTree = "<group>";
@@ -364,6 +369,7 @@
 				7890FC361752CD5000A6E28B /* Frustum.cpp in Sources */,
 				7865252A176136DE002AE042 /* Turret.cpp in Sources */,
 				7865253B17614BB7002AE042 /* HUD.cpp in Sources */,
+				7865253F1761A696002AE042 /* Menu.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
