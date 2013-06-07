@@ -78,6 +78,7 @@ void ParticleCluster::Update(float elapsedTime)
         }
     }
     
+    // TODO: delete model on main thread?
     if (model) {
         //model->Delete();
         delete model;
@@ -109,12 +110,9 @@ void ParticleCluster::Draw(const Program& p, const glm::mat4& viewProjection,
         
         model = new Model(ModelBuffer(ab, vertices.size() / 3), Material(), Bounds());
     }
-    
-    mat4 M = mat4(1);
-    mat4 MVP = viewProjection * M;
-    
-    p.SetModel(M); // Needed for Phong shading
-    p.SetMVP(MVP);
+
+    p.SetModel(mat4(1)); // Needed for Phong shading
+    p.SetMVP(viewProjection);
     
     if (!glowMap) {
         p.SetUniform("baseColor", color);
@@ -183,15 +181,18 @@ void Bolt::Draw(const Program& p, const glm::mat4& viewProjection,
         ElementArrayBuffer eab(indices);
         model = new Model(ModelBuffer(ab, eab), Material(), Bounds());
     }
-    
-    mat4 MVP = viewProjection;
-    
-    p.SetMVP(MVP);
-    
+
+    p.SetMVP(viewProjection);
     p.SetUniform("baseColor", color);
     p.SetUniform("illum", 0);
     glLineWidth(3.0);
     model->Draw(p, GL_LINE_STRIP);
+}
+
+BulletCluster::BulletCluster()
+{
+    owner = NULL;
+    model = NULL;
 }
 
 bool BulletCluster::Intersects(Object *object)
@@ -199,6 +200,7 @@ bool BulletCluster::Intersects(Object *object)
     lock_guard<std::mutex> lock(mutex);
 
 	if (particles.empty()) return false;
+    if (owner == object) return false;
     
     // Check if bullet is in object's bounding box
     Bounds bounds = object->GetBounds();
@@ -260,10 +262,7 @@ void BulletCluster::Draw(const Program& p, const glm::mat4& viewProjection,
         model = new Model(ModelBuffer(ab, eab), Material(), Bounds());
     }
     
-    mat4 MVP = viewProjection;
-    
-    p.SetMVP(MVP);
-    
+    p.SetMVP(viewProjection);
     p.SetUniform("baseColor", color);
     p.SetUniform("illum", 0);
     

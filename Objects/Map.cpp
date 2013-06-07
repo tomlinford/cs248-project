@@ -77,6 +77,8 @@ Map::Map(float *heightMap, size_t size, int x, int y) :
     M = glm::scale(mat4(1), vec3(MAP_SCALE_FACTOR));
 	M = translate(M, vec3(x, 0, y));
     
+    sphere = NULL;
+    
     // Find position
     position = vec3(MAP_SCALE_FACTOR * x, 0, MAP_SCALE_FACTOR * y);
     
@@ -122,10 +124,13 @@ void Map::Draw(const glm::mat4& viewProjection, const glm::vec3& cameraPos, cons
 	p.SetModel(M);
     p.SetUniform("baseColor", color);
     p.SetUniform("lightPosition", lightPos);
+    p.SetUniform("hasField", false);
 	p.SetUniform("heightField", &heightField, GL_TEXTURE0);
     
-    if (hasControlField) {
-        p.SetUniform("fieldPosition", controlFieldPosition);
+    if (sphere) {
+        p.SetUniform("hasField", true);
+        p.SetUniform("fieldPosition", sphere->GetPosition());
+        p.SetUniform("fieldRadius", sphere->GetScale());
     }
     
 	p.SetUniform("illum", 0);

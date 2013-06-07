@@ -226,6 +226,11 @@ void Scene::UpdateObjects(float elapsedSeconds)
 		level->ship->SetDirection(shipDirection);
 		level->ship->SetPosition(shipPosition);
 	}
+    
+    // Update sphere
+    if (level->sphere) {
+        level->sphere->SetScale(75 + 7 * sin(elapsedSeconds));
+    }
 
 	// Update other objects
 	for (int i = 0; i < level->objects.size(); i++)
@@ -256,26 +261,26 @@ void Scene::UpdateObjects(float elapsedSeconds)
 				position.z - 0.0 < 0.0001)
 			{
 				level->objects.erase(level->objects.begin() + i--);
-			}
-			else
-			{
-				flyable->SetDirection(direction);
-				flyable->SetPosition(position);
-			}
-		}
-		if (turret && level->ship) {
-			vec3 turretPos = turret->GetPosition();
-			vec3 shipPos = level->ship->GetPosition();
-			float distance = fabs(glm::distance(shipPos, turretPos));
-			if (distance < 100) {
-				vec3 dir = normalize(shipPos - turretPos);
-				turret->AddBullet(turretPos, 20.0f * dir);
-			}
-		}
-	}
-
-	// Update particles
-	particle_sys.Update(elapsedSeconds);
+            }
+            else
+            {
+                flyable->SetDirection(direction);
+                flyable->SetPosition(position);
+            }
+        }
+        if (turret && level->ship) {
+            vec3 turretPos = turret->GetPosition();
+            vec3 shipPos = level->ship->GetPosition();
+            float distance = fabs(glm::distance(shipPos, turretPos));
+            if (distance < 30) {
+                vec3 dir = normalize(shipPos - turretPos);
+                turret->AddBullet(turretPos, 20.0f * dir);
+            }
+        }
+    }
+    
+    // Update particles
+    particle_sys.Update(elapsedSeconds);
 }
 
 /** Determine if a collision has occurred - if so,
@@ -309,6 +314,7 @@ void Scene::HandleCollisions(float elapsedSeconds)
 	{
 		Object *obj = level->objects[i];
 		Missile *missile = dynamic_cast<Missile *>(obj);
+        Turret *turret = dynamic_cast<Turret *>(obj);
 
 		// If the object is not in the frustum,
 		// skip it for now
@@ -317,11 +323,23 @@ void Scene::HandleCollisions(float elapsedSeconds)
 
 		// Check object-bullet intersections
 		if (particle_sys.Intersects(obj)) {
-			//particle_sys.AddExplosionCluster(obj->GetPosition(), obj->GetColor());
-			//delete obj;
-			//obj = NULL;
-			//level->objects.erase(level->objects.begin() + i--);
-			continue;
+            if (turret) {
+                turret->AddDamage(0.5);
+                if (turret->GetHealth() < 0) {
+                    particle_sys.AddExplosionCluster(obj->GetPosition(), obj->GetColor());
+                    delete obj;
+                    obj = NULL;
+                    level->objects.erase(level->objects.begin() + i--);
+                    continue;
+                }
+            }
+            else {
+                particle_sys.AddExplosionCluster(obj->GetPosition(), obj->GetColor());
+                delete obj;
+                obj = NULL;
+                level->objects.erase(level->objects.begin() + i--);
+                continue;
+            }
 		}
 
 		// Check object-ship intersections
@@ -469,6 +487,7 @@ void Scene::RenderGlowMap()
 
 	main->Use();
 	main->SetUniform("illum", 0);
+    main->SetUniform("attenuate", true);
 	main->SetUniform("lightPosition", lightPosition);
 	main->SetUniform("cameraPosition", cameraPosition);
 
@@ -492,6 +511,7 @@ void Scene::RenderGlowMap()
 	}
 
 	// Draw particles
+    main->SetUniform("attenuate", false);
 	particle_sys.Draw(*main, viewProjection, cameraPosition, true);
 
 	main->Unuse();
@@ -508,6 +528,7 @@ void Scene::RenderScene()
 	level->DrawMap(viewProjection, cameraPosition, lightPosition, *frustum, false);
 
 	main->Use();
+    main->SetUniform("attenuate", true);
 	main->SetUniform("lightPosition", lightPosition);
 	main->SetUniform("cameraPosition", cameraPosition);
 
@@ -543,6 +564,7 @@ void Scene::RenderScene()
 	}
 
 	// Draw particles
+    main->SetUniform("attenuate", false);
 	particle_sys.Draw(*main, viewProjection, cameraPosition, false);
 
 	main->Unuse();

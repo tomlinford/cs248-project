@@ -12,6 +12,8 @@ uniform int illum;
 
 /* Force field position */
 uniform vec3 fieldPosition;
+uniform float fieldRadius;
+uniform bool hasField;
 
 /* Light position in camera space */
 uniform vec3 lightPosition;
@@ -24,7 +26,7 @@ void main()
     vec3 final_color;
     if (illum > 0) {
         vec3 color = baseColor;
-        if (distance(vertexPosition, fieldPosition) < 75.0) {
+        if (hasField && distance(vertexPosition, fieldPosition) < fieldRadius) {
             color += vec3(baseColor.z, 0.0, 0.0);
         }
 
@@ -47,7 +49,7 @@ void main()
         final_color = ambient + diffuse;
     } else {
         vec3 color = vec3(0.0, 0.4, 0.5);
-        if (distance(vertexPosition, fieldPosition) < 75.0) {
+        if (hasField && distance(vertexPosition, fieldPosition) < fieldRadius) {
             color += vec3(color.z, 0.0, 1.0);
         }
 

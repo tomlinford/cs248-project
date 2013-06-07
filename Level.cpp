@@ -166,10 +166,7 @@ void Level::LoadMaps() {
 	for (MapLoader &mapLoader : mapLoaders) {
         Map *newMap = new Map(mapLoader.terrainMap, mapLoader.size, mapLoader.x, mapLoader.y);
         newMap->SetColor(vec3(0.0, 0.20, 0.25));
-        
-        if (sphere)
-            newMap->SetControlFieldPosition(sphere->GetPosition());
-        
+        newMap->SetField(sphere);
         maps.push_back(newMap);
         mapLoader.needsToLoad = false;
         

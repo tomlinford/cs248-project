@@ -10,6 +10,7 @@
 
 #include "Scene.h"
 #include "HUD.h"
+#include "Menu.h"
 #include "Level.h"
 #include "Networking.h"
 #include "Sound.h"
@@ -21,8 +22,12 @@ using namespace glm;
 #define M_PI 3.14159265359
 #endif
 
+static Menu *menu;
 static Scene *scene;
 static HUD *hud;
+
+bool gaming;
+
 static bool readyToStart(false);
 static float win_width, win_height;
 static string currPlayer, ipAddress;
@@ -35,23 +40,24 @@ void GLFWCALL KeyCallback(int key, int action) {
 
 	if (scene && currPlayer[0] == '1') {
 		switch(key) {
-		case GLFW_KEY_ESC:
-			glfwCloseWindow();
-			break;
-		case GLFW_KEY_LEFT:
-			scene->keyLeft = (action == GLFW_PRESS);
-			break;
-		case GLFW_KEY_RIGHT:
-			scene->keyRight = (action == GLFW_PRESS);
-			break;
-		case GLFW_KEY_UP:
-			scene->keyUp = (action == GLFW_PRESS);
-			break;
-		case GLFW_KEY_DOWN:
-			scene->keyDown = (action == GLFW_PRESS);
-			break;
+            case GLFW_KEY_ESC:
+                glfwCloseWindow();
+                break;
+            case GLFW_KEY_LEFT:
+                scene->keyLeft = (action == GLFW_PRESS);
+                break;
+            case GLFW_KEY_RIGHT:
+                scene->keyRight = (action == GLFW_PRESS);
+                break;
+            case GLFW_KEY_UP:
+                scene->keyUp = (action == GLFW_PRESS);
+                break;
+            case GLFW_KEY_DOWN:
+                scene->keyDown = (action == GLFW_PRESS);
+                break;
 		}
 	}
+    if (menu) menu->HandleKey(key, action);
 	if (scene) Networking::KeyAction(key, action, scene->GetShipOffset());
 	TwEventKeyGLFW(key, action);
 }
@@ -122,6 +128,10 @@ void GLFWCALL WindowResizeCallback(int w, int h)
         hud->SetWidth(w);
         hud->SetHeight(h);
     }
+    if (menu) {
+        menu->SetWidth(w);
+        menu->SetHeight(h);
+    }
 
 	// Update global
 	win_width = w;
@@ -170,6 +180,56 @@ static void loadScene() {
 	WindowResizeCallback(win_width, win_height);
 }
 
+void StartGame(void *data)
+{
+    cout << "Start game! " << endl;
+    gaming = true;
+    
+    Level *level = new Level();
+    
+    // Choose player
+	Player p;
+	switch (currPlayer[0]) {
+            //switch('1') { // TODO: change for final
+        case '1':
+            p = PLAYER1;
+            break;
+        case '2':
+            p = PLAYER2;
+            break;
+	}
+    
+	scene = new Scene(p);
+    hud = new HUD();
+    
+	Networking::Init(scene, level, ipAddress, currPlayer.c_str());
+    
+	scene->LoadLevel(level);
+    hud->LoadLevel(level);
+    
+    WindowResizeCallback(win_width, win_height);
+}
+
+void InitMenu()
+{
+    string *options = new string[4];
+    menuFunc *functions = new menuFunc[4];
+    
+    options[0] = "NEW GAME";
+    functions[0] = StartGame;
+    
+    options[1] = "HIGH SCORES";
+    functions[1] = NULL;
+    
+    options[2] = "CREDITS";
+    functions[2] = NULL;
+    
+    options[3] = "EXIT";
+    functions[3] = NULL;
+    
+    menu = new Menu(options, functions, 4);
+}
+
 #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
 int main(int argc, char *argv[])
 {
@@ -201,8 +261,11 @@ int main(int argc, char *argv[])
 	glewInit();
 #endif
 
-	float bgColor[] = { 0.1f, 0.2f, 0.4f };         // Background color 
+    ipAddress = argv[1];
+	currPlayer = argv[2];
 
+    InitMenu();
+    
 	// Initialize AntTweakBar
 	TwInit(TW_OPENGL, NULL);
 
@@ -259,6 +322,14 @@ int main(int argc, char *argv[])
 		else if (readyToStart) {
 			loadScene();
 		}
+        
+        /*if (gaming) {
+            scene->Render();
+            hud->Render();
+        }
+        else {
+            menu->Render();
+        }*/
         
         TwDraw();
 		glfwSwapBuffers();

@@ -54,6 +54,7 @@ Ship::Ship(Model *model) : Flyable(model)
     scale = 0.7;
     health = 10;
     cluster = new BulletCluster();
+    cluster->SetOwner(this);
 }
 
 Ship::Ship(const string& filename) : Flyable(filename)
@@ -61,6 +62,7 @@ Ship::Ship(const string& filename) : Flyable(filename)
     scale = 0.7;
     health = 10;
     cluster = new BulletCluster();
+    cluster->SetOwner(this);
 }
 
 void Ship::AddBullet(glm::vec3 location, glm::vec3 velocity)

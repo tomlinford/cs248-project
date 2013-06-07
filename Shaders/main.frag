@@ -13,6 +13,9 @@ uniform vec3 baseColor;
  */
 uniform bool illum;
 
+/* Attenuate color based on distance? */
+uniform bool attenuate;
+
 /* Force field position */
 uniform vec3 fieldPosition;
 
@@ -56,9 +59,13 @@ void main()
         }
         final_color = color;
     }
+
+    gl_FragColor = vec4(final_color, 1.0);
     
-    // Attenuation factor
-    float distance = length(vertexPosition - lightPosition);
-    float attenuation = ((ATTENUATION_DISTANCE - distance) / ATTENUATION_DISTANCE);
-    gl_FragColor = attenuation * vec4(final_color, 1.0);
+    if (attenuate) {
+        // Attenuation factor
+        float distance = length(vertexPosition - lightPosition);
+        float attenuation = ((ATTENUATION_DISTANCE - distance) / ATTENUATION_DISTANCE);
+        gl_FragColor *= attenuation;
+    }
 }
