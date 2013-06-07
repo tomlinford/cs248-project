@@ -6,12 +6,14 @@
 #include <glm/glm.hpp>
 #include <time.h>
 #include <AntTweakBar.h>
+#include <fmod.hpp>
 
 #include "Scene.h"
 #include "HUD.h"
 #include "Menu.h"
 #include "Level.h"
 #include "Networking.h"
+#include "Sound.h"
 
 using namespace std;
 using namespace glm;
@@ -235,6 +237,8 @@ int main(int argc, char *argv[])
 		cerr << "Failed to initialize glfw" << endl;
 		exit(-1);
 	}
+	
+	Sound::Init();
 
 	// using opengl version 2.1
 	glfwOpenWindowHint(GLFW_FSAA_SAMPLES, 2);
@@ -315,7 +319,9 @@ int main(int argc, char *argv[])
             scene->Render();
             hud->Render();
         }
-		else if (readyToStart) loadScene();
+		else if (readyToStart) {
+			loadScene();
+		}
         
         /*if (gaming) {
             scene->Render();

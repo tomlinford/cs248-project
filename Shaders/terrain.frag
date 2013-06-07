@@ -15,9 +15,6 @@ uniform vec3 fieldPosition;
 uniform float fieldRadius;
 uniform bool hasField;
 
-/* Camera position */
-// uniform vec3 cameraPosition;
-
 /* Light position in camera space */
 uniform vec3 lightPosition;
 
@@ -38,10 +35,8 @@ void main()
         vec3 diffuseColor = color;
         
         // Camera position
-        vec3 N = normalize(-cross(dFdx(vertexPosition), dFdy(vertexPosition)));
+        vec3 N = normalize(cross(dFdx(vertexPosition), dFdy(vertexPosition)));
         vec3 L = normalize(lightPosition - vertexPosition);
-        // vec3 V = normalize(vertexPosition - cameraPosition);
-        // vec3 H = normalize(L - V);
 
         // Calculate ambient
         vec3 ambient = ambientColor;
