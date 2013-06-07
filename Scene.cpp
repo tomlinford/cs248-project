@@ -293,6 +293,7 @@ void Scene::HandleCollisions(float elapsedSeconds)
 	for (int i = 0; i < level->maps.size(); i++)
 	{
 		Map *map = level->maps[i];
+		if (map == NULL) continue;
 
 		// If the map is not in the frustum,
 		// skip it for now
@@ -372,9 +373,6 @@ void Scene::HandleCollisions(float elapsedSeconds)
 		/*particle_sys.AddExplosionCluster(level->ship->GetPosition(), level->ship->GetColor());
 		delete level->ship;
 		level->ship = NULL;*/
-	}
-	else if (level->ship) {
-		cout << "Ship health: " << level->ship->GetHealth() << endl;
 	}
 }
 

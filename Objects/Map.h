@@ -49,6 +49,10 @@ public:
               const glm::vec3& lightPos, bool glowMap) const;
 
 	void AddTerrain(float *heightMap, size_t size, int x, int y);
+
+	/** Height at location between 0, 0 and 1, 1.
+		Returns something between 0 and 1*/
+	float GetHeightAt(float x, float y);
     
 private:
     Texture heightField;

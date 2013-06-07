@@ -6,6 +6,9 @@
 #include "Level.h"
 #include "Flyable.h"
 
+// forward declare
+class HUDElement;
+
 class HUD
 {
 public:
@@ -24,5 +27,5 @@ private:
     float padding;
     Level *level;
     FTPixmapFont *font;
-	Texture *minimap;
+	HUDElement *minimap;
 };

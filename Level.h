@@ -75,6 +75,10 @@ public:
 	/* This will block until the level has been loaded. Must be called from the main thread. */
 	void Load();
 
+	/** Height at location between 0, 0 and 1, 1.
+		Returns something between 0 and 1*/
+	float GetHeightAt(float x, float y);
+
     float totalTime;
     std::vector<Map *> maps;
     Ship *ship;
