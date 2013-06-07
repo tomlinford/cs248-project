@@ -5,6 +5,7 @@
 #include <boost/asio.hpp>
 
 #include "Networking.h"
+#include "Sound.h"
 
 #define MAX_X 2.4
 #define MAX_Y 1.8
@@ -68,14 +69,14 @@ void Scene::LoadLevel(Level *l)
 {
 	level = l;
 	level->Load();
-    cond.notify_all();
-    particle_sys.AddBulletCluster(level->ship->GetBulletCluster());
-    for (int i = 0; i < level->objects.size(); i++) {
-        Turret *turret = dynamic_cast<Turret *>(level->objects[i]);
-        if (turret) {
-            particle_sys.AddBulletCluster(turret->GetBulletCluster());
-        }
-    }
+	cond.notify_all();
+	particle_sys.AddBulletCluster(level->ship->GetBulletCluster());
+	for (int i = 0; i < level->objects.size(); i++) {
+		Turret *turret = dynamic_cast<Turret *>(level->objects[i]);
+		if (turret) {
+			particle_sys.AddBulletCluster(turret->GetBulletCluster());
+		}
+	}
 }
 
 
@@ -162,25 +163,46 @@ void Scene::HandleMouse(float elapsedSeconds)
 		vec3 velocity = normalize(selected - level->ship->GetPosition());
 		level->ship->AddBullet(level->ship->GetPosition() + velocity, 20.0f * velocity);
 		Networking::AddBullet(level->ship->GetPosition() + velocity, 20.0f * velocity);
+		Sound::PlayLaser();
 	}
 	if (mouseRight && level->ship) {
-		AddLightning();
+		AddLightning(false);
 		Networking::AddLightning();
 	}
 }
 
 /** Adds lightning effects */
-void Scene::AddLightning() {
-	for (int i = 0; i < level->objects.size(); i++) {
-		Object *obj = level->objects[i];
-		if (glm::distance(obj->GetPosition(), level->ship->GetPosition()) < 30) {
-			particle_sys.AddBolt(level->ship->GetPosition(), obj->GetPosition());
-			particle_sys.AddExplosionCluster(obj->GetPosition(), obj->GetColor());
-			delete obj;
-			obj = NULL;
-			level->objects.erase(level->objects.begin() + i--);
+void Scene::AddLightning(bool acquireLock) {
+	bool playThunder = false;
+	if (acquireLock) {
+		lock_guard<std::mutex> lock(mutex);
+		for (int i = 0; i < level->objects.size(); i++) {
+			Object *obj = level->objects[i];
+			if (glm::distance(obj->GetPosition(), level->ship->GetPosition()) < 30) {
+				particle_sys.AddBolt(level->ship->GetPosition(), obj->GetPosition());
+				particle_sys.AddExplosionCluster(obj->GetPosition(), obj->GetColor());
+				delete obj;
+				obj = NULL;
+				level->objects.erase(level->objects.begin() + i--);
+				playThunder = true;
+			}
+		}
+		return;
+	} else {
+		for (int i = 0; i < level->objects.size(); i++) {
+			Object *obj = level->objects[i];
+			if (glm::distance(obj->GetPosition(), level->ship->GetPosition()) < 30) {
+				particle_sys.AddBolt(level->ship->GetPosition(), obj->GetPosition());
+				particle_sys.AddExplosionCluster(obj->GetPosition(), obj->GetColor());
+				delete obj;
+				obj = NULL;
+				level->objects.erase(level->objects.begin() + i--);
+				playThunder = true;
+			}
 		}
 	}
+	// only play the thunder sound if lightning bolts were added
+	if (playThunder) Sound::PlayThunder();
 }
 
 /** Updates objects by moving them to their new locations,
@@ -209,51 +231,51 @@ void Scene::UpdateObjects(float elapsedSeconds)
 	for (int i = 0; i < level->objects.size(); i++)
 	{
 		Object *obj = level->objects[i];
-        Flyable *flyable = dynamic_cast<Flyable *>(obj);
-        Missile *missile = dynamic_cast<Missile *>(obj);
-        Turret *turret = dynamic_cast<Turret *>(obj);
-        
-        if (missile && level->ship)
-        {
-            vec2 missileOffset = missile->GetOffset();
-            vec2 shipOffset = level->ship->GetOffset();
-            shipOffset.x *= -1;
-            
-            vec2 dir = shipOffset - missileOffset;
-            vec2 offset = 0.01f * dir;
-            missile->SetOffset(missileOffset + offset);
-        }
-        if (flyable)
-        {
-            vec3 direction = level->GetDirection(BACKWARD, elapsedSeconds + flyable->GetTimeOffset());
-            vec3 position = level->GetPosition(BACKWARD, elapsedSeconds + flyable->GetTimeOffset());
-            
-            // Remove objects off screen
-            if (position.x - 0.0 < 0.0001 &&
-                position.y - 0.0 < 0.0001 &&
-                position.z - 0.0 < 0.0001)
-            {
+		Flyable *flyable = dynamic_cast<Flyable *>(obj);
+		Missile *missile = dynamic_cast<Missile *>(obj);
+		Turret *turret = dynamic_cast<Turret *>(obj);
+
+		if (missile && level->ship)
+		{
+			vec2 missileOffset = missile->GetOffset();
+			vec2 shipOffset = level->ship->GetOffset();
+			shipOffset.x *= -1;
+
+			vec2 dir = shipOffset - missileOffset;
+			vec2 offset = 0.01f * dir;
+			missile->SetOffset(missileOffset + offset);
+		}
+		if (flyable)
+		{
+			vec3 direction = level->GetDirection(BACKWARD, elapsedSeconds + flyable->GetTimeOffset());
+			vec3 position = level->GetPosition(BACKWARD, elapsedSeconds + flyable->GetTimeOffset());
+
+			// Remove objects off screen
+			if (position.x - 0.0 < 0.0001 &&
+				position.y - 0.0 < 0.0001 &&
+				position.z - 0.0 < 0.0001)
+			{
 				level->objects.erase(level->objects.begin() + i--);
-            }
-            else
-            {
-                flyable->SetDirection(direction);
-                flyable->SetPosition(position);
-            }
-        }
-        if (turret && level->ship) {
-            vec3 turretPos = turret->GetPosition();
-            vec3 shipPos = level->ship->GetPosition();
-            float distance = fabs(glm::distance(shipPos, turretPos));
-            if (distance < 100) {
-                vec3 dir = normalize(shipPos - turretPos);
-                turret->AddBullet(turretPos, 20.0f * dir);
-            }
-        }
-    }
-    
-    // Update particles
-    particle_sys.Update(elapsedSeconds);
+			}
+			else
+			{
+				flyable->SetDirection(direction);
+				flyable->SetPosition(position);
+			}
+		}
+		if (turret && level->ship) {
+			vec3 turretPos = turret->GetPosition();
+			vec3 shipPos = level->ship->GetPosition();
+			float distance = fabs(glm::distance(shipPos, turretPos));
+			if (distance < 100) {
+				vec3 dir = normalize(shipPos - turretPos);
+				turret->AddBullet(turretPos, 20.0f * dir);
+			}
+		}
+	}
+
+	// Update particles
+	particle_sys.Update(elapsedSeconds);
 }
 
 /** Determine if a collision has occurred - if so,
@@ -275,7 +297,10 @@ void Scene::HandleCollisions(float elapsedSeconds)
 		// Check ship intersections
 		if (level->ship && map->Intersects(*level->ship)) {
 			particle_sys.AddExplosionCluster(level->ship->GetPosition(), map->GetColor());
-			level->ship->AddDamage(0.001 * elapsedSeconds);
+			if (player == PLAYER1) {
+				level->ship->AddDamage(0.001 * elapsedSeconds);
+				Networking::SetHealth(level->ship->GetHealth());
+			}
 		}
 	}
 
@@ -305,28 +330,34 @@ void Scene::HandleCollisions(float elapsedSeconds)
 			if (missile)
 			{
 				particle_sys.AddExplosionCluster(level->ship->GetPosition(), missile->GetColor());
-				//level->ship->AddDamage(0.5);
+				if (player == PLAYER1) {
+					level->ship->AddDamage(0.5);
+					Networking::SetHealth(level->ship->GetHealth());
+				}
 			}
-            else {
-                //particle_sys.AddExplosionCluster(obj->GetPosition(), obj->GetColor());
-                //level->ship->AddDamage(0.2);
-                //delete obj;
-                //obj = NULL;
-                //level->objects.erase(level->objects.begin() + i--);
-                continue;
-            }
+			else {
+				//particle_sys.AddExplosionCluster(obj->GetPosition(), obj->GetColor());
+				if (player == PLAYER1) {
+					level->ship->AddDamage(0.2);
+					Networking::SetHealth(level->ship->GetHealth());
+				}
+				//delete obj;
+				//obj = NULL;
+				//level->objects.erase(level->objects.begin() + i--);
+				continue;
+			}
 		}
 	}
-    
-    // Delete ship?
-    if (level->ship && level->ship->GetHealth() < 0) {
-        /*particle_sys.AddExplosionCluster(level->ship->GetPosition(), level->ship->GetColor());
-        delete level->ship;
-        level->ship = NULL;*/
-    }
-    else if (level->ship) {
-        cout << "Ship health: " << level->ship->GetHealth() << endl;
-    }
+
+	// Delete ship?
+	if (level->ship && level->ship->GetHealth() < 0) {
+		/*particle_sys.AddExplosionCluster(level->ship->GetPosition(), level->ship->GetColor());
+		delete level->ship;
+		level->ship = NULL;*/
+	}
+	else if (level->ship) {
+		cout << "Ship health: " << level->ship->GetHealth() << endl;
+	}
 }
 
 /** Updates the player views, which depends on the

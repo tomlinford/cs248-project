@@ -57,7 +57,7 @@ public:
 	void SetShipOffset(glm::vec2 offs) { shipOffset = offs; }
 
 	/** Lightning effects */
-	void AddLightning();
+	void AddLightning(bool acquireLock);
     
     /** Key events (Player 1) */
     bool keyLeft, keyRight, keyUp, keyDown;

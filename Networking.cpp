@@ -37,6 +37,7 @@ namespace Networking {
 	const static string ENEMY_SHIP = "enemy_ship";
 	const static string TURRET = "turret";
 	const static string LIGHTNING = "lightning";
+	const static string HEALTH = "health";
 
 	// function template
 	static void listenFunc();
@@ -174,9 +175,6 @@ namespace Networking {
 				std::this_thread::sleep_for(std::chrono::milliseconds(5));
 
 			getline(ns, line);
-			cout << line << endl;
-			if (line == END) break;
-
 			stringstream ss(line); string header;
 			ss >> header;
 			if (header == KEY) {
@@ -203,7 +201,10 @@ namespace Networking {
 				ss >> velocity.x >> velocity.y >> velocity.z;
 				level->ship->AddBullet(position, velocity);
 			} else if (header == LIGHTNING) {
-				scene->AddLightning();
+				scene->AddLightning(true);
+			} else if (header == HEALTH) {
+				float health; ss >> health;
+				level->ship->SetHealth(health);
 			} else if (header == END) {
 				glfwCloseWindow();
 			}
@@ -226,6 +227,11 @@ namespace Networking {
 	extern void AddLightning() {
 		lock_guard<mutex> lock(nspMutex);
 		(*nsp) << LIGHTNING << endl;
+	}
+
+	extern void SetHealth(float health) {
+		lock_guard<mutex> lock(nspMutex);
+		(*nsp) << HEALTH << " " << health << endl;
 	}
 
 };
