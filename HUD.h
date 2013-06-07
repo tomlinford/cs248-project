@@ -23,5 +23,5 @@ private:
     int width, height;
     float padding;
     Level *level;
-    FTGLPixmapFont *font;
+    FTPixmapFont *font;
 };

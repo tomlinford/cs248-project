@@ -1,4 +1,4 @@
-#include "HUD.h"
+#include "HUD.h"'
 #include <sstream>
 
 template<typename T>
@@ -11,7 +11,7 @@ string toString(T t) {
 
 HUD::HUD()
 {
-    font = new FTGLPixmapFont("01 Digitall.ttf");
+    font = new FTPixmapFont("01 Digitall.ttf");
 	font->FaceSize(36);
     padding = 10;
 }
@@ -23,22 +23,24 @@ HUD::~HUD()
 
 void HUD::Render()
 {
+	glColor4f(1, 1, 1, 1);
     string level = "LEVEL: ";
     level.append(toString(0));
+	glWindowPos2f(0, 0);
     font->Render(level.c_str(), -1, FTPoint(padding, height - padding - font->Ascender()));
     
+	float h = HUD::level->ship->GetHealth();
+	if (h < 0) h = 0;
+	glColor4f(1 - h / 10, h / 10, 0, 1);
     string health = "HEALTH: ";
-    health.append(toString(HUD::level->ship->GetHealth()));
+    health.append(toString(h));
     FTBBox box = font->BBox(health.c_str(), -1, FTPoint(0, 0), FTPoint(0, 0));
+	glWindowPos2f(0, 0);
     font->Render(health.c_str(), -1, FTPoint(width - 2 * padding - box.Upper().X(), height - padding - font->Ascender()));
     
-	/*glDisable(GL_TEXTURE_2D);
-	glPushMatrix();
-	glRasterPos2f(width, height);
-	glTranslatef(width / 2, height / 2, 0);
-	glColor3f(1, 0, 0);*/
+	glColor4f(1, 1, 1, 1);
     string score = "SCORE: ";
     score.append(toString(0));
-    font->Render(score.c_str(), -1, FTPoint(5, 5), FTPoint(), FTGL::RENDER_FRONT | FTGL::RENDER_BACK);
-	/*glPopMatrix();*/
+	glWindowPos2f(0, 0);
+    font->Render(score.c_str(), -1, FTPoint(5, 5));
 }
