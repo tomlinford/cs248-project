@@ -202,3 +202,9 @@ bool Map::Intersects(Object& other)
     
     return false;
 }
+
+float Map::GetHeightAt(float x, float y) {
+	int xi = clamp(x * 64, 0.f, 63.f);
+	int yi = clamp(y * 64, 0.f, 63.f);
+	return Sample(heightField.GetData(), heightField.GetWidth(), heightField.GetHeight(), xi, yi);
+}

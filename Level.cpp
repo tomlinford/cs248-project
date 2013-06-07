@@ -5,6 +5,7 @@
 #define M_PI 3.14159265359
 #endif
 
+#define MAP_DIM 16
 #define GRANULARITY 10
 
 using namespace glm;
@@ -14,7 +15,7 @@ float rand2(float min, float max) {
     return min + (float)rand() / RAND_MAX * (max - min);
 }
 
-Level::Level() : ready(false)
+Level::Level() : ready(false), maps(MAP_DIM * MAP_DIM, NULL)
 {
     pathModel = NULL;
     
@@ -188,6 +189,7 @@ void Level::DrawMap(const glm::mat4& viewProjection, const glm::vec3& cameraPos,
                     const glm::vec3& lightPos, const Frustum& frustum, DrawMode mode) {
 	int count = 0;
     for (Map *map : maps) {
+		if (map == NULL) continue;
         if (frustum.Contains(*map))
             map->Draw(viewProjection, cameraPos, lightPos, mode);
         else
@@ -202,7 +204,7 @@ void Level::LoadMaps() {
         Map *newMap = new Map(mapLoader.terrainMap, mapLoader.size, mapLoader.x, mapLoader.y);
         newMap->SetColor(vec3(0.0, 0.20, 0.25));
         newMap->SetField(sphere);
-        maps.push_back(newMap);
+		maps[mapLoader.x + mapLoader.y * MAP_DIM] = newMap;
         mapLoader.needsToLoad = false;
         
         // We need this data for collision testing - don't delete!
@@ -214,4 +216,15 @@ void Level::LoadMaps() {
 void Level::SetReady() {
 	ready = true;
 	cond.notify_all();
+}
+
+float Level::GetHeightAt(float x, float y) {
+	float step = 1.f / MAP_DIM;
+	int xi = (int) (x / step);
+	//if (xi > 63) xi = 63;
+	int yi = (int) (y / step);
+	//if (yi > 63) yi = 63;
+	float nx = (x - (step * xi)) * MAP_DIM;
+	float ny = (y - (step * yi)) * MAP_DIM;
+	return maps[xi + yi * MAP_DIM]->GetHeightAt(nx, ny);
 }

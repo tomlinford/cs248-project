@@ -6,6 +6,68 @@ using namespace glm;
 
 #define MINIMAP_SIZE 256
 
+class HUDElement {
+public:
+	HUDElement(int x, int y, int w, int h, int win_w, int win_h, Texture *tex)
+			: texture(tex) {
+		vector<vec3> vertices;
+		vertices.push_back(vec3(x - win_w / 2, y - win_h / 2, 0));
+		vertices.push_back(vec3(x - win_w / 2, y + h - win_h / 2, 0));
+		vertices.push_back(vec3(x + w - win_w / 2, y + h - win_h / 2, 0));
+		vertices.push_back(vec3(x + w - win_w / 2, y - win_h / 2, 0));
+
+		vector<vec2> textures;
+		textures.push_back(vec2(0, 0));
+		textures.push_back(vec2(0, 1));
+		textures.push_back(vec2(1, 1));
+		textures.push_back(vec2(1, 0));
+
+		vector<size_t> indices;
+		indices.push_back(0);
+		indices.push_back(2);
+		indices.push_back(1);
+		indices.push_back(2);
+		indices.push_back(0);
+		indices.push_back(3);
+
+		ArrayBuffer<vec3> abv(vertices);
+		ArrayBuffer<vec2> abt(textures);
+		ElementArrayBuffer eab(indices);
+		mb = new ModelBuffer(abv, abt, eab);
+
+		projection = ortho((float)-win_w / 2, (float)win_w / 2, (float)win_h / 2, (float)-win_h / 2, 0.f, 1.f);
+		
+		vector<vec3> outlineVertices;
+		outlineVertices.push_back(vec3(x - win_w / 2, y - win_h / 2, 0));
+		outlineVertices.push_back(vec3(x - win_w / 2, y + h - win_h / 2, 0));
+		outlineVertices.push_back(vec3(x + w - win_w / 2, y + h - win_h / 2, 0));
+		outlineVertices.push_back(vec3(x + w - win_w / 2, y - win_h / 2, 0));
+		outlineVertices.push_back(vec3(x - win_w / 2, y + h - win_h / 2, 0));
+		outlineVertices.push_back(vec3(x + w - win_w / 2, y + h - win_h / 2, 0));
+		outlineVertices.push_back(vec3(x - win_w / 2, y - win_h / 2, 0));
+		outlineVertices.push_back(vec3(x + w - win_w / 2, y - win_h / 2, 0));
+		outlineMB = new ModelBuffer(ArrayBuffer<vec3>(outlineVertices), outlineVertices.size());
+	}
+	~HUDElement() { delete texture; delete mb; }
+
+	void Draw(const Program &p) const {
+		p.Use();
+		p.SetMVP(projection);
+		p.SetUniform("texture", texture, GL_TEXTURE0);
+		mb->Draw(p, GL_TRIANGLES);
+
+		Program plain("Shaders/plain.vert", "Shaders/plain.frag");
+		plain.Use();
+		plain.SetMVP(projection);
+		outlineMB->Draw(plain, GL_LINES);
+	}
+private:
+	Texture *texture;
+	ModelBuffer *mb;
+	ModelBuffer *outlineMB;
+	mat4 projection;
+};
+
 template<typename T>
 static string toString(T t) {
 	stringstream s;
@@ -16,8 +78,14 @@ static string toString(T t) {
 
 static float *createMinimap(Level *l) {
 	vec3 *data = new vec3[MINIMAP_SIZE * MINIMAP_SIZE];
-	for (int i = 0; i < MINIMAP_SIZE * MINIMAP_SIZE; i++) {
-		data[i] = vec3(0, 0, 1);
+	for (int x = 0; x < MINIMAP_SIZE; x++) {
+		for (int y = 0; y < MINIMAP_SIZE; y++) {
+			if (x == 201 && y == 200)
+				y = 200;
+			float xf = (float) x /  (float) MINIMAP_SIZE;
+			float yf = (float) y / (float) MINIMAP_SIZE;
+			data[x + y * MINIMAP_SIZE] = vec3(0, 0, l->GetHeightAt(xf, yf));
+		}
 	}
 	return (float *) data;
 }
@@ -36,33 +104,14 @@ HUD::~HUD()
 
 void HUD::Render()
 {
-	/*if (minimap == NULL)
-		minimap = new Texture(MINIMAP_SIZE, MINIMAP_SIZE, GL_RGB, createMinimap(level));
+	if (minimap == NULL) {
+		Texture *tex = new Texture(MINIMAP_SIZE, MINIMAP_SIZE, GL_RGB,
+									createMinimap(level));
+		minimap = new HUDElement(width - MINIMAP_SIZE - 5, height - MINIMAP_SIZE - 5, MINIMAP_SIZE,
+								MINIMAP_SIZE, width, height, tex);
+	}
 
-	//glClear(GL_COLOR_BUFFER_BIT);
-	glMatrixMode (GL_PROJECTION);
-	glLoadIdentity();
-	glOrtho (0, width, height, 0, 0, 1);
-	glMatrixMode (GL_MODELVIEW);
-	glLoadIdentity();
-	//glUseProgram(0);
-	
-    minimap->Bind();
-    glBindTexture(GL_TEXTURE_2D, minimap->GetID());
-	
-    glBegin(GL_QUADS); {
-		int x = width - MINIMAP_SIZE - 5;
-		int y = height - MINIMAP_SIZE - 5;
-		glColor3f(0, 0, 1);
-		glTexCoord2f(0, 0);
-		glVertex2f(x, y);
-		glTexCoord2f(0, 1);
-		glVertex2f(x, y + MINIMAP_SIZE);
-		glTexCoord2f(1, 1);
-		glVertex2f(x + MINIMAP_SIZE, y + MINIMAP_SIZE);
-		glTexCoord2f(1, 0);
-		glVertex2f(x + MINIMAP_SIZE, y);
-	} glEnd();*/
+	minimap->Draw(Program("Shaders/hud.vert", "Shaders/hud.frag"));
 
 	glColor4f(1, 1, 1, 1);
 	string level = "LEVEL: ";
