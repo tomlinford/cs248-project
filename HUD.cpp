@@ -32,7 +32,13 @@ void HUD::Render()
     FTBBox box = font->BBox(health.c_str(), -1, FTPoint(0, 0), FTPoint(0, 0));
     font->Render(health.c_str(), -1, FTPoint(width - 2 * padding - box.Upper().X(), height - padding - font->Ascender()));
     
+	/*glDisable(GL_TEXTURE_2D);
+	glPushMatrix();
+	glRasterPos2f(width, height);
+	glTranslatef(width / 2, height / 2, 0);
+	glColor3f(1, 0, 0);*/
     string score = "SCORE: ";
     score.append(toString(0));
-    font->Render(score.c_str(), -1, FTPoint(5, 5));
+    font->Render(score.c_str(), -1, FTPoint(5, 5), FTPoint(), FTGL::RENDER_FRONT | FTGL::RENDER_BACK);
+	/*glPopMatrix();*/
 }
