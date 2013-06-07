@@ -14,6 +14,7 @@
     <ClCompile Include="..\HUD.cpp" />
     <ClCompile Include="..\Level.cpp" />
     <ClCompile Include="..\main.cpp" />
+    <ClCompile Include="..\Menu.cpp" />
     <ClCompile Include="..\Networking.cpp" />
     <ClCompile Include="..\Objects\Flyable.cpp" />
     <ClCompile Include="..\Objects\Map.cpp" />
@@ -40,6 +41,7 @@
     <ClInclude Include="..\Grid\vector.h" />
     <ClInclude Include="..\HUD.h" />
     <ClInclude Include="..\Level.h" />
+    <ClInclude Include="..\Menu.h" />
     <ClInclude Include="..\Networking.h" />
     <ClInclude Include="..\Objects\Flyable.h" />
     <ClInclude Include="..\Objects\Map.h" />

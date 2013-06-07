@@ -24,4 +24,5 @@ private:
     float padding;
     Level *level;
     FTPixmapFont *font;
+	Texture *minimap;
 };
