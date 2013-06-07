@@ -32,8 +32,10 @@ void Menu::PushMenu(Menu *other)
 
 void Menu::PopMenu()
 {
-    if (previous)
+    if (previous) {
         previous->SetNext(NULL);
+        previous->SetSelectionActive(false);
+    }
 }
 
 void Menu::HandleKey(int key, int action)
@@ -43,25 +45,34 @@ void Menu::HandleKey(int key, int action)
         return;
     }
     
-    if (action == GLFW_RELEASE)
+    if (action == GLFW_RELEASE) {
         return;
+    }
     
     switch(key) {
         case GLFW_KEY_UP:
-            selectedIndex--;
+            if (!selectionActive)
+                selectedIndex--;
             break;
         case GLFW_KEY_DOWN:
-            selectedIndex++;
+            if (!selectionActive)
+                selectedIndex++;
             break;
         case GLFW_KEY_ENTER:
         {
             if (functions[selectedIndex])
                 functions[selectedIndex](NULL);
+            selectionActive = true;
             break;
         }
         case GLFW_KEY_ESC:
-            PopMenu();
+        {
+            if (selectionActive)
+                selectionActive = false;
+            else if (previous)
+                PopMenu();
             break;
+        }
         default:
             break;
     }
@@ -70,7 +81,6 @@ void Menu::HandleKey(int key, int action)
         selectedIndex = numItems - 1;
     else if (selectedIndex == numItems)
         selectedIndex = 0;
-    cout << "Selected index " << selectedIndex << endl;
 }
 
 void Menu::Render()

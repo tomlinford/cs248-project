@@ -16,12 +16,13 @@ using boost::timer::cpu_times;
 
 static int count;
 
-Scene::Scene(Player p) : particle_sys(), finished(false)
+Scene::Scene(Player p) : particle_sys()
 {
 	player = p;
 	theta = phi = 0.0f;
     
     gameOver = false;
+    finished = false;
 
 	frustum = new Frustum();
 	main = new Program("Shaders/main.vert", "Shaders/main.frag");
@@ -72,7 +73,13 @@ Scene::~Scene()
 
 void Scene::LoadLevel(Level *l)
 {
+    gameOver = false;
+    finished = false;
+    
+    if (level)
+        delete level;
 	level = l;
+        
 	level->Load();
 	cond.notify_all();
 	particle_sys.AddBulletCluster(level->ship->GetBulletCluster());
@@ -597,6 +604,7 @@ void Scene::RenderScene()
 void Scene::RenderMinimap()
 {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glDisable(GL_DEPTH_TEST);
     
     mat4 minimapViewProjection = minimapProjection * minimapView;
     
@@ -609,7 +617,7 @@ void Scene::RenderMinimap()
 	main->SetUniform("cameraPosition", cameraPosition);
     
 	// Draw ship
-	if (level->ship && frustum->Contains(*level->ship))
+	if (level->ship)
 	{
 		main->SetUniform("illum", 0);
 		level->ship->Draw(*main, minimapViewProjection, cameraPosition);
@@ -619,11 +627,15 @@ void Scene::RenderMinimap()
 	for (int i = 0; i < level->objects.size(); i++)
 	{
 		Object *obj = level->objects[i];
-		if (frustum->Contains(*obj))
+		if (level->ship && glm::distance(level->ship->GetPosition(), obj->GetPosition()) < 50)
 		{
 			main->SetUniform("illum", 0);
 			obj->Draw(*main, minimapViewProjection, cameraPosition);
 		}
+        else if (!level->ship) {
+            main->SetUniform("illum", 0);
+			obj->Draw(*main, minimapViewProjection, cameraPosition);
+        }
 	}
     
     // Draw level path
@@ -640,6 +652,8 @@ void Scene::RenderMinimap()
     
 	glBindTexture(GL_TEXTURE_2D, minimapTexture->GetID());
 	glCopyTexImage2D(GL_TEXTURE_2D, 0, minimapTexture->GetFormat(), 0, 0, minimapTexture->GetWidth(), minimapTexture->GetHeight(), 0);
+    
+    glEnable(GL_DEPTH_TEST);
 }
 
 void Scene::RenderVelocityTexture()
@@ -715,7 +729,7 @@ void Scene::Render()
 
 	RenderGlowMap();
 	RenderScene();
-    //RenderMinimap();
+    RenderMinimap();
 	RenderVelocityTexture();
 	PostProcess();
 

@@ -143,7 +143,8 @@ void Map::Draw(const glm::mat4& viewProjection, const glm::vec3& cameraPos, cons
         triangles->Draw(p, GL_TRIANGLES);
     }
     else if (mode == MINIMAP) {
-        p.SetUniform("illum", 0);
+         p.SetUniform("baseColor", vec3(0.0, 0.7, 0.9));
+        p.SetUniform("illum", 1);
         triangles->Draw(p, GL_TRIANGLES);
     }
     

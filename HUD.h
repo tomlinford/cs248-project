@@ -3,6 +3,7 @@
 #include <string>
 #include <FTGL/ftgl.h>
 
+#include "Scene.h"
 #include "Level.h"
 #include "Flyable.h"
 
@@ -15,6 +16,7 @@ public:
     HUD();
     ~HUD();
     
+    void LoadScene(Scene *s) { scene = s; }
     void LoadLevel(Level *l) { level = l; }
     void Render();
     
@@ -25,7 +27,10 @@ private:
     
     int width, height;
     float padding;
+    
+    Scene *scene;
     Level *level;
+    
     FTPixmapFont *font;
 	HUDElement *minimap;
 };

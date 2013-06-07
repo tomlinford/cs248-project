@@ -52,6 +52,9 @@ public:
     void SetMinimapView(glm::mat4 v) { minimapView = v; }
     void SetMinimapProjection(glm::mat4 p) { minimapProjection = p; }
     
+    /** Get minimap texture */
+    Texture *GetMinimapTexture() { return minimapTexture; }
+    
     /** Update for FBO */
     void UpdateFBO(GLuint width, GLuint height);
 

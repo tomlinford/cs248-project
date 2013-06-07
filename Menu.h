@@ -23,10 +23,12 @@ public:
     
     void SetWidth(int w) { width = w; }
     void SetHeight(int h) { height = h; }
+    void SetSelectionActive(bool t) { selectionActive = t; }
     
     void HandleKey(int key, int action);
     
 private:
+    bool selectionActive;
     int selectedIndex;
     int numItems;
     int width, height;

@@ -41,28 +41,32 @@ public:
 		projection = ortho((float)-win_w / 2, (float)win_w / 2, (float)win_h / 2, (float)-win_h / 2, 0.f, 1.f);
 		
 		vector<vec3> outlineVertices;
-		outlineVertices.push_back(vec3(x - win_w / 2, y - win_h / 2, 0));
-		outlineVertices.push_back(vec3(x - win_w / 2, y + h - win_h / 2, 0));
-		outlineVertices.push_back(vec3(x + w - win_w / 2, y + h - win_h / 2, 0));
-		outlineVertices.push_back(vec3(x + w - win_w / 2, y - win_h / 2, 0));
-		outlineVertices.push_back(vec3(x - win_w / 2, y + h - win_h / 2, 0));
-		outlineVertices.push_back(vec3(x + w - win_w / 2, y + h - win_h / 2, 0));
-		outlineVertices.push_back(vec3(x - win_w / 2, y - win_h / 2, 0));
-		outlineVertices.push_back(vec3(x + w - win_w / 2, y - win_h / 2, 0));
+		outlineVertices.push_back(vec3(x - win_w / 2 - 1, y - win_h / 2 - 1, 0));
+		outlineVertices.push_back(vec3(x - win_w / 2 - 1, y + h - win_h / 2 + 1, 0));
+		outlineVertices.push_back(vec3(x + w - win_w / 2 + 1, y + h - win_h / 2 + 1, 0));
+		outlineVertices.push_back(vec3(x + w - win_w / 2 + 1, y - win_h / 2 - 1, 0));
+		outlineVertices.push_back(vec3(x - win_w / 2 - 1, y + h - win_h / 2 + 1, 0));
+		outlineVertices.push_back(vec3(x + w - win_w / 2 + 1, y + h - win_h / 2 + 1, 0));
+		outlineVertices.push_back(vec3(x - win_w / 2 - 1, y - win_h / 2 - 1, 0));
+		outlineVertices.push_back(vec3(x + w - win_w / 2 + 1, y - win_h / 2 - 1, 0));
 		outlineMB = new ModelBuffer(ArrayBuffer<vec3>(outlineVertices), outlineVertices.size());
 	}
 	~HUDElement() { delete texture; delete mb; }
 
-	void Draw(const Program &p) const {
+	void Draw(const Program &p, Model *path, Texture *tex) const {
 		p.Use();
 		p.SetMVP(projection);
-		p.SetUniform("texture", texture, GL_TEXTURE0);
+		p.SetUniform("texture", tex, GL_TEXTURE0);
 		mb->Draw(p, GL_TRIANGLES);
 
-        if (!plain) plain = new Program("Shaders/plain.vert", "Shaders/plain.frag");
-		plain->Use();
-		plain->SetMVP(projection);
-		outlineMB->Draw(*plain, GL_LINES);
+		Program plain("Shaders/plain.vert", "Shaders/plain.frag");
+		plain.Use();
+		plain.SetMVP(projection);
+        glLineWidth(1.0f);
+		outlineMB->Draw(plain, GL_LINES);
+
+		path->Draw(p, GL_LINE_STRIP);
+        p.Unuse();
 	}
 private:
 	Texture *texture;
@@ -87,7 +91,7 @@ static float *createMinimap(Level *l) {
 				y = 200;
 			float xf = (float) x /  (float) MINIMAP_SIZE;
 			float yf = (float) y / (float) MINIMAP_SIZE;
-			data[x + y * MINIMAP_SIZE] = vec3(0, 0, l->GetHeightAt(xf, yf));
+			data[x + y * MINIMAP_SIZE] = vec3(0, l->GetHeightAt(xf, yf) * 0.7, l->GetHeightAt(xf, yf) * 0.9);
 		}
 	}
 	return (float *) data;
@@ -107,9 +111,15 @@ HUD::~HUD()
 
 void HUD::Render()
 {
+    Texture *tex;
+    /*if (scene) {
+        tex = scene->GetMinimapTexture();
+    }
+    else {*/
+        tex = new Texture(MINIMAP_SIZE, MINIMAP_SIZE, GL_RGB,
+                               createMinimap(level));
+    //}
 	if (minimap == NULL) {
-		Texture *tex = new Texture(MINIMAP_SIZE, MINIMAP_SIZE, GL_RGB,
-									createMinimap(level));
 		minimap = new HUDElement(width - MINIMAP_SIZE - 5, height - MINIMAP_SIZE - 5, MINIMAP_SIZE,
 								MINIMAP_SIZE, width, height, tex);
 	}
@@ -117,30 +127,32 @@ void HUD::Render()
     if (!p) {
         p = new Program("Shaders/hud.vert", "Shaders/hud.frag");
     }
-	minimap->Draw(*p);
+	minimap->Draw(*p, level->GetPath(), tex);
 
 	glColor4f(1, 1, 1, 1);
 	string level = "LEVEL: ";
 	level.append(toString(0));
 	glWindowPos2f(0, 0);
 	font->Render(level.c_str(), -1, FTPoint(padding, height - padding - font->Ascender()));
-     
+    
+    float h = 0;
     if (HUD::level->ship) {
-        float h = HUD::level->ship->GetHealth();
+        h = HUD::level->ship->GetHealth();
         if (h < 0)
             h = 0;
-        glColor4f(1 - h / 10, h / 10, 0, 1);
-        string health = "HEALTH: ";
-        health.append(toString(h));
-        FTBBox box = font->BBox(health.c_str(), -1, FTPoint(0, 0), FTPoint(0, 0));
-        glWindowPos2f(0, 0);
-        font->Render(health.c_str(), -1, FTPoint(width - 2 * padding - box.Upper().X(), height - padding - font->Ascender()));
     }
+    
+    glColor4f(1 - h / 10, h / 10, 0, 1);
+    string health = "HEALTH: ";
+    health.append(toString(h));
+    FTBBox box = font->BBox(health.c_str(), -1, FTPoint(0, 0), FTPoint(0, 0));
+    glWindowPos2f(0, 0);
+    font->Render(health.c_str(), -1, FTPoint(width - 2 * padding - box.Upper().X(), height - padding - font->Ascender()));
 
     glColor4f(1, 1, 1, 1);
 	string score = "SCORE: ";
     score.append(toString(0));
-    FTBBox box = font->BBox(score.c_str(), -1, FTPoint(0, 0), FTPoint(0, 0));
+    box = font->BBox(score.c_str(), -1, FTPoint(0, 0), FTPoint(0, 0));
     glWindowPos2f(0, 0);
     font->Render(score.c_str(), -1, FTPoint(width / 2 - box.Upper().X() / 2, height - padding - font->Ascender()));
 }
