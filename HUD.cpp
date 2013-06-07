@@ -4,6 +4,9 @@
 
 using namespace glm;
 
+static Program *p = NULL;
+static Program *plain = NULL;
+
 #define MINIMAP_SIZE 256
 
 class HUDElement {
@@ -56,10 +59,10 @@ public:
 		p.SetUniform("texture", texture, GL_TEXTURE0);
 		mb->Draw(p, GL_TRIANGLES);
 
-		Program plain("Shaders/plain.vert", "Shaders/plain.frag");
-		plain.Use();
-		plain.SetMVP(projection);
-		outlineMB->Draw(plain, GL_LINES);
+        if (!plain) plain = new Program("Shaders/plain.vert", "Shaders/plain.frag");
+		plain->Use();
+		plain->SetMVP(projection);
+		outlineMB->Draw(*plain, GL_LINES);
 	}
 private:
 	Texture *texture;
@@ -111,7 +114,10 @@ void HUD::Render()
 								MINIMAP_SIZE, width, height, tex);
 	}
 
-	minimap->Draw(Program("Shaders/hud.vert", "Shaders/hud.frag"));
+    if (!p) {
+        p = new Program("Shaders/hud.vert", "Shaders/hud.frag");
+    }
+	minimap->Draw(*p);
 
 	glColor4f(1, 1, 1, 1);
 	string level = "LEVEL: ";
