@@ -78,9 +78,6 @@ static string toString(T t) {
 
 static float *createMinimap(Level *l) {
 	vec3 *data = new vec3[MINIMAP_SIZE * MINIMAP_SIZE];
-	for (int i = 0; i < MINIMAP_SIZE * MINIMAP_SIZE; i++) {
-		data[i] = vec3(0, 0, 1);
-	}
 	for (int x = 0; x < MINIMAP_SIZE; x++) {
 		for (int y = 0; y < MINIMAP_SIZE; y++) {
 			if (x == 201 && y == 200)

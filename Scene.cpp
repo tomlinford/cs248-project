@@ -16,7 +16,7 @@ using boost::timer::cpu_times;
 
 static int count;
 
-Scene::Scene(Player p) : particle_sys()
+Scene::Scene(Player p) : particle_sys(), finished(false)
 {
 	player = p;
 	theta = phi = 0.0f;
