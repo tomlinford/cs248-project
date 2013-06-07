@@ -50,7 +50,7 @@ public:
 	}
 	~HUDElement() { delete texture; delete mb; }
 
-	void Draw(const Program &p) const {
+	void Draw(const Program &p, Model *path) const {
 		p.Use();
 		p.SetMVP(projection);
 		p.SetUniform("texture", texture, GL_TEXTURE0);
@@ -60,6 +60,8 @@ public:
 		plain.Use();
 		plain.SetMVP(projection);
 		outlineMB->Draw(plain, GL_LINES);
+
+		path->Draw(p, GL_LINE_STRIP);
 	}
 private:
 	Texture *texture;
@@ -111,7 +113,7 @@ void HUD::Render()
 								MINIMAP_SIZE, width, height, tex);
 	}
 
-	minimap->Draw(Program("Shaders/hud.vert", "Shaders/hud.frag"));
+	minimap->Draw(Program("Shaders/hud.vert", "Shaders/hud.frag"), level->GetPath());
 
 	glColor4f(1, 1, 1, 1);
 	string level = "LEVEL: ";
