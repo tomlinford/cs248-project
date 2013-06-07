@@ -313,8 +313,10 @@ int main(int argc, char *argv[])
 	glewInit();
 #endif
 
-    ipAddress = argv[1];
-	currPlayer = argv[2];
+	if (argc > 1) ipAddress = argv[1];
+	else ipAddress = "localhost";
+	if (argc > 2) currPlayer = argv[2];
+	else currPlayer = "1s";
 
     CreateMainMenu();
     CreateStartMenu();
