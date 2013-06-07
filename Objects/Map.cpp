@@ -117,7 +117,7 @@ void Map::ComputeBounds()
                     position + vec3(MAP_SCALE_FACTOR, maxY, MAP_SCALE_FACTOR));
 }
 
-void Map::Draw(const glm::mat4& viewProjection, const glm::vec3& cameraPos, const glm::vec3& lightPos, bool glowMap) const {
+void Map::Draw(const glm::mat4& viewProjection, const glm::vec3& cameraPos, const glm::vec3& lightPos, DrawMode mode) const {
 	p.Use();
     
 	p.SetMVP(viewProjection * M);
@@ -135,10 +135,15 @@ void Map::Draw(const glm::mat4& viewProjection, const glm::vec3& cameraPos, cons
     
 	p.SetUniform("illum", 0);
     glLineWidth(2.0f);
-    lines->Draw(p, GL_LINES);
-    
-    if (!glowMap) {
+    if (mode == GLOW || mode == NORMAL) {
+        lines->Draw(p, GL_LINES);
+    }
+    if (mode == NORMAL) {
         p.SetUniform("illum", 1);
+        triangles->Draw(p, GL_TRIANGLES);
+    }
+    else if (mode == MINIMAP) {
+        p.SetUniform("illum", 0);
         triangles->Draw(p, GL_TRIANGLES);
     }
     

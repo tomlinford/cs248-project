@@ -121,19 +121,23 @@ void HUD::Render()
 	level.append(toString(0));
 	glWindowPos2f(0, 0);
 	font->Render(level.c_str(), -1, FTPoint(padding, height - padding - font->Ascender()));
+     
+    if (HUD::level->ship) {
+        float h = HUD::level->ship->GetHealth();
+        if (h < 0)
+            h = 0;
+        glColor4f(1 - h / 10, h / 10, 0, 1);
+        string health = "HEALTH: ";
+        health.append(toString(h));
+        FTBBox box = font->BBox(health.c_str(), -1, FTPoint(0, 0), FTPoint(0, 0));
+        glWindowPos2f(0, 0);
+        font->Render(health.c_str(), -1, FTPoint(width - 2 * padding - box.Upper().X(), height - padding - font->Ascender()));
+    }
 
-	float h = HUD::level->ship->GetHealth();
-	if (h < 0) h = 0;
-	glColor4f(1 - h / 10, h / 10, 0, 1);
-	string health = "HEALTH: ";
-	health.append(toString(h));
-	FTBBox box = font->BBox(health.c_str(), -1, FTPoint(0, 0), FTPoint(0, 0));
-	glWindowPos2f(0, 0);
-	font->Render(health.c_str(), -1, FTPoint(width - 2 * padding - box.Upper().X(), height - padding - font->Ascender()));
-
-	glColor4f(1, 1, 1, 1);
+    glColor4f(1, 1, 1, 1);
 	string score = "SCORE: ";
-	score.append(toString(0));
-	glWindowPos2f(0, 0);
-	font->Render(score.c_str(), -1, FTPoint(5, 5));
+    score.append(toString(0));
+    FTBBox box = font->BBox(score.c_str(), -1, FTPoint(0, 0), FTPoint(0, 0));
+    glWindowPos2f(0, 0);
+    font->Render(score.c_str(), -1, FTPoint(width / 2 - box.Upper().X() / 2, height - padding - font->Ascender()));
 }

@@ -14,6 +14,11 @@ public:
     Menu(std::string options[], menuFunc functions[], int numItems);
     ~Menu();
     
+    void PushMenu(Menu *other);
+    void PopMenu();
+    void SetPrevious(Menu *p) { previous = p; }
+    void SetNext(Menu *n) { next = n; }
+    
     void Render();
     
     void SetWidth(int w) { width = w; }
@@ -27,7 +32,7 @@ private:
     int width, height;
     float padding;
     
-    Menu *previous;
+    Menu *next, *previous;
     
     menuFunc *functions;
     std::string *options;

@@ -8,6 +8,9 @@ Menu::Menu(std::string o[], menuFunc f[], int i)
     functions = f;
     numItems = i;
     
+    next = NULL;
+    previous = NULL;
+    
     selectedIndex = 0;
     
     padding = 20.0f;
@@ -21,15 +24,29 @@ Menu::~Menu()
     delete font;
 }
 
+void Menu::PushMenu(Menu *other)
+{
+    next = other;
+    other->SetPrevious(this);
+}
+
+void Menu::PopMenu()
+{
+    if (previous)
+        previous->SetNext(NULL);
+}
+
 void Menu::HandleKey(int key, int action)
 {
+    if (next) {
+        next->HandleKey(key, action);
+        return;
+    }
+    
     if (action == GLFW_RELEASE)
         return;
     
     switch(key) {
-        case GLFW_KEY_ESC:
-            // Load previous menu
-            break;
         case GLFW_KEY_UP:
             selectedIndex--;
             break;
@@ -37,7 +54,13 @@ void Menu::HandleKey(int key, int action)
             selectedIndex++;
             break;
         case GLFW_KEY_ENTER:
-            functions[selectedIndex](NULL);
+        {
+            if (functions[selectedIndex])
+                functions[selectedIndex](NULL);
+            break;
+        }
+        case GLFW_KEY_ESC:
+            PopMenu();
             break;
         default:
             break;
@@ -52,6 +75,11 @@ void Menu::HandleKey(int key, int action)
 
 void Menu::Render()
 {
+    if (next) {
+        next->Render();
+        return;
+    }
+    
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     
     float itemHeight = font->Ascender() * numItems + padding * (numItems - 1);
@@ -61,11 +89,12 @@ void Menu::Render()
         
         if (i == selectedIndex) {
             glColor4f(0.0, 0.7, 0.9, 1.0);
-            continue;
+            //continue;
         }
         else {
             glColor4f(0.5, 0.5, 0.5, 1.0);
         }
+        glWindowPos2f(0,0);
         
         string item = options[i];
         FTBBox box = font->BBox(item.c_str(), -1, FTPoint(0, 0), FTPoint(0, 0));

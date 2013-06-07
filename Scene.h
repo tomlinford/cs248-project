@@ -2,6 +2,7 @@
 
 #include "gl.h"
 
+#include <thread>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <boost/timer/timer.hpp>
@@ -48,6 +49,8 @@ public:
     }
     void SetView(glm::mat4 v) { view = v; }
     void SetProjection(glm::mat4 p) { projection = p; }
+    void SetMinimapView(glm::mat4 v) { minimapView = v; }
+    void SetMinimapProjection(glm::mat4 p) { minimapProjection = p; }
     
     /** Update for FBO */
     void UpdateFBO(GLuint width, GLuint height);
@@ -68,6 +71,9 @@ public:
     /** FPS direction in spherical coordinates (Player 2) */
     float theta, phi;
     
+    /** Game over? */
+    bool gameOver;
+    
 private:
     /** View matrices. These should be
      player-specific. The camera for player 1
@@ -76,10 +82,16 @@ private:
      movement. */
     glm::mat4 view;
     glm::mat4 projection;
+    glm::mat4 minimapView;
+    glm::mat4 minimapProjection;
     glm::mat4 viewProjection;
     glm::mat4 prevViewProjection;
     glm::vec3 cameraPosition;
     glm::vec3 lightPosition;
+    
+    /* Separate update thread */
+    thread updateThread;
+    bool finished;
     
     /* Level loading synchronization */
     std::condition_variable cond;
@@ -116,6 +128,7 @@ private:
     Texture *sceneTexture;
     Texture *velocityTexture;
     Texture *combinedTexture;
+    Texture *minimapTexture;
     FBO *fbo;
     
     /** Global objects */
@@ -137,6 +150,7 @@ private:
     void RenderGlowMap();
     void RenderVelocityTexture();
     void RenderScene();
+    void RenderMinimap();
     void PostProcess();
 };
 

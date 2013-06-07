@@ -6,6 +6,7 @@
 #endif
 
 #define MAP_DIM 16
+#define GRANULARITY 10
 
 using namespace glm;
 using namespace std;
@@ -16,6 +17,8 @@ float rand2(float min, float max) {
 
 Level::Level() : ready(false), maps(MAP_DIM * MAP_DIM, NULL)
 {
+    pathModel = NULL;
+    
     ship = new Ship("Models/ship.obj");
     ship->SetColor(vec3(0.0, 0.9, 0.0));
     
@@ -26,6 +29,29 @@ Level::Level() : ready(false), maps(MAP_DIM * MAP_DIM, NULL)
 
 	// prefetch turret obj file and associated buffer
 	Object turret("Models/turret.obj");
+}
+
+/* Returns an object representing the animation path */
+void Level::GenPath()
+{
+    vector<vec3> vertices;
+    vector<size_t> indices;
+    
+    GLuint index = 0;
+    for (int i = 1; i < path.size(); i++)
+    {
+        CMSpline *spline = path[i].spline;
+        for (float u = 0; u < GRANULARITY; u++) {
+            vec3 position = spline->evaluate3D(u / GRANULARITY);
+            vertices.push_back(position);
+            indices.push_back(index++);
+        }
+    }
+    
+    ArrayBuffer<vec3> ab(vertices);
+    ElementArrayBuffer eab(indices);
+    ModelBuffer mb(ab, eab);
+    pathModel = new Model(mb, Material(), Bounds());
 }
 
 Level::~Level()
@@ -68,6 +94,14 @@ void Level::PrecomputeSplines()
                                       path[i].position,
                                       path[i + 1].position);
     }
+}
+
+Model *Level::GetPath()
+{
+    if (!pathModel) {
+        GenPath();
+    }
+    return pathModel;
 }
 
 vec3 Level::GetPosition(Direction direction, float time)
@@ -152,12 +186,12 @@ void Level::AddEnemyShip(float timeOffset, glm::vec2 offset) {
 }
 
 void Level::DrawMap(const glm::mat4& viewProjection, const glm::vec3& cameraPos,
-                    const glm::vec3& lightPos, const Frustum& frustum, bool glowMap) {
+                    const glm::vec3& lightPos, const Frustum& frustum, DrawMode mode) {
 	int count = 0;
     for (Map *map : maps) {
 		if (map == NULL) continue;
         if (frustum.Contains(*map))
-            map->Draw(viewProjection, cameraPos, lightPos, glowMap);
+            map->Draw(viewProjection, cameraPos, lightPos, mode);
         else
             count++;
             
