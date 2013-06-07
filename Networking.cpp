@@ -17,6 +17,9 @@ namespace Networking {
 	static string ip = "";
 	static string player;
 
+	// game over condition
+	static bool gameOver = false;
+
 	// constant port number
 	const static char *port = "1338";
 
@@ -47,6 +50,8 @@ namespace Networking {
 		level = currentLevel;
 		ip = ip_addr;
 		player = p;
+
+		gameOver = false;
 
 		// starts listening thread
 		thread listenThread(listenFunc);
@@ -171,8 +176,10 @@ namespace Networking {
 			// hacky solution:
 			// every 5 milliseconds, poll the underlying buffer of the network
 			// iostream to see if it has received more data
-			while(ns.rdbuf()->available() == 0)
+			while(ns.rdbuf()->available() == 0 && !gameOver)
 				std::this_thread::sleep_for(std::chrono::milliseconds(5));
+
+			if (gameOver) break;
 
 			getline(ns, line);
 			stringstream ss(line); string header;
@@ -232,6 +239,10 @@ namespace Networking {
 	extern void SetHealth(float health) {
 		lock_guard<mutex> lock(nspMutex);
 		(*nsp) << HEALTH << " " << health << endl;
+	}
+
+	extern void GameOver() {
+		gameOver = true;
 	}
 
 };

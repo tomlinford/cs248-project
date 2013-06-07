@@ -14,6 +14,7 @@
     <ClCompile Include="..\HUD.cpp" />
     <ClCompile Include="..\Level.cpp" />
     <ClCompile Include="..\main.cpp" />
+    <ClCompile Include="..\Menu.cpp" />
     <ClCompile Include="..\Networking.cpp" />
     <ClCompile Include="..\Objects\Flyable.cpp" />
     <ClCompile Include="..\Objects\Map.cpp" />
@@ -40,6 +41,7 @@
     <ClInclude Include="..\Grid\vector.h" />
     <ClInclude Include="..\HUD.h" />
     <ClInclude Include="..\Level.h" />
+    <ClInclude Include="..\Menu.h" />
     <ClInclude Include="..\Networking.h" />
     <ClInclude Include="..\Objects\Flyable.h" />
     <ClInclude Include="..\Objects\Map.h" />
@@ -148,7 +150,7 @@
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>ftgl.lib;GLFW.lib;glew32.lib;opengl32.lib;AntTweakBar.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>fmodex_vc.lib;ftgl.lib;GLFW.lib;glew32.lib;opengl32.lib;AntTweakBar.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
       <Command>

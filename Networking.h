@@ -8,4 +8,5 @@ namespace Networking {
 	void AddBullet(glm::vec3 position, glm::vec3 velocity);
 	void AddLightning();
 	void SetHealth(float health);
+	void GameOver();
 };

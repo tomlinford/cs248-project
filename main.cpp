@@ -115,9 +115,12 @@ void GLFWCALL WindowResizeCallback(int w, int h)
 	float ratio = (float)w / h;
 	if (scene) {
 		scene->SetProjection(glm::perspective(75.0f,        // Field of view
-			ratio,        // Aspect ratio
-			0.1f,         // Near clipping plane
-			50.0f));     // Far clipping plane
+                                              ratio,        // Aspect ratio
+                                              0.1f,         // Near clipping plane
+                                              50.0f));      // Far clipping plane
+        scene->SetMinimapProjection(glm::ortho(-10.0f, 10.0f,   // Left, right
+                                               -10.0f, 10.0f,   // Bottom, top
+                                               -50.0f, 50.0f)); // Near, far
 		scene->SetFrustum(75.0f, ratio, 0.1f, 50.0f);
 		scene->UpdateFBO(w, h);
 	}
@@ -365,14 +368,14 @@ int main(int argc, char *argv[])
 			nbFrames = 0;
 			lastTime += 1.0;
 		}
-		/*if (scene) {
+		if (scene) {
             scene->Render();
             hud->Render();
         }
 		else if (readyToStart) {
 			loadScene();
-		}*/
-        
+		}
+        /*
         if (finished) {
             break;
         }
@@ -384,9 +387,9 @@ int main(int argc, char *argv[])
         }
         else {
             menu->Render();
-        }
+        }*/
         
-        //TwDraw();
+        TwDraw();
 		glfwSwapBuffers();
 	}
 	TwTerminate();

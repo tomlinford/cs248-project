@@ -43,6 +43,7 @@ Scene::Scene(Player p) : particle_sys()
 	velocityTexture = NULL;
 	combinedTexture = NULL;
 	sceneTexture = NULL;
+    minimapTexture = NULL;
 
 	keyLeft = false;
 	keyRight = false;
@@ -58,7 +59,7 @@ Scene::Scene(Player p) : particle_sys()
 
 Scene::~Scene()
 {
-    finished = true;
+    /*finished = true;
     updateThread.join();
     
 	if (main)
@@ -66,7 +67,7 @@ Scene::~Scene()
 	if (level)
 		delete level;
 	if (frustum)
-		delete frustum;
+		delete frustum;*/
 }
 
 void Scene::LoadLevel(Level *l)
@@ -119,6 +120,10 @@ void Scene::UpdateFBO(GLuint width, GLuint height)
 	if (sceneTexture)
 		delete sceneTexture;
 	sceneTexture = new Texture(width, height, GL_RGBA);
+    
+    if (minimapTexture)
+        delete minimapTexture;
+    minimapTexture = new Texture(width, height, GL_RGBA);
 
 	if (fbo)
 		delete fbo;
@@ -421,6 +426,16 @@ void Scene::UpdateView(float elapsedSeconds)
 			position + direction,
 			up);
 	}
+    
+    // Minimap view
+    if (level->ship) {
+        // Compute view vectors
+		vec3 position = level->ship->GetPosition();
+        
+		SetMinimapView(lookAt(position + vec3(0.0, 0.5, 0.0),
+                       position,
+                       vec3(0, 0, -1)));
+    }
 }
 
 /* Updates object positions in world based on elapsed
@@ -488,7 +503,7 @@ void Scene::RenderGlowMap()
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	// Maps have their own shader program for vertex displacement
-	level->DrawMap(projection * view, cameraPosition, lightPosition, *frustum, true);
+	level->DrawMap(viewProjection, cameraPosition, lightPosition, *frustum, GLOW);
 
 	main->Use();
 	main->SetUniform("illum", 0);
@@ -530,7 +545,7 @@ void Scene::RenderScene()
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	// Maps have their own shader program for vertex displacement
-	level->DrawMap(viewProjection, cameraPosition, lightPosition, *frustum, false);
+	level->DrawMap(viewProjection, cameraPosition, lightPosition, *frustum, NORMAL);
 
 	main->Use();
     main->SetUniform("attenuate", true);
@@ -579,6 +594,54 @@ void Scene::RenderScene()
 
 	glBindTexture(GL_TEXTURE_2D, depthTexture->GetID());
 	glCopyTexImage2D(GL_TEXTURE_2D, 0, depthTexture->GetFormat(), 0, 0, depthTexture->GetWidth(), depthTexture->GetHeight(), 0);
+}
+
+void Scene::RenderMinimap()
+{
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    
+    mat4 minimapViewProjection = minimapProjection * minimapView;
+    
+	// Maps have their own shader program for vertex displacement
+	level->DrawMap(minimapViewProjection, cameraPosition, lightPosition, *frustum, MINIMAP);
+    
+	main->Use();
+    main->SetUniform("attenuate", true);
+	main->SetUniform("lightPosition", lightPosition);
+	main->SetUniform("cameraPosition", cameraPosition);
+    
+	// Draw ship
+	if (level->ship && frustum->Contains(*level->ship))
+	{
+		main->SetUniform("illum", 0);
+		level->ship->Draw(*main, minimapViewProjection, cameraPosition);
+	}
+    
+	// Draw objects in scene
+	for (int i = 0; i < level->objects.size(); i++)
+	{
+		Object *obj = level->objects[i];
+		if (frustum->Contains(*obj))
+		{
+			main->SetUniform("illum", 0);
+			obj->Draw(*main, minimapViewProjection, cameraPosition);
+		}
+	}
+    
+    // Draw level path
+    Model *path = level->GetPath();
+    main->SetMVP(minimapViewProjection);
+    main->SetUniform("baseColor", vec3(1.0));
+    main->SetUniform("illum", 0);
+    main->SetUniform("attenuate", false);
+    
+    glLineWidth(10.0f);
+    path->Draw(*main, GL_LINE_STRIP);
+    
+	main->Unuse();
+    
+	glBindTexture(GL_TEXTURE_2D, minimapTexture->GetID());
+	glCopyTexImage2D(GL_TEXTURE_2D, 0, minimapTexture->GetFormat(), 0, 0, minimapTexture->GetWidth(), minimapTexture->GetHeight(), 0);
 }
 
 void Scene::RenderVelocityTexture()
@@ -654,6 +717,7 @@ void Scene::Render()
 
 	RenderGlowMap();
 	RenderScene();
+    //RenderMinimap();
 	RenderVelocityTexture();
 	PostProcess();
 

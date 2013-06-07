@@ -6,12 +6,19 @@
 
 #include <assert.h>
 
-typedef enum
+enum TessLevel
 {
     TESSLVL_32,
     TESSLVL_64,
     TESSLVL_128
-} TessLevel;
+};
+
+/* Defines a draw mode */
+enum DrawMode {
+    MINIMAP,
+    GLOW,
+    NORMAL
+};
 
 /** Represents a terrain map. A maps's model space should be
  the same as its world space; this restriction makes sense
@@ -46,7 +53,7 @@ public:
     void SetColor(const glm::vec3& color) { this->color = color; }
 
 	void Draw(const glm::mat4& viewProjection, const glm::vec3& cameraPos,
-              const glm::vec3& lightPos, bool glowMap) const;
+              const glm::vec3& lightPos, DrawMode mode) const;
 
 	void AddTerrain(float *heightMap, size_t size, int x, int y);
     

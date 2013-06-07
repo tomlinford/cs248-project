@@ -58,13 +58,16 @@ public:
 
 	/* This will be called from another thread, so Level will have to hold onto this */
 	void SetLevel(float *terrainMap, size_t size, int x, int y);
+    
+    /* Fetches a line representation of the path */
+    Model *GetPath();
 
 	// gets called from Networking
 	void AddEnemyShip(float timeOffset, glm::vec2 offset);
 
 	/** This will be called from the main thread, so the Level will load the map if necessary */
 	void DrawMap(const glm::mat4& viewProjection, const glm::vec3& cameraPos,
-                 const glm::vec3& lightPos, const Frustum& frustrum, bool glowMap);
+                 const glm::vec3& lightPos, const Frustum& frustrum, DrawMode mode);
 
     /** Whether or not the level has finished loading */
 	void SetReady();
@@ -86,14 +89,15 @@ private:
 	bool ready;
 	std::vector<MapLoader> mapLoaders;
 
-	// lock between Level and Networking
+    /** Level path object */
+    Model *pathModel;
+    
+	/** Lock between Level and Networking */
 	std::mutex mutex;
-
-	// condition variable
 	std::condition_variable cond;
     
-    /** Precomputes splines. Call after loading control points. */
+    /** Private helpers */
+    void GenPath();
     void PrecomputeSplines();
-
 	void LoadMaps();
 };

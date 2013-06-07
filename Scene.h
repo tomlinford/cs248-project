@@ -49,6 +49,8 @@ public:
     }
     void SetView(glm::mat4 v) { view = v; }
     void SetProjection(glm::mat4 p) { projection = p; }
+    void SetMinimapView(glm::mat4 v) { minimapView = v; }
+    void SetMinimapProjection(glm::mat4 p) { minimapProjection = p; }
     
     /** Update for FBO */
     void UpdateFBO(GLuint width, GLuint height);
@@ -80,6 +82,8 @@ private:
      movement. */
     glm::mat4 view;
     glm::mat4 projection;
+    glm::mat4 minimapView;
+    glm::mat4 minimapProjection;
     glm::mat4 viewProjection;
     glm::mat4 prevViewProjection;
     glm::vec3 cameraPosition;
@@ -124,6 +128,7 @@ private:
     Texture *sceneTexture;
     Texture *velocityTexture;
     Texture *combinedTexture;
+    Texture *minimapTexture;
     FBO *fbo;
     
     /** Global objects */
@@ -145,6 +150,7 @@ private:
     void RenderGlowMap();
     void RenderVelocityTexture();
     void RenderScene();
+    void RenderMinimap();
     void PostProcess();
 };
 
