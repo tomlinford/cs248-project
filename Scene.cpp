@@ -59,7 +59,7 @@ Scene::Scene(Player p) : particle_sys()
 
 Scene::~Scene()
 {
-    /*finished = true;
+    finished = true;
     updateThread.join();
     
 	if (main)
@@ -67,7 +67,7 @@ Scene::~Scene()
 	if (level)
 		delete level;
 	if (frustum)
-		delete frustum;*/
+		delete frustum;
 }
 
 void Scene::LoadLevel(Level *l)
