@@ -6,7 +6,6 @@
 
 #include <glm/glm.hpp>
 #include <time.h>
-#include <AntTweakBar.h>
 #include <fmod.hpp>
 
 #include "Scene.h"
@@ -26,24 +25,22 @@ using namespace glm;
 #define M_PI 3.14159265359
 #endif
 
-static Menu *menu, *start;
+static Menu *menu, *start, *credits, *hscores;
 static Scene *scene;
 static HUD *hud;
+
+TextField *ipField;
+TextField *playerField;
 
 bool netInit;
 bool finished;
 bool gaming;
 
-static bool readyToStart(false);
 static float win_width, win_height;
-static string currPlayer, ipAddress;
 
 void GLFWCALL KeyCallback(int key, int action) {
-	if (scene && currPlayer[0] == '1') {
+	if (scene) {
 		switch(key) {
-            //case GLFW_KEY_ESC:
-            //    glfwCloseWindow();
-            //    break;
             case GLFW_KEY_LEFT:
                 scene->keyLeft = (action == GLFW_PRESS);
                 break;
@@ -60,14 +57,18 @@ void GLFWCALL KeyCallback(int key, int action) {
 	}
     if (menu) menu->HandleKey(key, action);
 	if (scene) Networking::KeyAction(key, action, scene->GetShipOffset());
-	TwEventKeyGLFW(key, action);
+}
+
+void GLFWCALL CharCallback(int character, int action)
+{
+    if (menu) menu->HandleChar(character, action);
 }
 
 void GLFWCALL MouseCallback(int x, int y) {
 	// This gets called once before the window has been
 	// initialized; the if block makes sure we don't
 	// preset theta and phi to junk when that happens
-	if (win_width > 0 && win_height > 0 && currPlayer[0] == '2' && scene)
+	if (win_width > 0 && win_height > 0 && scene)
 	{
 		glfwSetMousePos(win_width / 2, win_height / 2);
 
@@ -81,12 +82,11 @@ void GLFWCALL MouseCallback(int x, int y) {
 		else if (scene->phi < -M_PI / 2)
 			scene->phi = -M_PI / 2;
 	}
-	TwEventMousePosGLFW(x, y);
 }
 
 void GLFWCALL MouseButtonCallback(int button, int action)
 {
-	if (currPlayer[0] == '2' && scene) {
+	if (scene) {
 		if (button == GLFW_MOUSE_BUTTON_LEFT) {
 			if (action == GLFW_PRESS)
 				scene->mouseLeft = true;
@@ -107,7 +107,6 @@ void GLFWCALL MouseButtonCallback(int button, int action)
 			cerr << "Unsupported mouse button " << endl;
 		}
 	}
-	TwEventMouseButtonGLFW(button, action);
 }
 
 void GLFWCALL WindowResizeCallback(int w, int h)
@@ -140,53 +139,14 @@ void GLFWCALL WindowResizeCallback(int w, int h)
         start->SetWidth(w);
         start->SetHeight(h);
     }
+    if (credits) {
+        credits->SetWidth(w);
+        credits->SetHeight(h);
+    }
 
 	// Update global
 	win_width = w;
 	win_height = h;
-	TwWindowSize(w, h);
-}
-
-// Function called to copy the content of a std::string (souceString) handled 
-// by the AntTweakBar library to destinationClientString handled by our application
-void TW_CALL CopyStdStringToClient(std::string& destinationClientString, const std::string& sourceLibraryString) {
-	destinationClientString = sourceLibraryString;
-}
-
-void TW_CALL StartGameCB(void *_gameInfo) {
-	pair<string, string> gameInfo = *(pair<string, string> *)_gameInfo;
-	cout << "button clicked " << gameInfo.first << gameInfo.second << endl;
-	ipAddress = gameInfo.first;
-	currPlayer = gameInfo.second;
-	readyToStart = true;
-}
-
-static void loadScene() {
-	TwDeleteAllBars();
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	glfwSwapBuffers();
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	Level *level = new Level();
-
-	// Choose player
-	Player p;
-	//currPlayer = argv[2][0];
-	switch (currPlayer[0]) {
-		//switch('1') { // TODO: change for final
-	case '1':
-		p = PLAYER1;
-		break;
-	case '2':
-		p = PLAYER2;
-		break;
-	}
-	scene = new Scene(p);
-    hud = new HUD();
-	Networking::Init(scene, level, ipAddress, currPlayer.c_str());
-	scene->LoadLevel(level);
-    hud->LoadScene(scene);
-    hud->LoadLevel(level);
-	WindowResizeCallback(win_width, win_height);
 }
 
 void StartGame(void *data)
@@ -198,7 +158,7 @@ void StartGame(void *data)
     
     // Choose player
 	Player p;
-	switch (currPlayer[0]) {
+	switch (playerField->GetCurrentText()[0]) {
     //switch('1') { // TODO: change for final
         case '1':
             p = PLAYER1;
@@ -214,7 +174,7 @@ void StartGame(void *data)
     if (!hud)
         hud = new HUD();
     
-    Networking::Init(scene, level, ipAddress, currPlayer.c_str());
+    Networking::Init(scene, level, ipField->GetCurrentText(), playerField->GetCurrentText().c_str());
     
 	scene->LoadLevel(level);
     hud->LoadLevel(level);
@@ -230,18 +190,12 @@ void Exit(void *data)
         delete hud;
     if (menu)
         delete menu;
+    if (credits)
+        delete credits;
+    if (start)
+        delete start;
     
     finished = true;
-}
-
-void SetServerIP(void *data)
-{
-    cout << "Set server ip " << endl;
-}
-
-void SetPlayer(void *data)
-{
-    cout << "Set player " << endl;
 }
 
 void LoadStartMenu(void *data)
@@ -249,41 +203,69 @@ void LoadStartMenu(void *data)
     menu->PushMenu(start);
 }
 
+void LoadCreditsMenu(void *data)
+{
+    menu->PushMenu(credits);
+}
+
 void CreateStartMenu()
 {
-    string *options = new string[4];
-    menuFunc *functions = new menuFunc[4];
+    MenuItem **items = new MenuItem *[3];
+
+    ipField = new TextField("SERVER IP: ", "127.0.0.1");
+    playerField = new TextField("PLAYER: ", "1s");
     
-    options[0] = "SERVER IP";
-    functions[0] = SetServerIP;
+    items[0] = ipField;
+    items[1] = playerField;
+    items[2] = new MenuItem("CONNECT", StartGame);
     
-    options[1] = "PLAYER";
-    functions[1] = SetPlayer;
+    start = new Menu(items, 3);
+}
+
+void CreateHighScoresMenu()
+{
+    MenuItem **items = new MenuItem *[11];
     
-    options[2] = "CONNECT";
-    functions[2] = StartGame;
+    items[0] = new MenuItem("HIGH SCORES:", NULL);
+    items[1] = new MenuItem("", NULL);
+    items[2] = new MenuItem("", NULL);
+    items[3] = new MenuItem("", NULL);
+    items[4] = new MenuItem("", NULL);
+    items[5] = new MenuItem("", NULL);
+    items[6] = new MenuItem("", NULL);
+    items[7] = new MenuItem("", NULL);
+    items[8] = new MenuItem("", NULL);
     
-    start = new Menu(options, functions, 3);
+    credits = new Menu(items, 9, 48);
+}
+
+void CreateCreditsMenu()
+{
+    MenuItem **items = new MenuItem *[9];
+    
+    items[0] = new MenuItem("DEVELOPMENT:", NULL);
+    items[1] = new MenuItem("tom linford", NULL);
+    items[2] = new MenuItem("ben-han sung", NULL);
+    items[3] = new MenuItem("", NULL);
+    items[4] = new MenuItem("SPECIAL THANKS TO:", NULL);
+    items[5] = new MenuItem("michael lentine", NULL);
+    items[6] = new MenuItem("jonathan su", NULL);
+    items[7] = new MenuItem("bo zhu", NULL);
+    items[8] = new MenuItem("saket patkar", NULL);
+    
+    credits = new Menu(items, 9, 48);
 }
 
 void CreateMainMenu()
 {
-    string *options = new string[4];
-    menuFunc *functions = new menuFunc[4];
+    MenuItem **items = new MenuItem *[4];
     
-    options[0] = "NEW GAME";
-    functions[0] = LoadStartMenu;
+    items[0] = new MenuItem("NEW GAME", LoadStartMenu);
+    items[1] = new MenuItem("HIGH SCORES", NULL);
+    items[2] = new MenuItem("CREDITS", LoadCreditsMenu);
+    items[3] = new MenuItem("EXIT", Exit);
     
-    options[1] = "HIGH SCORES";
-    functions[1] = NULL;
-    
-    options[2] = "CREDITS";
-    functions[2] = NULL;
-    
-    options[3] = "EXIT";
-    functions[3] = Exit;
-    
-    menu = new Menu(options, functions, 4);
+    menu = new Menu(items, 4);
 }
 
 #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
@@ -317,35 +299,11 @@ int main(int argc, char *argv[])
 	glewInit();
 #endif
 
-	if (argc > 1) ipAddress = argv[1];
-	else ipAddress = "localhost";
-	if (argc > 2) currPlayer = argv[2];
-	else currPlayer = "1s";
-
     CreateMainMenu();
     CreateStartMenu();
-    
-	// Initialize AntTweakBar
-	TwInit(TW_OPENGL, NULL);
+    CreateCreditsMenu();
 
-	// Create a tweak bar
-	TwBar *bar = TwNewBar("TweakBar");
-	//TwDefine(" GLOBAL help='This example shows how to integrate AntTweakBar with GLFW and OpenGL.' "); // Message added to the help bar.
-	TwDefine(" TweakBar movable=false resizable=false iconifiable=false fontresizable=false ");
-
-	// Define the required callback function to copy a std::string (see TwCopyStdStringToClientFunc documentation)
-	TwCopyStdStringToClientFunc(CopyStdStringToClient);
-	pair<string, string> gameInfo("localhost", "1s");
-	if (argc > 1) gameInfo.first = argv[1];
-	if (argc > 2) gameInfo.second = argv[2];
-	TwAddVarRW(bar, "IP", TW_TYPE_STDSTRING, &gameInfo.first, " label='Server IP Address' ");
-	TwAddVarRW(bar, "Player", TW_TYPE_STDSTRING, &gameInfo.second, " label='Player Number' ");
-
-	TwAddButton(bar, "Start", StartGameCB, &gameInfo, " label='Start Game' ");
-
-	// - Directly redirect GLFW char events to AntTweakBar
-	glfwSetCharCallback((GLFWcharfun)TwEventCharGLFW);
-
+    glfwSetCharCallback(CharCallback);    
 	glfwSetKeyCallback(KeyCallback);
 	glfwSetMousePosCallback(MouseCallback);
 	glfwSetMouseButtonCallback(MouseButtonCallback);
@@ -374,13 +332,6 @@ int main(int argc, char *argv[])
 			nbFrames = 0;
 			lastTime += 1.0;
 		}
-		/*if (scene) {
-            scene->Render();
-            hud->Render();
-        }
-		else if (readyToStart) {
-			loadScene();
-		}*/
         
         if (finished) {
             break;
@@ -395,10 +346,8 @@ int main(int argc, char *argv[])
             menu->Render();
         }
         
-        //TwDraw();
 		glfwSwapBuffers();
 	}
-	TwTerminate();
 	glfwTerminate();
 	return 0;
 }
