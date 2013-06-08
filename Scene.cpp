@@ -169,7 +169,7 @@ void Scene::HandleKeys(float elapsedSeconds)
 /** Adds bullets based on mouse presses. */
 void Scene::HandleMouse(float elapsedSeconds)
 {
-	float interval = 3 * (elapsedSeconds - lastTime);
+	//float interval = 3 * (elapsedSeconds - lastTime);
 
 	if (mouseLeft && level->ship) {
 		vec3 selected = glm::unProject(vec3(512, 384, 1.0),

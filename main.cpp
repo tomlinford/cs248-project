@@ -150,6 +150,10 @@ void GLFWCALL WindowResizeCallback(int w, int h)
         credits->SetWidth(w);
         credits->SetHeight(h);
     }
+    if (hscores) {
+        hscores->SetWidth(w);
+        hscores->SetHeight(h);
+    }
 
 	// Update global
 	win_width = w;
@@ -213,6 +217,11 @@ void LoadCreditsMenu(void *data)
     menu->PushMenu(credits);
 }
 
+void LoadHighScoresMenu(void *data)
+{
+    menu->PushMenu(hscores);
+}
+
 void CreateStartMenu()
 {
     MenuItem **items = new MenuItem *[3];
@@ -241,7 +250,7 @@ void CreateHighScoresMenu()
     items[7] = new MenuItem("", NULL);
     items[8] = new MenuItem("", NULL);
     
-    credits = new Menu(items, 9, 48);
+    hscores = new Menu(items, 9, 48);
 }
 
 void CreateCreditsMenu()
@@ -266,7 +275,7 @@ void CreateMainMenu()
     MenuItem **items = new MenuItem *[4];
     
     items[0] = new MenuItem("NEW GAME", LoadStartMenu);
-    items[1] = new MenuItem("HIGH SCORES", NULL);
+    items[1] = new MenuItem("HIGH SCORES", LoadHighScoresMenu);
     items[2] = new MenuItem("CREDITS", LoadCreditsMenu);
     items[3] = new MenuItem("EXIT", Exit);
     
@@ -307,6 +316,7 @@ int main(int argc, char *argv[])
     CreateMainMenu();
     CreateStartMenu();
     CreateCreditsMenu();
+    CreateHighScoresMenu();
 
     glfwSetCharCallback(CharCallback);    
 	glfwSetKeyCallback(KeyCallback);
