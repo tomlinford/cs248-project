@@ -1,11 +1,10 @@
-#include "HUD.h"'
+#include "HUD.h"
 #include <sstream>
 #include <glm/glm.hpp>
 
 using namespace glm;
 
 static Program *p = NULL;
-static Program *plain = NULL;
 
 #define MINIMAP_SIZE 256
 

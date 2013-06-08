@@ -16,7 +16,6 @@
 		783D3D161749DCB100C79047 /* libboost_system-mt.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 783D3D141749DCB100C79047 /* libboost_system-mt.dylib */; };
 		783D3D3B1749F28E00C79047 /* libboost_timer-mt.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 783D3D391749F28D00C79047 /* libboost_timer-mt.a */; };
 		783D3D3C1749F28E00C79047 /* libboost_timer-mt.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 783D3D3A1749F28D00C79047 /* libboost_timer-mt.dylib */; };
-		7865252717610E71002AE042 /* libAntTweakBar.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 7865252617610E71002AE042 /* libAntTweakBar.dylib */; };
 		7865252A176136DE002AE042 /* Turret.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 78652528176136DE002AE042 /* Turret.cpp */; };
 		786525371761492C002AE042 /* libfreetype.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 786525351761492C002AE042 /* libfreetype.a */; };
 		786525381761492C002AE042 /* libftgl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 786525361761492C002AE042 /* libftgl.a */; };
@@ -72,7 +71,6 @@
 		783D3D381749ED1900C79047 /* terrain.vert */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; path = terrain.vert; sourceTree = "<group>"; };
 		783D3D391749F28D00C79047 /* libboost_timer-mt.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libboost_timer-mt.a"; path = "../../../../../../../opt/local/lib/libboost_timer-mt.a"; sourceTree = "<group>"; };
 		783D3D3A1749F28D00C79047 /* libboost_timer-mt.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libboost_timer-mt.dylib"; path = "../../../../../../../opt/local/lib/libboost_timer-mt.dylib"; sourceTree = "<group>"; };
-		7865252617610E71002AE042 /* libAntTweakBar.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libAntTweakBar.dylib; path = ../../../../../../../usr/lib/libAntTweakBar.dylib; sourceTree = "<group>"; };
 		78652528176136DE002AE042 /* Turret.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Turret.cpp; sourceTree = "<group>"; };
 		78652529176136DE002AE042 /* Turret.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Turret.h; sourceTree = "<group>"; };
 		786525351761492C002AE042 /* libfreetype.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libfreetype.a; path = ../../../../../../../opt/local/lib/libfreetype.a; sourceTree = "<group>"; };
@@ -153,7 +151,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				7865252717610E71002AE042 /* libAntTweakBar.dylib in Frameworks */,
 				782C9C0217421A0300C1B104 /* OpenGL.framework in Frameworks */,
 				782C9BF6174216EA00C1B104 /* Cocoa.framework in Frameworks */,
 				783346C9173B6FA80036E30F /* ApplicationServices.framework in Frameworks */,
@@ -180,7 +177,6 @@
 				786525481761BC76002AE042 /* libfmodexL.dylib */,
 				786525351761492C002AE042 /* libfreetype.a */,
 				786525361761492C002AE042 /* libftgl.a */,
-				7865252617610E71002AE042 /* libAntTweakBar.dylib */,
 				783D3D391749F28D00C79047 /* libboost_timer-mt.a */,
 				783D3D3A1749F28D00C79047 /* libboost_timer-mt.dylib */,
 				783D3D131749DCB100C79047 /* libboost_system-mt.a */,
