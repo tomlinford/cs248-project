@@ -400,6 +400,7 @@ void Scene::HandleCollisions(float elapsedSeconds)
 		delete level->ship;
 		level->ship = NULL;
 		gameOver = true;
+		Networking::GameOver();
 	}
 }
 

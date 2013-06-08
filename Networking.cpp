@@ -239,9 +239,11 @@ namespace Networking {
 	extern void SetHealth(float health) {
 		lock_guard<mutex> lock(nspMutex);
 		(*nsp) << HEALTH << " " << health << endl;
+		if (health <= 0) (*nsp) << END << endl;
 	}
 
 	extern void GameOver() {
+		SetHealth(-1);
 		gameOver = true;
 	}
 

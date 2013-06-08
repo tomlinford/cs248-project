@@ -149,10 +149,13 @@ void Menu::HandleKey(int key, int action)
 
 void Menu::Render()
 {
+	cout << "Back to rendering" << endl;
     if (next) {
         next->Render();
+		cout << "Submenu rendering" << endl;
         return;
     }
+	cout << "My menu rendering" << endl;
     
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     
