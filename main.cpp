@@ -26,7 +26,7 @@ using namespace glm;
 #define M_PI 3.14159265359
 #endif
 
-static Menu *menu, *start, *credits, *hscores, *nextLevel;
+static Menu *menu, *start, *credits, *hscores, *nextLevel, *connect;
 static Scene *scene;
 static HUD *hud;
 static Player p;
@@ -178,6 +178,10 @@ void GLFWCALL WindowResizeCallback(int w, int h)
         nextLevel->SetWidth(w);
         nextLevel->SetHeight(h);
     }
+    if (connect) {
+        connect->SetWidth(w);
+        connect->SetWidth(h);
+    }
 
 	// Update global
 	win_width = w;
@@ -242,6 +246,11 @@ void LoadStartMenu(void *data)
     menu->GetCurrentMenu()->PushMenu(start);
 }
 
+void LoadConnectMenu(void *data)
+{
+    menu->GetCurrentMenu()->PushMenu(connect);
+}
+
 void LoadCreditsMenu(void *data)
 {
     menu->GetCurrentMenu()->PushMenu(credits);
@@ -261,7 +270,6 @@ void LoadNextLevelMenu(void *data)
     if (top != nextLevel)
         top->PushMenu(nextLevel);
 }
-
 
 void CreateNextLevelMenu()
 {
@@ -296,6 +304,17 @@ void CreateStartMenu()
     start = new Menu(items, 3);
 }
 
+void CreateConnectMenu()
+{
+    MenuItem **items = new MenuItem *[3];
+    
+    items[0] = new MenuItem("CONNECTING...", NULL);
+    items[1] = new MenuItem("", NULL);
+    items[2] = new MenuItem("CANCEL", StartGame);
+    
+    connect = new Menu(items, 3);
+}
+
 void CreateHighScoresMenu()
 {
     MenuItem **items = new MenuItem *[11];
@@ -317,7 +336,7 @@ void CreateCreditsMenu()
 {
     MenuItem **items = new MenuItem *[9];
     
-    items[0] = new MenuItem("DEVELOPMENT:", NULL);
+    items[0] = new MenuItem("DEVELOPERS:", NULL);
     items[1] = new MenuItem("tom linford", NULL);
     items[2] = new MenuItem("ben-han sung", NULL);
     items[3] = new MenuItem("", NULL);
