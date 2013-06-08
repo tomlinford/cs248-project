@@ -43,10 +43,9 @@ Object::Object(const Object& other)
 
 Object::~Object()
 {
-    /*if (model) {
-        model->Delete();
-        delete model;
-    }*/
+    // We actually do not want to delete the model
+    // because it is cached and may be used by
+    // some other Object
 };
 
 bool Object::Intersects(Object& other)
@@ -151,7 +150,7 @@ void Object::DrawAABB(const Program& p, const glm::mat4& viewProjection) const
 }
 
 void Object::Draw(const Program& p, const glm::mat4& viewProjection,
-				 const glm::vec3& cameraPos, GLenum mode) const
+				 const glm::vec3& cameraPos, DrawMode mode) const
 {
     mat4 MVP = viewProjection * M;
     
@@ -159,7 +158,18 @@ void Object::Draw(const Program& p, const glm::mat4& viewProjection,
     p.SetModel(M); // Needed for Phong shading
 	p.SetMVP(MVP);
     
-	Object::model->Draw(p, mode);
+    if (mode == GLOW || mode == NORMAL) {
+        p.SetUniform("illum", 0);
+        Object::model->Draw(p, GL_LINE_LOOP);
+    }
+    if (mode == NORMAL) {
+        p.SetUniform("illum", 1);
+        Object::model->Draw(p, GL_TRIANGLES);
+    }
+    else if (mode == MINIMAP) {
+        p.SetUniform("illum", 0);
+        Object::model->Draw(p, GL_TRIANGLES);
+    }
     
 #ifdef DEBUG
     DrawAABB(p, viewProjection);

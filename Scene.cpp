@@ -18,13 +18,12 @@ using namespace::glm;
 using boost::timer::cpu_timer;
 using boost::timer::cpu_times;
 
-static int count;
-
 Scene::Scene() : particle_sys()
 {
 	player = PLAYER1;
 	theta = phi = 0.0f;
     score = 0;
+    totalScore = 0;
 
 	gameOver = false;
     levelOver = false;
@@ -52,12 +51,7 @@ Scene::Scene() : particle_sys()
 	sceneTexture = NULL;
 	minimapTexture = NULL;
 
-	keyLeft = false;
-	keyRight = false;
-	keyDown = false;
-	keyUp = false;
-	mouseLeft = false;
-	mouseRight = false;
+	ResetControls();
 
 	// Spawn update thread
 	updateThread = new thread(&Scene::Update, this);
@@ -76,6 +70,16 @@ Scene::~Scene()
 		delete frustum;
 }
 
+void Scene::ResetControls()
+{
+    keyLeft = false;
+	keyRight = false;
+	keyDown = false;
+	keyUp = false;
+	mouseLeft = false;
+	mouseRight = false;
+}
+
 void Scene::LoadLevel(Level *l, Player p)
 {
 	unique_lock<std::mutex> lock(mutex);
@@ -85,6 +89,8 @@ void Scene::LoadLevel(Level *l, Player p)
 
     levelOver = false;
 	gameOver = false;
+    
+    ResetControls();
 
 	if (level)
 		delete level;
@@ -156,7 +162,7 @@ void Scene::UpdateFBO(GLuint width, GLuint height)
 	screen = new Screen();
 }
 
-/* Scene update functions below */
+/************** USER INPUT PROCESSING HERE **************/
 
 /** Captures ship offset based on key presses. */
 void Scene::HandleKeys(float elapsedSeconds)
@@ -179,6 +185,7 @@ void Scene::HandleKeys(float elapsedSeconds)
 		shipOffset.y -= interval;
 
 	shipOffset = glm::clamp(shipOffset, vec2(-MAX_X, -MAX_Y), vec2(MAX_X, MAX_Y));
+    level->ship->SetOffset(shipOffset);
 }
 
 /** Adds bullets based on mouse presses. */
@@ -203,124 +210,42 @@ void Scene::HandleMouse(float elapsedSeconds)
 }
 
 /** Adds lightning effects */
-void Scene::AddLightning(bool acquireLock) {
+void Scene::AddLightning(bool acquireLock)
+{
 	bool playThunder = false;
-	if (acquireLock) {
+    
+	if (acquireLock)
 		lock_guard<std::mutex> lock(mutex);
-		for (int i = 0; i < level->objects.size(); i++) {
-			Object *obj = level->objects[i];
-			if (glm::distance(obj->GetPosition(), level->ship->GetPosition()) < 30) {
-                Ship *flyable = dynamic_cast<Ship *>(obj);
-                Missile *missile = dynamic_cast<Missile *>(obj);
-                Turret *turret = dynamic_cast<Turret *>(obj);
-                
-                if (flyable)
-                    score += SHIP_VALUE;
-                else if (missile)
-                    score += MISSILE_VALUE;
-                else if (turret)
-                    score += TURRET_VALUE;
-                
-				particle_sys.AddBolt(level->ship->GetPosition(), obj->GetPosition());
-				particle_sys.AddExplosionCluster(obj->GetPosition(), obj->GetColor());
-				delete obj;
-				obj = NULL;
-				level->objects.erase(level->objects.begin() + i--);
-				playThunder = true;
-			}
-		}
-		return;
-	} else {
-		for (int i = 0; i < level->objects.size(); i++) {
-			Object *obj = level->objects[i];
-			if (glm::distance(obj->GetPosition(), level->ship->GetPosition()) < 30) {
-				particle_sys.AddBolt(level->ship->GetPosition(), obj->GetPosition());
-				particle_sys.AddExplosionCluster(obj->GetPosition(), obj->GetColor());
-				delete obj;
-				obj = NULL;
-				level->objects.erase(level->objects.begin() + i--);
-				playThunder = true;
-			}
-		}
-	}
-	// only play the thunder sound if lightning bolts were added
+
+    for (int i = 0; i < level->objects.size(); i++) {
+        Object *obj = level->objects[i];
+        if (glm::distance(obj->GetPosition(), level->ship->GetPosition()) < 30) {
+            particle_sys.AddBolt(level->ship->GetPosition(), obj->GetPosition());
+            particle_sys.AddExplosionCluster(obj->GetPosition(), obj->GetColor());
+            delete obj;
+            obj = NULL;
+            level->objects.erase(level->objects.begin() + i--);
+            playThunder = true;
+        }
+    }
+    
+	// Only play the thunder sound if lightning bolts were added
 	if (playThunder) Sound::PlayThunder();
 }
+
+/************** SCENE UDPATE METHODS HERE **************/
 
 /** Updates objects by moving them to their new locations,
 which is a function of the elapsed time. */
 void Scene::UpdateObjects(float elapsedSeconds)
 {
-	// Compute ship position along path
-	if (level->ship)
-	{
-		vec3 shipDirection = level->GetDirection(FORWARD, elapsedSeconds);
-		vec3 shipPosition = level->GetPosition(FORWARD, elapsedSeconds);
-
-		// Update light/camera
-		lightPosition = shipPosition;
-		cameraPosition = shipPosition - 3.0f * shipDirection;
-
-		// Update ship position
-		// Important: Note offset and direction must be set before
-		// position
-		level->ship->SetOffset(shipOffset);
-		level->ship->SetDirection(shipDirection);
-		level->ship->SetPosition(shipPosition);
-	}
-
-	// Update sphere
-	if (level->sphere) {
-		level->sphere->SetScale(75 + 7 * sin(elapsedSeconds));
-	}
-
-	// Update other objects
-	for (int i = 0; i < level->objects.size(); i++)
-	{
-		Object *obj = level->objects[i];
-		Flyable *flyable = dynamic_cast<Flyable *>(obj);
-		Missile *missile = dynamic_cast<Missile *>(obj);
-		Turret *turret = dynamic_cast<Turret *>(obj);
-
-		if (missile && level->ship)
-		{
-			vec2 missileOffset = missile->GetOffset();
-			vec2 shipOffset = level->ship->GetOffset();
-			shipOffset.x *= -1;
-
-			vec2 dir = shipOffset - missileOffset;
-			vec2 offset = 0.01f * dir;
-			missile->SetOffset(missileOffset + offset);
-		}
-		if (flyable)
-		{
-			vec3 direction = level->GetDirection(BACKWARD, elapsedSeconds + flyable->GetTimeOffset());
-			vec3 position = level->GetPosition(BACKWARD, elapsedSeconds + flyable->GetTimeOffset());
-
-			// Remove objects off screen
-			if (position.x - 0.0 < 0.0001 &&
-				position.y - 0.0 < 0.0001 &&
-				position.z - 0.0 < 0.0001)
-			{
-				level->objects.erase(level->objects.begin() + i--);
-			}
-			else
-			{
-				flyable->SetDirection(direction);
-				flyable->SetPosition(position);
-			}
-		}
-		if (turret && level->ship) {
-			vec3 turretPos = turret->GetPosition();
-			vec3 shipPos = level->ship->GetPosition();
-			float distance = fabs(glm::distance(shipPos, turretPos));
-			if (distance < 30) {
-				vec3 dir = normalize(shipPos - turretPos);
-				turret->AddBullet(turretPos, 20.0f * dir);
-			}
-		}
-	}
-
+    // Update level objects
+    level->Update(elapsedSeconds);
+    
+    // Update light/camera
+    lightPosition = level->ship->GetPosition();
+    cameraPosition = level->ship->GetPosition() - 3.0f * level->ship->GetDirection();
+    
 	// Update particles
 	particle_sys.Update(elapsedSeconds);
 }
@@ -331,92 +256,12 @@ whether to add particle effects at the location of
 collision. */
 void Scene::HandleCollisions(float elapsedSeconds)
 {
-	// Check map collision
-	for (int i = 0; i < level->maps.size(); i++)
-	{
-		Map *map = level->maps[i];
-		if (map == NULL) continue;
-
-		// If the map is not in the frustum,
-		// skip it for now
-		if (!frustum->Contains(*map))
-			continue;
-
-		// Check ship intersections
-		if (level->ship && map->Intersects(*level->ship)) {
-			particle_sys.AddExplosionCluster(level->ship->GetPosition(), map->GetColor());
-			if (player == PLAYER1) {
-				level->ship->AddDamage(0.001 * elapsedSeconds);
-				Networking::SetHealth(level->ship->GetHealth());
-			}
-		}
-	}
-
-	// Check object collisions
-	for (int i = 0; i < level->objects.size(); i++)
-	{
-		Object *obj = level->objects[i];
-		if (obj == NULL) continue;
-        Ship *ship = dynamic_cast<Ship *>(obj);
-		Missile *missile = dynamic_cast<Missile *>(obj);
-		Turret *turret = dynamic_cast<Turret *>(obj);
-
-		// If the object is not in the frustum,
-		// skip it for now
-		if (!frustum->Contains(*obj))
-			continue;
-
-		// Check object-bullet intersections
-		if (particle_sys.Intersects(obj)) {
-			if (turret) {
-				turret->AddDamage(0.5);
-				if (turret->GetHealth() < 0) {
-					particle_sys.AddExplosionCluster(obj->GetPosition(), obj->GetColor());
-					delete obj;
-					obj = NULL;
-					level->objects.erase(level->objects.begin() + i--);
-                    score += TURRET_VALUE;
-					continue;
-				}
-			}
-			else {
-                if (missile)
-                    score += MISSILE_VALUE;
-                else if (ship)
-                    score += SHIP_VALUE;
-				particle_sys.AddExplosionCluster(obj->GetPosition(), obj->GetColor());
-				delete obj;
-				obj = NULL;
-				level->objects.erase(level->objects.begin() + i--);
-				continue;
-			}
-		}
-
-		// Check object-ship intersections
-		if (level->ship && level->ship->Intersects(*obj))
-		{
-			if (missile)
-			{
-				particle_sys.AddExplosionCluster(level->ship->GetPosition(), missile->GetColor());
-				if (player == PLAYER1) {
-					level->ship->AddDamage(0.5);
-					Networking::SetHealth(level->ship->GetHealth());
-				}
-			}
-			else {
-				particle_sys.AddExplosionCluster(obj->GetPosition(), obj->GetColor());
-				if (player == PLAYER1) {
-					level->ship->AddDamage(0.2);
-					Networking::SetHealth(level->ship->GetHealth());
-				}
-				delete obj;
-				obj = NULL;
-				level->objects.erase(level->objects.begin() + i--);
-				continue;
-			}
-		}
-	}
-
+	// Check collision between level objects
+    level->HandleCollisions(elapsedSeconds, particle_sys, *frustum);
+    
+    // Update score
+    score = level->score;
+    
 	// Delete ship?
 	if (level->ship && level->ship->GetHealth() < 0) {
 		particle_sys.AddExplosionCluster(level->ship->GetPosition(), level->ship->GetColor());
@@ -431,8 +276,11 @@ void Scene::HandleCollisions(float elapsedSeconds)
 ship position. */
 void Scene::UpdateView(float elapsedSeconds)
 {
+    if (!level->ship)
+        return;
+    
 	// View for player 1 (chase cam)
-	if (player == PLAYER1 && level->ship)
+	if (player == PLAYER1)
 	{
 		// Compute ship position along path
 		vec3 position = level->GetPosition(FORWARD, elapsedSeconds);
@@ -449,7 +297,7 @@ void Scene::UpdateView(float elapsedSeconds)
 			up);
 	}
 	// View for player 2 (on board cam)
-	else if (level->ship)
+	else
 	{
 		// Compute view vectors
 		vec3 position = level->ship->GetPosition();
@@ -466,15 +314,12 @@ void Scene::UpdateView(float elapsedSeconds)
 			up);
 	}
 
-	// Minimap view
-	if (level->ship) {
-		// Compute view vectors
-		vec3 position = level->ship->GetPosition();
+	// Minimap view (orthogonal overhead cam)
+    vec3 position = level->ship->GetPosition();
 
-		SetMinimapView(lookAt(position + vec3(0.0, 0.5, 0.0),
-			position,
-			vec3(0, 0, -1)));
-	}
+    SetMinimapView(lookAt(position + vec3(0.0, 0.5, 0.0),
+        position,
+        vec3(0, 0, -1)));
 }
 
 /* Updates object positions in world based on elapsed
@@ -493,8 +338,6 @@ void Scene::Update()
 				delete timer;
 			timer = new cpu_timer();
 		}
-        
-        cout << "Score: " << score << endl;
 
 		times = timer->elapsed();
 		float elapsedSeconds = (float)times.wall / pow(10.f, 9.f);
@@ -503,9 +346,12 @@ void Scene::Update()
             Networking::GameOver();
             gameOver = true;
             levelOver = true;
+            totalScore += level->score;
         }
-        if (gameOver)
+        if (gameOver) {
+            totalScore = 0;
             continue;
+        }
 
 		// Handle player-specific input
 		if (player == PLAYER2)
@@ -521,63 +367,85 @@ void Scene::Update()
 
 /* Loads new objects via the main thread because OpenGL
 calls are not thread safe */
-void Scene::LoadNewObjects()
+void Scene::AddMissiles()
 {
+    if (!level->ship)
+        return;
+    
+    float interval = (float)timer->elapsed().wall / pow(10.f, 9.f) - lastTime;
+    
 	float size = level->objects.size();
 	for (int i = 0; i < size; i++)
 	{
 		Ship *ship = dynamic_cast<Ship *>(level->objects[i]);
-		if (ship &&
-			level->ship &&
-			::count % 30 == 0 &&
-			glm::distance(level->ship->GetPosition(), ship->GetPosition()) < 20)
+        if (!ship)
+            continue;
+        
+        float distance = glm::distance(level->ship->GetPosition(), ship->GetPosition());
+		if (distance < 20)
 		{
-			Missile *missile = new Missile("Models/missile.obj");
-			missile->SetColor(vec3(1.0, 1.0, 1.0));
-			missile->SetTimeOffset(ship->GetTimeOffset());
-			missile->SetOffset(ship->GetOffset());
-			level->objects.push_back(missile);
+            float lastFireTime = ship->GetLastFireTime();
+            lastFireTime += interval;
+
+            if (lastFireTime > ship->GetFiringRate()) {
+                Missile *missile = new Missile("Models/missile.obj");
+                missile->SetColor(vec3(1.0, 1.0, 1.0));
+                missile->SetTimeOffset(ship->GetTimeOffset());
+                missile->SetOffset(ship->GetOffset());
+                level->objects.push_back(missile);
+                ship->SetLastFireTime(0);
+            }
+            else {
+                ship->SetLastFireTime(lastFireTime);
+            }
 		}
 	}
 }
 
-/* Rendering functions below */
+/************** SCENE RENDERING METHODS HERE **************/
+
+void Scene::RenderObjects(DrawMode mode)
+{
+    // Draw sphere
+	if (level->sphere && frustum->Contains(*level->sphere)) {
+        main->SetUniform("hasField", true);
+        main->SetUniform("fieldRadius", level->sphere->GetScale());
+        main->SetUniform("fieldPosition", level->sphere->GetPosition());
+		level->sphere->Draw(*main, viewProjection, cameraPosition, mode);
+    }
+    
+	// Draw objects
+	for (int i = 0; i < level->objects.size(); i++) {
+		Object *obj = level->objects[i];
+		if (frustum->Contains(*obj))
+			obj->Draw(*main, viewProjection, cameraPosition, mode);
+	}
+    
+    // Draw ship
+	if (level->ship && frustum->Contains(*level->ship))
+		level->ship->Draw(*main, viewProjection, cameraPosition, mode);
+    
+    // Draw particles
+	particle_sys.Draw(*main, viewProjection, cameraPosition, mode);
+}
 
 void Scene::RenderGlowMap()
 {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	// Maps have their own shader program for vertex displacement
-	level->DrawMap(viewProjection, cameraPosition, lightPosition, *frustum, GLOW);
+	// Draw maps
+    for (Map *map : level->maps) {
+		if (!map || !frustum->Contains(*map)) continue;
+            map->Draw(viewProjection, cameraPosition, lightPosition, GLOW);
+    }
 
 	main->Use();
-	main->SetUniform("illum", 0);
 	main->SetUniform("attenuate", true);
+    main->SetUniform("hasField", false);
 	main->SetUniform("lightPosition", lightPosition);
 	main->SetUniform("cameraPosition", cameraPosition);
 
-	if (level->sphere && frustum->Contains(*level->sphere))
-	{
-		level->sphere->Draw(*main, viewProjection, cameraPosition, GL_LINE_LOOP);
-	}
-
-	// Draw ship
-	if (level->ship && frustum->Contains(*level->ship))
-	{
-		level->ship->Draw(*main, viewProjection, cameraPosition, GL_LINE_LOOP);
-	}
-
-	// Draw objects in scene
-	for (int i = 0; i < level->objects.size(); i++)
-	{
-		Object *obj = level->objects[i];
-		if (frustum->Contains(*obj))
-			obj->Draw(*main, viewProjection, cameraPosition, GL_LINE_LOOP);
-	}
-
-	// Draw particles
-	main->SetUniform("attenuate", false);
-	particle_sys.Draw(*main, viewProjection, cameraPosition, true);
+    RenderObjects(GLOW);
 
 	main->Unuse();
 
@@ -590,47 +458,18 @@ void Scene::RenderScene()
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	// Maps have their own shader program for vertex displacement
-	level->DrawMap(viewProjection, cameraPosition, lightPosition, *frustum, NORMAL);
+	for (Map *map : level->maps) {
+		if (!map || !frustum->Contains(*map)) continue;
+        map->Draw(viewProjection, cameraPosition, lightPosition, NORMAL);
+    }
 
 	main->Use();
 	main->SetUniform("attenuate", true);
+    main->SetUniform("hasField", false);
 	main->SetUniform("lightPosition", lightPosition);
 	main->SetUniform("cameraPosition", cameraPosition);
 
-	// Draw sphere
-	if (level->sphere && frustum->Contains(*level->sphere)) {
-		main->SetUniform("illum", 1);
-		level->sphere->Draw(*main, viewProjection, cameraPosition);
-		main->SetUniform("illum", 0);
-		level->sphere->Draw(*main, viewProjection, cameraPosition, GL_LINE_LOOP);
-		main->SetUniform("fieldPosition", level->sphere->GetPosition());
-	}
-
-	// Draw ship
-	if (level->ship && frustum->Contains(*level->ship))
-	{
-		main->SetUniform("illum", 1);
-		level->ship->Draw(*main, viewProjection, cameraPosition);
-		main->SetUniform("illum", 0);
-		level->ship->Draw(*main, viewProjection, cameraPosition, GL_LINE_LOOP);
-	}
-
-	// Draw objects in scene
-	for (int i = 0; i < level->objects.size(); i++)
-	{
-		Object *obj = level->objects[i];
-		if (frustum->Contains(*obj))
-		{
-			main->SetUniform("illum", 1);
-			obj->Draw(*main, viewProjection, cameraPosition);
-			main->SetUniform("illum", 0);
-			obj->Draw(*main, viewProjection, cameraPosition, GL_LINE_LOOP);
-		}
-	}
-
-	// Draw particles
-	main->SetUniform("attenuate", false);
-	particle_sys.Draw(*main, viewProjection, cameraPosition, false);
+	RenderObjects(NORMAL);
 
 	main->Unuse();
 
@@ -643,51 +482,32 @@ void Scene::RenderScene()
 
 void Scene::RenderMinimap()
 {
-	return;
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glDisable(GL_DEPTH_TEST);
 
 	mat4 minimapViewProjection = minimapProjection * minimapView;
 
 	// Maps have their own shader program for vertex displacement
-	level->DrawMap(minimapViewProjection, cameraPosition, lightPosition, *frustum, MINIMAP);
+	for (Map *map : level->maps) {
+		if (!map || !frustum->Contains(*map)) continue;
+        map->Draw(viewProjection, cameraPosition, lightPosition, MINIMAP);
+    }
 
 	main->Use();
 	main->SetUniform("attenuate", true);
 	main->SetUniform("lightPosition", lightPosition);
 	main->SetUniform("cameraPosition", cameraPosition);
 
-	// Draw ship
-	if (level->ship)
-	{
-		main->SetUniform("illum", 0);
-		level->ship->Draw(*main, minimapViewProjection, cameraPosition);
-	}
-
-	// Draw objects in scene
-	for (int i = 0; i < level->objects.size(); i++)
-	{
-		Object *obj = level->objects[i];
-		if (level->ship && glm::distance(level->ship->GetPosition(), obj->GetPosition()) < 50)
-		{
-			main->SetUniform("illum", 0);
-			obj->Draw(*main, minimapViewProjection, cameraPosition);
-		}
-		else if (!level->ship) {
-			main->SetUniform("illum", 0);
-			obj->Draw(*main, minimapViewProjection, cameraPosition);
-		}
-	}
+	RenderObjects(MINIMAP);
 
 	// Draw level path
-	Model *path = level->GetPath();
 	main->SetMVP(minimapViewProjection);
 	main->SetUniform("baseColor", vec3(1.0));
 	main->SetUniform("illum", 0);
 	main->SetUniform("attenuate", false);
 
 	glLineWidth(10.0f);
-	path->Draw(*main, GL_LINE_STRIP);
+	level->pathModel->Draw(*main, GL_LINE_STRIP);
 
 	main->Unuse();
 
@@ -710,7 +530,7 @@ void Scene::RenderVelocityTexture()
 	velocity->SetUniform("currentVP", viewProjection);
 
 	// Draw particles
-	particle_sys.Draw(*velocity, viewProjection, cameraPosition, false);
+	particle_sys.Draw(*velocity, viewProjection, cameraPosition, NORMAL);
 
 	velocity->Unuse();
 }
@@ -762,15 +582,13 @@ void Scene::Render()
 	if (!timer) return;
 	unique_lock<std::mutex> lock(mutex);
 
-	LoadNewObjects();
-
-	::count++;
+	AddMissiles();
 
 	viewProjection = projection * view;
 
 	RenderGlowMap();
 	RenderScene();
-	RenderMinimap();
+	//RenderMinimap();
 	RenderVelocityTexture();
 	PostProcess();
 

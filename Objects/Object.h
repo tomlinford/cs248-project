@@ -10,6 +10,13 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/quaternion.hpp>
 
+/* Defines a draw mode */
+enum DrawMode {
+    MINIMAP,
+    GLOW,
+    NORMAL
+};
+
 /* The Object class represents an object in the game.
    It has an associated 3D model and gameplay-related
    object information including position, orientation,
@@ -27,9 +34,17 @@ public:
      intersects another object's AABB */
     virtual bool Intersects(Object& other);
     
+    /** Score value */
+    virtual int GetValue() { return 10; }
+    
     /** Color */
     virtual glm::vec3 GetColor() { return color; }
     virtual void SetColor(glm::vec3 c) { color = c; }
+    
+    /** Accessors for health */
+    float GetHealth() { return health; }
+    void SetHealth(float h) { health = h; }
+    void AddDamage(float damage) { health -= damage; }
     
     /** Position in world space */
     virtual glm::vec3 GetPosition() { return position; };
@@ -79,7 +94,7 @@ public:
     
     /** Draws the object */
     virtual void Draw(const Program& p, const glm::mat4& viewProjection,
-                      const glm::vec3& cameraPos, GLenum mode = GL_TRIANGLES) const;
+                      const glm::vec3& cameraPos, DrawMode mode) const;
     
 protected:
     /** Associated 3D model */
@@ -87,6 +102,7 @@ protected:
     
     /** Properties */
     float scale;
+    float health;
     glm::mat4 M;
     glm::vec3 color;
     glm::vec3 position;

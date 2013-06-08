@@ -55,8 +55,6 @@ Texture::~Texture()
     glDeleteTextures(1, &id);
     if (bitmap)
         delete bitmap;
-	if (data)
-		delete data;
 }
 
 /* Loads a texture file into the shader */

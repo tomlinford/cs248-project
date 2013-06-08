@@ -86,7 +86,7 @@ void ParticleCluster::Update(float elapsedTime)
 
 // Generates and draws particle buffer
 void ParticleCluster::Draw(const Program& p, const glm::mat4& viewProjection,
-                          const glm::vec3& cameraPos, bool glowMap)
+                          const glm::vec3& cameraPos, DrawMode mode)
 {
     if (particles.size() == 0)
         return;
@@ -117,15 +117,17 @@ void ParticleCluster::Draw(const Program& p, const glm::mat4& viewProjection,
     p.SetModel(mat4(1)); // Needed for Phong shading
     p.SetMVP(viewProjection);
     
-    if (!glowMap) {
+    if (mode == NORMAL) {
         p.SetUniform("baseColor", color);
         p.SetUniform("illum", 1);
+        glLineWidth(3.0);
         model->Draw(p, GL_TRIANGLES);
     }
     
 	// color has already been set, will have the same color as above
     p.SetUniform("baseColor", color);
 	p.SetUniform("illum", 0);
+    glLineWidth(1.0);
 	model->Draw(p, GL_LINE_LOOP);
 }
 
@@ -160,7 +162,7 @@ bool Bolt::Valid() {
 }
 
 void Bolt::Draw(const Program& p, const glm::mat4& viewProjection,
-                const glm::vec3& cameraPos, bool glowMap) {
+                const glm::vec3& cameraPos, DrawMode mode) {
     lock_guard<std::mutex> lock(mutex);
     
     // Draw lightning bolt
@@ -236,7 +238,7 @@ void BulletCluster::AddBullet(glm::vec3 l, glm::vec3 v)
 }
 
 void BulletCluster::Draw(const Program& p, const glm::mat4& viewProjection,
-                  const glm::vec3& cameraPos, bool glowMap)
+                  const glm::vec3& cameraPos, DrawMode mode)
 {
     lock_guard<std::mutex> lock(mutex);
     
@@ -271,13 +273,10 @@ void BulletCluster::Draw(const Program& p, const glm::mat4& viewProjection,
     }
     
     p.SetMVP(viewProjection);
+	p.SetUniform("attenuate", false);
     p.SetUniform("baseColor", color);
     p.SetUniform("illum", 0);
-    
-    if (glowMap)
-        glLineWidth(10.0);
-    else
-        glLineWidth(3.0);
+    glLineWidth(3.0);
     model->Draw(p, GL_LINES);
 }
 
@@ -326,13 +325,13 @@ bool ParticleSystem::Intersects(Object *object)
 }
 
 void ParticleSystem::Draw(const Program& p, const glm::mat4& viewProjection,
-          const glm::vec3& cameraPos, bool glowMap)
+          const glm::vec3& cameraPos, DrawMode mode)
 {
     for (std::vector<ParticleCluster *>::iterator it = clusters.begin();
          it != clusters.end();
          it++)
     {
         ParticleCluster *cluster = *it;
-        cluster->Draw(p, viewProjection, cameraPos, glowMap);
+        cluster->Draw(p, viewProjection, cameraPos, mode);
     }
 }

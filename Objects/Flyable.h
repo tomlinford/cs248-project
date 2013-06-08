@@ -14,6 +14,9 @@ public:
     Flyable(Model *model) : Object(model) {}
     Flyable(const string& filename) : Object(filename) {}
     
+    /** Score value */
+    virtual int GetValue() { return 15; }
+    
     /** Set speed. This should be in voxels per
      animation interval. */
     virtual float GetSpeed() { return speed; }
@@ -50,6 +53,9 @@ class Missile : public Flyable
 public:
     Missile(Model *model);
     Missile(const string& filename);
+    
+    /** Score value */
+    virtual int GetValue() { return 40; }
 };
 
 /* A subclass of the Flyable to represent the
@@ -60,6 +66,9 @@ public:
     Ship(Model *model);
     Ship(const string& filename);
     
+    /** Score value */
+    virtual int GetValue() { return 20; }
+    
     /** Override set color to update bullet cluster color
      as well */
     virtual void SetColor(glm::vec3 c);
@@ -67,15 +76,16 @@ public:
     /** Adds a bullet */
     void AddBullet(glm::vec3 location, glm::vec3 velocity);
     
+    /** Get last fire time */
+    float GetFiringRate() { return firingRate; }
+    float GetLastFireTime() { return lastFireTime; }
+    void SetLastFireTime(float f) { lastFireTime = f; }
+    
     /** Bullet cluster accessor */
     BulletCluster *GetBulletCluster() { return cluster; }
     
-    /** Accessors for health */
-    float GetHealth() { return health; }
-    void SetHealth(float h) { health = h; }
-    void AddDamage(float damage) { health -= damage; }
-    
 protected:
-    float health;
     BulletCluster *cluster;
+    float firingRate;
+    float lastFireTime;
 };

@@ -13,13 +13,6 @@ enum TessLevel
     TESSLVL_128
 };
 
-/* Defines a draw mode */
-enum DrawMode {
-    MINIMAP,
-    GLOW,
-    NORMAL
-};
-
 /** Represents a terrain map. A maps's model space should be
  the same as its world space; this restriction makes sense
  since the map really is the game world. It also simplifies
@@ -83,4 +76,7 @@ private:
     
     /** Computes this map's boundig box */
     void ComputeBounds();
+    
+    /** Deletes old map data */
+    void DeleteInvalidData() const;
 };

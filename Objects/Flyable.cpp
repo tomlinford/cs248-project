@@ -57,6 +57,8 @@ Ship::Ship(Model *model) : Flyable(model)
 	health = START_HEALTH;
     cluster = new BulletCluster();
     cluster->SetOwner(this);
+    firingRate = 0.03;
+    lastFireTime = 0;
 }
 
 Ship::Ship(const string& filename) : Flyable(filename)
@@ -65,6 +67,8 @@ Ship::Ship(const string& filename) : Flyable(filename)
     health = START_HEALTH;
     cluster = new BulletCluster();
     cluster->SetOwner(this);
+    firingRate = 0.03;
+    lastFireTime = 0;
 }
 
 void Ship::AddBullet(glm::vec3 location, glm::vec3 velocity)

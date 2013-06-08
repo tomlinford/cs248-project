@@ -4,6 +4,7 @@
 #include <ApplicationServices/ApplicationServices.h>
 #endif
 
+#include <sstream>
 #include <glm/glm.hpp>
 #include <time.h>
 #include <fmod.hpp>
@@ -32,15 +33,27 @@ static Player p;
 
 TextField *ipField;
 TextField *playerField;
+MenuItem *scoreField;
+MenuItem *totalScoreField;
 
 bool netInit;
 bool finished;
 bool gaming;
+bool menuKeyDown;
 
 static float win_width, win_height;
 
+template<typename T>
+static string toString(T t) {
+	stringstream s;
+	s.precision(2);
+	s << t;
+	return s.str();
+}
+
 void GLFWCALL KeyCallback(int key, int action) {
 	if (scene && gaming && p == PLAYER1) {
+        cout << "Key" << endl;
 		switch(key) {
             case GLFW_KEY_LEFT:
                 scene->keyLeft = (action == GLFW_PRESS);
@@ -54,10 +67,15 @@ void GLFWCALL KeyCallback(int key, int action) {
             case GLFW_KEY_DOWN:
                 scene->keyDown = (action == GLFW_PRESS);
                 break;
+            default:
+                break;
 		}
         Networking::KeyAction(key, action, scene->GetShipOffset());
 	}
-    if (menu) menu->HandleKey(key, action);
+    if (menu) {
+        menuKeyDown = (action == GLFW_PRESS);
+        menu->HandleKey(key, action);
+    }
 }
 
 void GLFWCALL CharCallback(int character, int action)
@@ -166,10 +184,7 @@ void GLFWCALL WindowResizeCallback(int w, int h)
 
 void StartGame(void *data)
 {
-    cout << "Start game! " << endl;
     gaming = true;
-    
-    Level *level = new Level();
     
     // Choose player
 	switch (playerField->GetCurrentText()[0]) {
@@ -187,6 +202,7 @@ void StartGame(void *data)
     if (!hud)
         hud = new HUD();
     
+    Level *level = new Level();
     Networking::Init(scene, level, ipField->GetCurrentText(), playerField->GetCurrentText().c_str());
     
 	scene->LoadLevel(level, p);
@@ -229,6 +245,9 @@ void LoadHighScoresMenu(void *data)
 
 void LoadNextLevelMenu(void *data)
 {
+    scoreField->label = "" + toString(scene->score);
+    totalScoreField->label = "" + toString(scene->totalScore);
+    
     Menu *top = menu->GetCurrentMenu();
     if (top != nextLevel)
         top->PushMenu(nextLevel);
@@ -239,12 +258,15 @@ void CreateNextLevelMenu()
 {
     MenuItem **items = new MenuItem *[8];
     
+    scoreField = new MenuItem("", NULL);
+    totalScoreField = new MenuItem("", NULL);
+    
     items[0] = new MenuItem("LEVEL COMPLETED", NULL);
     items[1] = new MenuItem("", NULL);
     items[2] = new MenuItem("LEVEL SCORE:", NULL);
-    items[3] = new MenuItem("", NULL);
+    items[3] = scoreField;
     items[4] = new MenuItem("TOTAL SCORE:", NULL);
-    items[5] = new MenuItem("", NULL);
+    items[5] = totalScoreField;
     items[6] = new MenuItem("", NULL);
     items[7] = new MenuItem("CONTINUE", StartGame);
     
@@ -386,8 +408,9 @@ int main(int argc, char *argv[])
             scene->Render();
             hud->Render();
             gaming = !scene->gameOver;
-            if (scene->levelOver)
+            if (scene->levelOver) {
                 LoadNextLevelMenu(NULL);
+            }
         }
         else {
             menu->Render();

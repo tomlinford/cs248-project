@@ -78,7 +78,7 @@ namespace Networking {
 		// Read data
 		float *terrainMap = new float[size * size];
 		ns.read((char *)terrainMap, size * size * sizeof(float));
-		level->SetLevel(terrainMap, size, x, y);
+		level->LoadMap(terrainMap, size, x, y);
 	}
 
 	/** Parses path data from the server.
@@ -100,7 +100,7 @@ namespace Networking {
 		// Read data
 		vec3 *points = new vec3[num];
 		ns.read((char *)points, num * sizeof(float) * 3);
-		level->SetControlPoints(points, num);
+		level->LoadControlPoints(points, num);
 	}
 
 	/** Parses enemy ship data from server.
@@ -115,7 +115,7 @@ namespace Networking {
 		float timeOffset;
 		vec2 offset;
 		ss >> timeOffset >> offset.x >> offset.y;
-		level->AddEnemyShip(timeOffset, offset);
+		level->LoadEnemyShip(timeOffset, offset);
 	}
 
 	/** Parses power-up/power-down sphere data from server.
@@ -131,13 +131,7 @@ namespace Networking {
 		ss >> loc.x >> loc.y >> loc.z;
 		Turret *turret = new Turret("Models/turret.obj");
 		turret->SetColor(vec3(0.9, 0.7, 0.5));
-
-        //float levelHeight = level->GetHeightAt(loc.x * 20, loc.y * 20);
-        //if (loc.z * 60 < levelHeight)
-        //    turret->SetPosition(vec3(loc.x * 20, levelHeight, loc.y * 20));
-        //else
-            turret->SetPosition(vec3(loc.x * 20, (loc.z) * 60, loc.y * 20));
-		
+        turret->SetPosition(vec3(loc.x * 20, (loc.z) * 60, loc.y * 20));
 		level->objects.push_back(turret);
 	}
 

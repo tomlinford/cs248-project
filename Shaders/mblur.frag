@@ -10,7 +10,7 @@
 /* Specifies GLSL version 1.10 - corresponds to OpenGL 2.0 */
 #version 120
 
-#define MAX_SAMPLES 200
+#define MAX_SAMPLES 100
 #define TOLERANCE 0.1
 #define M_PI 3.14159265358979323846264
 
@@ -33,7 +33,7 @@ void main()
     // Calculate amount of sampling as a function of pixel speed
     // Less speed --> less blur --> less sampling
     float speed = length(velocity / texelSize);
-    int samples = int(min(50 * speed, MAX_SAMPLES));
+    int samples = int(min(0.7 * speed, MAX_SAMPLES));
     velocity = normalize(velocity);
     
     // Calculate final color
@@ -47,6 +47,7 @@ void main()
         float sampleCount = 0;
         
         // Sample nearby pixels in direction of velocity
+        // Discard erroneous samples based on depth
         for(int i = 0; i < samples; i++) {
             vec2 offset = i * blur_interval * velocity;
             float depth = texture2D(sceneDepthTexture, texturePosition + offset).x;
@@ -67,7 +68,6 @@ void main()
     }
     else {
         finalColor = texture2D(sceneColorTexture, texturePosition);
-        //finalColor = vec4(1.0);
     }
     
     gl_FragColor = finalColor;

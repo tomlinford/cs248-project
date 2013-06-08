@@ -65,8 +65,10 @@ public:
 	/** Lightning effects */
 	void AddLightning(bool acquireLock);
     
-    /** Control information. Key events (Player 1),
-     Ship offset (Player 1), Mouse events (Player 2), 
+    /** Control information. 
+     Key events (Player 1)
+     Ship offset (Player 1) 
+     Mouse events (Player 2)
      Viewing angles (Player 2) */
     bool keyLeft, keyRight, keyUp, keyDown;
     glm::vec2 shipOffset;
@@ -82,6 +84,7 @@ public:
     /** Player information */
     Player player;
     int score;
+    int totalScore;
     
 private:
     /** View matrices. These should be
@@ -146,9 +149,11 @@ private:
     void UpdateObjects(float elapsedSeconds);
     void HandleCollisions(float elapsedSeconds);
     void UpdateView(float elapsedSeconds);
-    void LoadNewObjects();
+    void AddMissiles();
+    void ResetControls();
     
     /** Rendering helpers */
+    void RenderObjects(DrawMode mode);
     void RenderGlowMap();
     void RenderVelocityTexture();
     void RenderScene();
