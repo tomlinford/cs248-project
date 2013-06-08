@@ -92,6 +92,7 @@ void Menu::HandleChar(int character, int action)
 void Menu::UpdateSelection(int dir)
 {
     TextField *f = NULL;
+    int orig_index = selectedIndex;
     do {
         selectedIndex += dir;
         if (selectedIndex > numItems - 1)
@@ -99,7 +100,7 @@ void Menu::UpdateSelection(int dir)
         else if (selectedIndex < 0)
             selectedIndex = numItems - 1;
         f = dynamic_cast<TextField *>(items[selectedIndex]);
-    } while (!items[selectedIndex]->func && !f);
+    } while (!items[selectedIndex]->func && !f && selectedIndex != orig_index);
 }
 
 void Menu::HandleKey(int key, int action)
@@ -167,7 +168,7 @@ void Menu::Render()
         if (i == selectedIndex) {
             float k = 1.0;
             if (!selectionActive)
-                k = sin(elapsedSeconds * 5);
+                k = sin(elapsedSeconds * 5) + 1;
             glColor4f(0.0, 0.7, 0.9, k * 1.0);
         }
         else {
