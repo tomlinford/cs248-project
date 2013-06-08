@@ -29,11 +29,11 @@ typedef enum
 class Scene
 {
 public:
-    Scene(Player player);
+    Scene();
     ~Scene();
     
     /** Setup functions */
-    void LoadLevel(Level *level);
+    void LoadLevel(Level *l, Player p);
     
     /** Move objects, test collision, etc. 
      Also forward information to server. Perhaps
@@ -77,6 +77,10 @@ public:
     /** Game over? */
     bool gameOver;
     
+    /** Player information */
+    Player player;
+    glm::vec2 shipOffset;
+    
 private:
     /** View matrices. These should be
      player-specific. The camera for player 1
@@ -105,10 +109,6 @@ private:
     
     /** The current level */
     Level *level;
-    
-    /** Player information */
-    Player player;
-    glm::vec2 shipOffset;
     
     /** Global animation timer */
     boost::timer::cpu_timer *timer;

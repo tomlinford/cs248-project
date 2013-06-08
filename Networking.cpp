@@ -21,7 +21,7 @@ namespace Networking {
 	static bool gameOver = false;
 
 	// constant port number
-	const static char *port = "1338";
+	const static char *port = "3789";
 
 	// pointer to active network stream and associated lock
 	typedef boost::asio::ip::tcp::iostream nstream;

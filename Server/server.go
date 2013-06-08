@@ -54,7 +54,7 @@ func main() {
 
 	// the := operator is duck typing, and automatically sets
 	// the types of ln and err to the appropriate types
-	ln, err := net.Listen("tcp", ":1338")
+	ln, err := net.Listen("tcp", ":3789")
 	if err != nil {
 		panic(err)
 	}
