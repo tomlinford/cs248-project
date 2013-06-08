@@ -475,6 +475,11 @@ void Scene::Update()
 
 		times = timer->elapsed();
 		float elapsedSeconds = (float)times.wall / pow(10.f, 9.f);
+        
+        if (elapsedSeconds > level->totalTime) {
+            Networking::GameOver();
+            gameOver = true;
+        }
 
 		// Handle player-specific input
 		if (player == PLAYER1)

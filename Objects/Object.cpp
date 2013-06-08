@@ -44,8 +44,10 @@ Object::Object(const Object& other)
 // TODO: When to delete model?
 Object::~Object()
 {
-    //if (model)
-    //   delete model;
+    /*if (model) {
+        model->Delete()
+        delete model;
+    }*/
 };
 
 bool Object::Intersects(Object& other)
