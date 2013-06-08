@@ -59,6 +59,13 @@ ParticleCluster::ParticleCluster(glm::vec3 location, glm::vec3 c): deleteModel(f
     }
 }
 
+ParticleCluster::~ParticleCluster()
+{
+    if (model) {
+        delete model;
+    }
+}
+
 void ParticleCluster::AddParticle(glm::vec3 location, glm::vec3 velocity, glm::vec3 force, float scale)
 {
     particles.push_back(Particle(location, velocity, force, scale));
@@ -322,6 +329,15 @@ bool ParticleSystem::Intersects(Object *object)
             return true;
     }
     return false;
+}
+
+void ParticleSystem::Clear()
+{
+    for (int i = 0; i < clusters.size(); i++ ) {
+		ParticleCluster *cluster = clusters[i];
+		delete cluster;
+	}
+    clusters.clear();
 }
 
 void ParticleSystem::Draw(const Program& p, const glm::mat4& viewProjection,

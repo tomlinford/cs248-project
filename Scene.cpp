@@ -25,8 +25,6 @@ Scene::Scene() : particle_sys()
     score = 0;
     totalScore = 0;
 
-	gameOver = false;
-    levelOver = false;
 	finished = false;
 
 	frustum = new Frustum();
@@ -51,7 +49,7 @@ Scene::Scene() : particle_sys()
 	sceneTexture = NULL;
 	minimapTexture = NULL;
 
-	ResetControls();
+	Reset();
 
 	// Spawn update thread
 	updateThread = new thread(&Scene::Update, this);
@@ -70,14 +68,20 @@ Scene::~Scene()
 		delete frustum;
 }
 
-void Scene::ResetControls()
+void Scene::Reset()
 {
+    shipOffset = vec2(0);
+    levelOver = false;
+	gameOver = false;
+    
     keyLeft = false;
 	keyRight = false;
 	keyDown = false;
 	keyUp = false;
 	mouseLeft = false;
 	mouseRight = false;
+    
+    particle_sys.Clear();
 }
 
 void Scene::LoadLevel(Level *l, Player p)
@@ -85,12 +89,8 @@ void Scene::LoadLevel(Level *l, Player p)
 	unique_lock<std::mutex> lock(mutex);
 
 	player = p;
-	shipOffset = vec2(0);
-
-    levelOver = false;
-	gameOver = false;
     
-    ResetControls();
+    Reset();
 
 	if (level)
 		delete level;
@@ -341,15 +341,18 @@ void Scene::Update()
 
 		times = timer->elapsed();
 		float elapsedSeconds = (float)times.wall / pow(10.f, 9.f);
+        elapsedSeconds += 70;
         
-        if (elapsedSeconds > level->totalTime) {
+        if (!gameOver && elapsedSeconds > level->totalTime) {
             Networking::GameOver();
             gameOver = true;
             levelOver = true;
             totalScore += level->score;
         }
         if (gameOver) {
-            totalScore = 0;
+            if (!levelOver) {
+                totalScore = 0;
+            }
             continue;
         }
 

@@ -212,7 +212,7 @@ vec3 Level::GetPosition(Direction direction, float time)
     }
     
     // Send to origin if we fail (for debugging)
-    cerr << "Could not calculate direction for time " << time << endl;
+    // cerr << "Could not calculate direction for time " << time << endl;
     return vec3(0.0);
 }
 
@@ -244,7 +244,7 @@ glm::vec3 Level::GetDirection(Direction direction, float time)
     }
     
     // Set to no direction if we fail
-    cerr << "Could not calculate direction for time " << time << endl;
+    // cerr << "Could not calculate direction for time " << time << endl;
     return vec3(0.0);
 }
 

@@ -43,7 +43,7 @@ class ParticleCluster
 public:
     ParticleCluster() : deleteModel(false) {}
     ParticleCluster(glm::vec3 location, glm::vec3 color);
-    //~ParticleCluster();
+    ~ParticleCluster();
     
     void SetColor(glm::vec3 c) { color = c; }
     
@@ -110,6 +110,7 @@ public:
     void AddBulletCluster(BulletCluster *cluster);
     void AddExplosionCluster(glm::vec3 location, glm::vec3 color);
     void AddBolt(glm::vec3 start, glm::vec3 end);
+    void Clear();
     void Draw(const Program& p, const glm::mat4& viewProjection,
               const glm::vec3& cameraPos, DrawMode mode);
     

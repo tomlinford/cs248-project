@@ -150,7 +150,7 @@ private:
     void HandleCollisions(float elapsedSeconds);
     void UpdateView(float elapsedSeconds);
     void AddMissiles();
-    void ResetControls();
+    void Reset();
     
     /** Rendering helpers */
     void RenderObjects(DrawMode mode);
