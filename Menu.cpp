@@ -1,3 +1,4 @@
+
 #include "Menu.h"
 
 using namespace::std;
@@ -47,7 +48,13 @@ Menu::Menu(MenuItem *it[], int i, float fontsize)
     next = NULL;
     previous = NULL;
     
-    selectedIndex = 0;
+    selectedIndex = -1;
+    for (int j = 0; j < numItems; j++) {
+        if (items[j]->func) {
+            selectedIndex = j;
+            break;
+        }
+    }
     selectionActive = false;
     
     padding = 20.0f;
@@ -65,6 +72,7 @@ Menu::~Menu()
 
 void Menu::PushMenu(Menu *other)
 {
+    assert(this != other);
     next = other;
     other->SetPrevious(this);
 }
@@ -91,6 +99,9 @@ void Menu::HandleChar(int character, int action)
 
 void Menu::UpdateSelection(int dir)
 {
+    if (selectedIndex == -1)
+        return;
+    
     TextField *f = NULL;
     int orig_index = selectedIndex;
     do {
@@ -146,6 +157,13 @@ void Menu::HandleKey(int key, int action)
         default:
             break;
     }
+}
+
+Menu* Menu::GetCurrentMenu()
+{
+    if (next)
+        return next->GetCurrentMenu();
+    return this;
 }
 
 void Menu::Render()

@@ -9,6 +9,10 @@
 #define MAX_X 2.4
 #define MAX_Y 1.8
 
+#define SHIP_VALUE 10
+#define TURRET_VALUE 20
+#define MISSILE_VALUE 30
+
 using namespace::std;
 using namespace::glm;
 using boost::timer::cpu_timer;
@@ -20,8 +24,10 @@ Scene::Scene() : particle_sys()
 {
 	player = PLAYER1;
 	theta = phi = 0.0f;
+    score = 0;
 
 	gameOver = false;
+    levelOver = false;
 	finished = false;
 
 	frustum = new Frustum();
@@ -77,8 +83,8 @@ void Scene::LoadLevel(Level *l, Player p)
 	player = p;
 	shipOffset = vec2(0);
 
+    levelOver = false;
 	gameOver = false;
-	finished = false;
 
 	if (level)
 		delete level;
@@ -204,6 +210,17 @@ void Scene::AddLightning(bool acquireLock) {
 		for (int i = 0; i < level->objects.size(); i++) {
 			Object *obj = level->objects[i];
 			if (glm::distance(obj->GetPosition(), level->ship->GetPosition()) < 30) {
+                Ship *flyable = dynamic_cast<Ship *>(obj);
+                Missile *missile = dynamic_cast<Missile *>(obj);
+                Turret *turret = dynamic_cast<Turret *>(obj);
+                
+                if (flyable)
+                    score += SHIP_VALUE;
+                else if (missile)
+                    score += MISSILE_VALUE;
+                else if (turret)
+                    score += TURRET_VALUE;
+                
 				particle_sys.AddBolt(level->ship->GetPosition(), obj->GetPosition());
 				particle_sys.AddExplosionCluster(obj->GetPosition(), obj->GetColor());
 				delete obj;
@@ -340,6 +357,7 @@ void Scene::HandleCollisions(float elapsedSeconds)
 	{
 		Object *obj = level->objects[i];
 		if (obj == NULL) continue;
+        Ship *ship = dynamic_cast<Ship *>(obj);
 		Missile *missile = dynamic_cast<Missile *>(obj);
 		Turret *turret = dynamic_cast<Turret *>(obj);
 
@@ -357,10 +375,15 @@ void Scene::HandleCollisions(float elapsedSeconds)
 					delete obj;
 					obj = NULL;
 					level->objects.erase(level->objects.begin() + i--);
+                    score += TURRET_VALUE;
 					continue;
 				}
 			}
 			else {
+                if (missile)
+                    score += MISSILE_VALUE;
+                else if (ship)
+                    score += SHIP_VALUE;
 				particle_sys.AddExplosionCluster(obj->GetPosition(), obj->GetColor());
 				delete obj;
 				obj = NULL;
@@ -471,7 +494,7 @@ void Scene::Update()
 			timer = new cpu_timer();
 		}
         
-        if (gameOver) continue;
+        cout << "Score: " << score << endl;
 
 		times = timer->elapsed();
 		float elapsedSeconds = (float)times.wall / pow(10.f, 9.f);
@@ -479,16 +502,15 @@ void Scene::Update()
         if (elapsedSeconds > level->totalTime) {
             Networking::GameOver();
             gameOver = true;
+            levelOver = true;
         }
+        if (gameOver)
+            continue;
 
 		// Handle player-specific input
-		if (player == PLAYER1)
-			HandleKeys(elapsedSeconds);
-		else {
-			HandleKeys(elapsedSeconds);
+		if (player == PLAYER2)
 			HandleMouse(elapsedSeconds);
-		}
-
+        HandleKeys(elapsedSeconds);
 		UpdateObjects(elapsedSeconds);
 		HandleCollisions(elapsedSeconds);
 		UpdateView(elapsedSeconds);

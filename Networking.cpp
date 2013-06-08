@@ -131,8 +131,13 @@ namespace Networking {
 		ss >> loc.x >> loc.y >> loc.z;
 		Turret *turret = new Turret("Models/turret.obj");
 		turret->SetColor(vec3(0.9, 0.7, 0.5));
-		turret->SetPosition(vec3(loc.x * 20, (loc.z) * 60, loc.y * 20));
-		//turret->SetScale(5.0);
+
+        //float levelHeight = level->GetHeightAt(loc.x * 20, loc.y * 20);
+        //if (loc.z * 60 < levelHeight)
+        //    turret->SetPosition(vec3(loc.x * 20, levelHeight, loc.y * 20));
+        //else
+            turret->SetPosition(vec3(loc.x * 20, (loc.z) * 60, loc.y * 20));
+		
 		level->objects.push_back(turret);
 	}
 

@@ -25,7 +25,7 @@ using namespace glm;
 #define M_PI 3.14159265359
 #endif
 
-static Menu *menu, *start, *credits, *hscores;
+static Menu *menu, *start, *credits, *hscores, *nextLevel;
 static Scene *scene;
 static HUD *hud;
 static Player p;
@@ -154,6 +154,10 @@ void GLFWCALL WindowResizeCallback(int w, int h)
         hscores->SetWidth(w);
         hscores->SetHeight(h);
     }
+    if (nextLevel) {
+        nextLevel->SetWidth(w);
+        nextLevel->SetHeight(h);
+    }
 
 	// Update global
 	win_width = w;
@@ -187,6 +191,7 @@ void StartGame(void *data)
     
 	scene->LoadLevel(level, p);
     hud->LoadLevel(level);
+    hud->LoadScene(scene);
     
     WindowResizeCallback(win_width, win_height);
 }
@@ -209,17 +214,41 @@ void Exit(void *data)
 
 void LoadStartMenu(void *data)
 {
-    menu->PushMenu(start);
+    menu->GetCurrentMenu()->PushMenu(start);
 }
 
 void LoadCreditsMenu(void *data)
 {
-    menu->PushMenu(credits);
+    menu->GetCurrentMenu()->PushMenu(credits);
 }
 
 void LoadHighScoresMenu(void *data)
 {
-    menu->PushMenu(hscores);
+    menu->GetCurrentMenu()->PushMenu(hscores);
+}
+
+void LoadNextLevelMenu(void *data)
+{
+    Menu *top = menu->GetCurrentMenu();
+    if (top != nextLevel)
+        top->PushMenu(nextLevel);
+}
+
+
+void CreateNextLevelMenu()
+{
+    MenuItem **items = new MenuItem *[8];
+    
+    items[0] = new MenuItem("LEVEL COMPLETED", NULL);
+    items[1] = new MenuItem("", NULL);
+    items[2] = new MenuItem("LEVEL SCORE:", NULL);
+    items[3] = new MenuItem("", NULL);
+    items[4] = new MenuItem("TOTAL SCORE:", NULL);
+    items[5] = new MenuItem("", NULL);
+    items[6] = new MenuItem("", NULL);
+    items[7] = new MenuItem("CONTINUE", StartGame);
+    
+    nextLevel = new Menu(items, 8, 48);
 }
 
 void CreateStartMenu()
@@ -227,7 +256,7 @@ void CreateStartMenu()
     MenuItem **items = new MenuItem *[3];
 
     ipField = new TextField("SERVER IP: ", "127.0.0.1");
-    playerField = new TextField("PLAYER: ", "1s");
+    playerField = new TextField("PLAYER: ", "1S");
     
     items[0] = ipField;
     items[1] = playerField;
@@ -316,6 +345,7 @@ int main(int argc, char *argv[])
     CreateMainMenu();
     CreateStartMenu();
     CreateCreditsMenu();
+    CreateNextLevelMenu();
     CreateHighScoresMenu();
 
     glfwSetCharCallback(CharCallback);    
@@ -356,6 +386,8 @@ int main(int argc, char *argv[])
             scene->Render();
             hud->Render();
             gaming = !scene->gameOver;
+            if (scene->levelOver)
+                LoadNextLevelMenu(NULL);
         }
         else {
             menu->Render();

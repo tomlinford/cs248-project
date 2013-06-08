@@ -45,7 +45,6 @@ struct MapLoader
 class Level
 {
 public:
-    
 	Level();
     ~Level();
 

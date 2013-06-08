@@ -91,6 +91,14 @@ Map::Map(float *heightMap, size_t size, int x, int y) :
 	lines = wp->lineMB;
 }
 
+Map::~Map()
+{
+    // Delete height data
+    /*float *data = heightField.GetData();
+    if (data)
+        delete data; */
+}
+
 void Map::ComputeBounds()
 {
     int width = heightField.GetWidth();

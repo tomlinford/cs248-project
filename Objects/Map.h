@@ -35,6 +35,9 @@ public:
      in the map. */
     Map(float *heightMap, size_t size, int x, int y);
     
+    /** Destructor */
+    ~Map();
+    
     /** Determine if an object and Map intersects by
      testing the z-value of the object's bounding box's
      bottom against the Map's height field. Note that

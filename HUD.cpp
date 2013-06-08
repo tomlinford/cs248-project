@@ -139,6 +139,7 @@ static float *createMinimap(Level *l) {
 
 HUD::HUD() : minimap(NULL)
 {
+    scene = NULL;
 	font = new FTPixmapFont("01 Digitall.ttf");
 	font->FaceSize(36);
 	padding = 10;
@@ -184,7 +185,7 @@ void HUD::Render()
 
     glColor4f(1, 1, 1, 1);
 	string score = "SCORE: ";
-    score.append(toString(0));
+    if (scene) score.append(toString(scene->score));
     box = font->BBox(score.c_str(), -1, FTPoint(0, 0), FTPoint(0, 0));
     glWindowPos2f(0, 0);
     font->Render(score.c_str(), -1, FTPoint(width / 2 - box.Upper().X() / 2, height - padding - font->Ascender()));

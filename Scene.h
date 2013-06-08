@@ -65,21 +65,23 @@ public:
 	/** Lightning effects */
 	void AddLightning(bool acquireLock);
     
-    /** Key events (Player 1) */
+    /** Control information. Key events (Player 1),
+     Ship offset (Player 1), Mouse events (Player 2), 
+     Viewing angles (Player 2) */
     bool keyLeft, keyRight, keyUp, keyDown;
-    
-    /** Mouse events (Player 2) */
+    glm::vec2 shipOffset;
     bool mouseLeft, mouseRight;
-    
-    /** FPS direction in spherical coordinates (Player 2) */
     float theta, phi;
     
-    /** Game over? */
-    bool gameOver;
+    /** Game over / level over. If the game is over but
+     the level is not, then the player died. If the game
+     is over and the level is also over, the player should 
+     continue to the next level */
+    bool gameOver, levelOver;
     
     /** Player information */
     Player player;
-    glm::vec2 shipOffset;
+    int score;
     
 private:
     /** View matrices. These should be
@@ -96,7 +98,7 @@ private:
     glm::vec3 cameraPosition;
     glm::vec3 lightPosition;
     
-    /* Separate update thread */
+    /* Game update thread */
     thread *updateThread;
     bool finished;
     

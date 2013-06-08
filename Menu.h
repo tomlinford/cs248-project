@@ -3,6 +3,7 @@
 #include "gl.h"
 
 #include <iostream>
+#include <assert.h>
 #include <math.h>
 #include <string>
 #include <FTGL/ftgl.h>
@@ -66,6 +67,8 @@ public:
     
     void HandleKey(int key, int action);
     void HandleChar(int character, int action);
+    
+    Menu *GetCurrentMenu();
     
 private:
     

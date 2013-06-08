@@ -246,5 +246,8 @@ float Level::GetHeightAt(float x, float y) {
 	//if (yi > 63) yi = 63;
 	float nx = (x - (step * xi)) * MAP_DIM;
 	float ny = (y - (step * yi)) * MAP_DIM;
-	return maps[xi + yi * MAP_DIM]->GetHeightAt(nx, ny);
+    if (maps[xi + yi * MAP_DIM])
+        return maps[xi + yi * MAP_DIM]->GetHeightAt(nx, ny);
+    else
+        return 0;
 }

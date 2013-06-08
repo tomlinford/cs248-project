@@ -41,11 +41,10 @@ Object::Object(const Object& other)
     M = other.M;
 }
 
-// TODO: When to delete model?
 Object::~Object()
 {
     /*if (model) {
-        model->Delete()
+        model->Delete();
         delete model;
     }*/
 };
