@@ -93,7 +93,7 @@ private:
     glm::vec3 lightPosition;
     
     /* Separate update thread */
-    thread updateThread;
+    thread *updateThread;
     bool finished;
     
     /* Level loading synchronization */

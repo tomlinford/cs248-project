@@ -3,6 +3,7 @@
 #ifdef __APPLE__
 #include <ApplicationServices/ApplicationServices.h>
 #endif
+
 #include <glm/glm.hpp>
 #include <time.h>
 #include <fmod.hpp>
@@ -13,6 +14,9 @@
 #include "Level.h"
 #include "Networking.h"
 #include "Sound.h"
+
+// memory leak detection
+//#include <vld.h>
 
 using namespace std;
 using namespace glm;

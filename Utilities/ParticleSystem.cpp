@@ -41,7 +41,7 @@ void Particle::Update(float elapsedTime)
     scale *= (MAX_LIFETIME - age) / MAX_LIFETIME;
 }
 
-ParticleCluster::ParticleCluster(glm::vec3 location, glm::vec3 c)
+ParticleCluster::ParticleCluster(glm::vec3 location, glm::vec3 c): deleteModel(false)
 {
     color = c;
     model = NULL;
@@ -80,9 +80,7 @@ void ParticleCluster::Update(float elapsedTime)
     
     // TODO: delete model on main thread?
     if (model) {
-        //model->Delete();
-        delete model;
-        model = NULL;
+        deleteModel = true;
     }
 }
 
@@ -92,6 +90,11 @@ void ParticleCluster::Draw(const Program& p, const glm::mat4& viewProjection,
 {
     if (particles.size() == 0)
         return;
+
+	if (deleteModel) {
+		delete model;
+		model = NULL;
+	}
     
     if (!model) {
         // pre allocate space for vectors

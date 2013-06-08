@@ -6,6 +6,8 @@
 #define M_PI 3.14159265359
 #endif
 
+#define START_HEALTH 1000
+
 using namespace::std;
 using namespace::glm;
 
@@ -52,7 +54,7 @@ Missile::Missile(const string& filename) : Flyable(filename)
 Ship::Ship(Model *model) : Flyable(model)
 {
     scale = 0.7;
-    health = 10;
+	health = START_HEALTH;
     cluster = new BulletCluster();
     cluster->SetOwner(this);
 }
@@ -60,7 +62,7 @@ Ship::Ship(Model *model) : Flyable(model)
 Ship::Ship(const string& filename) : Flyable(filename)
 {
     scale = 0.7;
-    health = 10;
+    health = START_HEALTH;
     cluster = new BulletCluster();
     cluster->SetOwner(this);
 }

@@ -54,14 +54,13 @@ Scene::Scene(Player p) : particle_sys()
 	mouseRight = false;
 
 	// Spawn update thread
-    updateThread = thread(&Scene::Update, this);
-	updateThread.detach();
+    updateThread = new thread(&Scene::Update, this);
 }
 
 Scene::~Scene()
 {
     finished = true;
-    updateThread.join();
+    updateThread->join();
     
 	if (main)
 		delete main;
@@ -79,6 +78,7 @@ void Scene::LoadLevel(Level *l)
     if (level)
         delete level;
 	level = l;
+	level->sceneMutex = &mutex;
         
 	level->Load();
 	cond.notify_all();
@@ -330,6 +330,7 @@ void Scene::HandleCollisions(float elapsedSeconds)
 	for (int i = 0; i < level->objects.size(); i++)
 	{
 		Object *obj = level->objects[i];
+		if (obj == NULL) continue;
 		Missile *missile = dynamic_cast<Missile *>(obj);
         Turret *turret = dynamic_cast<Turret *>(obj);
 
@@ -603,6 +604,7 @@ void Scene::RenderScene()
 
 void Scene::RenderMinimap()
 {
+	return;
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glDisable(GL_DEPTH_TEST);
     
