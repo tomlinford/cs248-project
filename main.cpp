@@ -51,9 +51,9 @@ static string toString(T t) {
 	return s.str();
 }
 
-void GLFWCALL KeyCallback(int key, int action) {
-	if (scene && gaming && p == PLAYER1) {
-        cout << "Key" << endl;
+void GLFWCALL KeyCallback(int key, int action)
+{
+	if (!menuKeyDown && scene && gaming && p == PLAYER1) {
 		switch(key) {
             case GLFW_KEY_LEFT:
                 scene->keyLeft = (action == GLFW_PRESS);
@@ -72,9 +72,11 @@ void GLFWCALL KeyCallback(int key, int action) {
 		}
         Networking::KeyAction(key, action, scene->GetShipOffset());
 	}
-    if (menu) {
+    else {
         menuKeyDown = (action == GLFW_PRESS);
-        menu->HandleKey(key, action);
+        if (menu) {
+            menu->HandleKey(key, action);
+        }
     }
 }
 
@@ -395,7 +397,7 @@ int main(int argc, char *argv[])
 		double currentTime = glfwGetTime();
 		nbFrames++;
 		if ( currentTime - lastTime >= 1.0 ){
-			cout << nbFrames << " fps" << endl;
+			//cout << nbFrames << " fps" << endl;
 			nbFrames = 0;
 			lastTime += 1.0;
 		}
