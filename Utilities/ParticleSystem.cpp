@@ -285,6 +285,11 @@ void ParticleSystem::Update(float elapsedTime)
 {
 	for (int i = 0; i < clusters.size(); i++ ) {
 		ParticleCluster *cluster = clusters[i];
+        
+        if (dynamic_cast<BulletCluster *>(cluster)) {
+            cout << "Updating bullet cluster" << endl;
+        }
+        
 		if (!cluster->Valid()) {
             delete cluster;
 			clusters.erase(clusters.begin() + i--);
