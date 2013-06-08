@@ -11,9 +11,6 @@ uniform mat4 MVP;
 
 void main()
 {
-    // Raw position - no transformation
-    // This maps the quad directly to the viewport size
     gl_Position = MVP * vec4(vertexCoordinates, 1);
-    
     texturePosition = textureCoordinates;
 }

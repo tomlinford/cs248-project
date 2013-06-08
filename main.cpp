@@ -3,6 +3,7 @@
 #ifdef __APPLE__
 #include <ApplicationServices/ApplicationServices.h>
 #endif
+
 #include <glm/glm.hpp>
 #include <time.h>
 #include <AntTweakBar.h>
@@ -14,6 +15,9 @@
 #include "Level.h"
 #include "Networking.h"
 #include "Sound.h"
+
+// memory leak detection
+//#include <vld.h>
 
 using namespace std;
 using namespace glm;
@@ -37,9 +41,9 @@ static string currPlayer, ipAddress;
 void GLFWCALL KeyCallback(int key, int action) {
 	if (scene && currPlayer[0] == '1') {
 		switch(key) {
-            case GLFW_KEY_ESC:
-                glfwCloseWindow();
-                break;
+            //case GLFW_KEY_ESC:
+            //    glfwCloseWindow();
+            //    break;
             case GLFW_KEY_LEFT:
                 scene->keyLeft = (action == GLFW_PRESS);
                 break;
@@ -118,7 +122,7 @@ void GLFWCALL WindowResizeCallback(int w, int h)
                                               ratio,        // Aspect ratio
                                               0.1f,         // Near clipping plane
                                               50.0f));      // Far clipping plane
-        scene->SetMinimapProjection(glm::ortho(-10.0f, 10.0f,   // Left, right
+        scene->SetMinimapProjection(glm::ortho(10.0f, -10.0f,   // Left, right
                                                -10.0f, 10.0f,   // Bottom, top
                                                -50.0f, 50.0f)); // Near, far
 		scene->SetFrustum(75.0f, ratio, 0.1f, 50.0f);
@@ -180,6 +184,7 @@ static void loadScene() {
     hud = new HUD();
 	Networking::Init(scene, level, ipAddress, currPlayer.c_str());
 	scene->LoadLevel(level);
+    hud->LoadScene(scene);
     hud->LoadLevel(level);
 	WindowResizeCallback(win_width, win_height);
 }
@@ -209,7 +214,6 @@ void StartGame(void *data)
     if (!hud)
         hud = new HUD();
     
-    // TODO: Fix forever loop to support restarting game
     Networking::Init(scene, level, ipAddress, currPlayer.c_str());
     
 	scene->LoadLevel(level);
@@ -259,7 +263,7 @@ void CreateStartMenu()
     options[2] = "CONNECT";
     functions[2] = StartGame;
     
-    start = new Menu(options, functions, 4);
+    start = new Menu(options, functions, 3);
 }
 
 void CreateMainMenu()
@@ -370,14 +374,14 @@ int main(int argc, char *argv[])
 			nbFrames = 0;
 			lastTime += 1.0;
 		}
-		if (scene) {
+		/*if (scene) {
             scene->Render();
             hud->Render();
         }
 		else if (readyToStart) {
 			loadScene();
-		}
-        /*
+		}*/
+        
         if (finished) {
             break;
         }
@@ -389,9 +393,9 @@ int main(int argc, char *argv[])
         }
         else {
             menu->Render();
-        }*/
+        }
         
-        TwDraw();
+        //TwDraw();
 		glfwSwapBuffers();
 	}
 	TwTerminate();

@@ -38,7 +38,7 @@ void Level::GenPath()
     vector<size_t> indices;
     
     GLuint index = 0;
-    for (int i = 1; i < path.size(); i++)
+    for (int i = 2; i < path.size() - 2; i++)
     {
         CMSpline *spline = path[i].spline;
         for (float u = 0; u < GRANULARITY; u++) {
@@ -56,9 +56,24 @@ void Level::GenPath()
 
 Level::~Level()
 {
+	unique_lock<std::mutex> lock(*sceneMutex);
     for (int i = 2; i < path.size() - 1; i++) {
         delete path[i].spline;
     }
+	delete ship;
+	ship = NULL;
+	for (Map *&m : maps) {
+		Map *temp = m;
+		m = NULL;
+		delete temp;
+	}
+	for (Object *&o : objects) {
+		Object *temp = o;
+		o = NULL;
+		delete temp;
+	}
+	delete sphere;
+	sphere = NULL;
 }
     
 void Level::Load() {
@@ -190,8 +205,14 @@ void Level::DrawMap(const glm::mat4& viewProjection, const glm::vec3& cameraPos,
 	int count = 0;
     for (Map *map : maps) {
 		if (map == NULL) continue;
-        if (frustum.Contains(*map))
+        if ((mode == NORMAL || mode == GLOW) && frustum.Contains(*map))
             map->Draw(viewProjection, cameraPos, lightPos, mode);
+        else if (mode == MINIMAP) {
+            if (ship && glm::distance(map->GetPosition(), ship->GetPosition()) < 100)
+                map->Draw(viewProjection, cameraPos, lightPos, mode);
+            else if (!ship && glm::distance(map->GetPosition(), lightPos) < 100)
+                map->Draw(viewProjection, cameraPos, lightPos, mode);
+        }
         else
             count++;
             

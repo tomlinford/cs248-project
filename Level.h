@@ -89,6 +89,9 @@ public:
     std::vector<Object *> objects;
     std::vector<ControlPoint> path;
 
+	/** Scene's mutex */
+	std::mutex *sceneMutex;
+
 private:
 	bool ready;
 	std::vector<MapLoader> mapLoaders;

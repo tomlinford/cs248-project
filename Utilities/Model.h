@@ -57,6 +57,7 @@ struct Bounds
 class Model {
 public:
 	Model(const ModelBuffer& mb, Material mat, Bounds b);
+	~Model() { Delete(); }
     
     // Separate delete method (instead of destructor)
     // to avoid copying issues

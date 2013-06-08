@@ -4,6 +4,9 @@
 
 using namespace glm;
 
+static Program *p = NULL;
+static Program *plain = NULL;
+
 #define MINIMAP_SIZE 256
 
 // well, this is basically just for the minimap
@@ -86,6 +89,7 @@ public:
 		plain.Use();
 		plain.SetUniform("color", vec3(1));
 		plain.SetMVP(projection);
+        glLineWidth(1.0f);
 		outlineMB->Draw(plain, GL_LINES);
 
 		pathMB->Draw(plain, GL_LINE_STRIP);
@@ -102,6 +106,7 @@ public:
 			plain.SetUniform("color", vec3(0, 1, 0));
 			shipMB->Draw(plain, GL_TRIANGLE_FAN);
 		}
+        p.Unuse();
 	}
 private:
 	Texture *texture;
@@ -127,7 +132,7 @@ static float *createMinimap(Level *l) {
 		for (int y = 0; y < MINIMAP_SIZE; y++) {
 			float xf = (float) x /  (float) MINIMAP_SIZE;
 			float yf = (float) y / (float) MINIMAP_SIZE;
-			data[x + y * MINIMAP_SIZE] = vec3(0, 0, l->GetHeightAt(xf, yf));
+			data[x + y * MINIMAP_SIZE] = vec3(0, l->GetHeightAt(xf, yf) * 0.7, l->GetHeightAt(xf, yf) * 0.9);
 		}
 	}
 	return (float *) data;
@@ -143,6 +148,7 @@ HUD::HUD() : minimap(NULL)
 HUD::~HUD()
 {
 	delete font;
+	delete minimap;
 }
 
 void HUD::Render()
@@ -154,37 +160,33 @@ void HUD::Render()
 			MINIMAP_SIZE, width, height, tex, level);
 	}
 
-	minimap->Draw(Program("Shaders/hud.vert", "Shaders/hud.frag"), level);
+    if (!p) p = new Program("Shaders/hud.vert", "Shaders/hud.frag");
+	minimap->Draw(*p, level);
 
 	glColor4f(1, 1, 1, 1);
 	string level = "LEVEL: ";
 	level.append(toString(0));
 	glWindowPos2f(0, 0);
 	font->Render(level.c_str(), -1, FTPoint(padding, height - padding - font->Ascender()));
+    
+    float h = 0;
+    if (HUD::level->ship) {
+        h = HUD::level->ship->GetHealth();
+        if (h < 0)
+            h = 0;
+    }
+    
+    glColor4f(1 - h / 10, h / 10, 0, 1);
+    string health = "HEALTH: ";
+    health.append(toString(h));
+    FTBBox box = font->BBox(health.c_str(), -1, FTPoint(0, 0), FTPoint(0, 0));
+    glWindowPos2f(0, 0);
+    font->Render(health.c_str(), -1, FTPoint(width - 2 * padding - box.Upper().X(), height - padding - font->Ascender()));
 
-	if (HUD::level->ship) {
-		float h = HUD::level->ship->GetHealth();
-		if (h < 0)
-			h = 0;
-		glColor4f(1 - h / 10, h / 10, 0, 1);
-		string health = "HEALTH: ";
-		health.append(toString(h));
-		FTBBox box = font->BBox(health.c_str(), -1, FTPoint(0, 0), FTPoint(0, 0));
-		glWindowPos2f(0, 0);
-		font->Render(health.c_str(), -1, FTPoint(width - 2 * padding - box.Upper().X(), height - padding - font->Ascender()));
-	} else { // dead, show a health of 0
-		glColor4f(1, 0, 0, 1);
-		string health = "HEALTH: ";
-		health.append(toString(0));
-		FTBBox box = font->BBox(health.c_str(), -1, FTPoint(0, 0), FTPoint(0, 0));
-		glWindowPos2f(0, 0);
-		font->Render(health.c_str(), -1, FTPoint(width - 2 * padding - box.Upper().X(), height - padding - font->Ascender()));
-	}
-
-	glColor4f(1, 1, 1, 1);
+    glColor4f(1, 1, 1, 1);
 	string score = "SCORE: ";
-	score.append(toString(0));
-	FTBBox box = font->BBox(score.c_str(), -1, FTPoint(0, 0), FTPoint(0, 0));
-	glWindowPos2f(0, 0);
-	font->Render(score.c_str(), -1, FTPoint(width / 2 - box.Upper().X() / 2, height - padding - font->Ascender()));
+    score.append(toString(0));
+    box = font->BBox(score.c_str(), -1, FTPoint(0, 0), FTPoint(0, 0));
+    glWindowPos2f(0, 0);
+    font->Render(score.c_str(), -1, FTPoint(width / 2 - box.Upper().X() / 2, height - padding - font->Ascender()));
 }

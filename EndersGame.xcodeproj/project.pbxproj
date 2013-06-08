@@ -88,6 +88,8 @@
 		786525461761BC2F002AE042 /* thunder.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = thunder.mp3; sourceTree = "<group>"; };
 		786525471761BC76002AE042 /* libfmodex.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libfmodex.dylib; path = ../../../../../../../usr/lib/libfmodex.dylib; sourceTree = "<group>"; };
 		786525481761BC76002AE042 /* libfmodexL.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libfmodexL.dylib; path = ../../../../../../../usr/lib/libfmodexL.dylib; sourceTree = "<group>"; };
+		7865254B17629231002AE042 /* hud.frag */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; path = hud.frag; sourceTree = "<group>"; };
+		7865254C17629231002AE042 /* hud.vert */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; path = hud.vert; sourceTree = "<group>"; };
 		786F67EF1742259B00E359E4 /* Program.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Program.cpp; sourceTree = "<group>"; };
 		786F67F01742259B00E359E4 /* Program.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Program.h; sourceTree = "<group>"; };
 		786F67FC17422A5E00E359E4 /* RenderBuffer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = RenderBuffer.cpp; sourceTree = "<group>"; };
@@ -273,6 +275,8 @@
 		786F68071742350100E359E4 /* Shaders */ = {
 			isa = PBXGroup;
 			children = (
+				7865254B17629231002AE042 /* hud.frag */,
+				7865254C17629231002AE042 /* hud.vert */,
 				789B19B51746417F00C90C56 /* blur.frag */,
 				789B19B61746417F00C90C56 /* hblur.vert */,
 				789B19B71746417F00C90C56 /* rblur.vert */,

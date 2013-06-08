@@ -41,7 +41,7 @@ public:
 class ParticleCluster
 {
 public:
-    ParticleCluster() {}
+    ParticleCluster() : deleteModel(false) {}
     ParticleCluster(glm::vec3 location, glm::vec3 color);
     //~ParticleCluster();
     
@@ -62,6 +62,8 @@ protected:
     glm::vec3 color;
     
     Model *model;
+private:
+	bool deleteModel;
 };
 
 /* Represents a lightning bolt. Generated using midpoint
