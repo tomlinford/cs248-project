@@ -56,7 +56,6 @@ void Level::GenPath()
 
 Level::~Level()
 {
-	unique_lock<std::mutex> lock(*sceneMutex);
     for (int i = 2; i < path.size() - 1; i++) {
         delete path[i].spline;
     }

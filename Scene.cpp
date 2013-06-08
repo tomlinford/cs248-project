@@ -16,13 +16,13 @@ using boost::timer::cpu_times;
 
 static int count;
 
-Scene::Scene(Player p) : particle_sys()
+Scene::Scene() : particle_sys()
 {
-	player = p;
+	player = PLAYER1;
 	theta = phi = 0.0f;
-    
-    gameOver = false;
-    finished = false;
+
+	gameOver = false;
+	finished = false;
 
 	frustum = new Frustum();
 	main = new Program("Shaders/main.vert", "Shaders/main.frag");
@@ -44,7 +44,7 @@ Scene::Scene(Player p) : particle_sys()
 	velocityTexture = NULL;
 	combinedTexture = NULL;
 	sceneTexture = NULL;
-    minimapTexture = NULL;
+	minimapTexture = NULL;
 
 	keyLeft = false;
 	keyRight = false;
@@ -54,14 +54,14 @@ Scene::Scene(Player p) : particle_sys()
 	mouseRight = false;
 
 	// Spawn update thread
-    updateThread = new thread(&Scene::Update, this);
+	updateThread = new thread(&Scene::Update, this);
 }
 
 Scene::~Scene()
 {
-    finished = true;
-    updateThread->join();
-    
+	finished = true;
+	updateThread->join();
+
 	if (main)
 		delete main;
 	if (level)
@@ -70,18 +70,21 @@ Scene::~Scene()
 		delete frustum;
 }
 
-void Scene::LoadLevel(Level *l)
+void Scene::LoadLevel(Level *l, Player p)
 {
-    gameOver = false;
-    finished = false;
-    
-    unique_lock<std::mutex> lock(mutex);
-    
-    if (level)
-        delete level;
+	unique_lock<std::mutex> lock(mutex);
+
+	player = p;
+	shipOffset = vec2(0);
+
+	gameOver = false;
+	finished = false;
+
+	if (level)
+		delete level;
 	level = l;
 	level->sceneMutex = &mutex;
-        
+
 	level->Load();
 	cond.notify_all();
 	particle_sys.AddBulletCluster(level->ship->GetBulletCluster());
@@ -90,6 +93,10 @@ void Scene::LoadLevel(Level *l)
 		if (turret) {
 			particle_sys.AddBulletCluster(turret->GetBulletCluster());
 		}
+	}
+	if (timer) {
+		delete timer;
+		timer = new cpu_timer();
 	}
 }
 
@@ -129,10 +136,10 @@ void Scene::UpdateFBO(GLuint width, GLuint height)
 	if (sceneTexture)
 		delete sceneTexture;
 	sceneTexture = new Texture(width, height, GL_RGBA);
-    
-    if (minimapTexture)
-        delete minimapTexture;
-    minimapTexture = new Texture(width, height, GL_RGBA);
+
+	if (minimapTexture)
+		delete minimapTexture;
+	minimapTexture = new Texture(width, height, GL_RGBA);
 
 	if (fbo)
 		delete fbo;
@@ -244,11 +251,11 @@ void Scene::UpdateObjects(float elapsedSeconds)
 		level->ship->SetDirection(shipDirection);
 		level->ship->SetPosition(shipPosition);
 	}
-    
-    // Update sphere
-    if (level->sphere) {
-        level->sphere->SetScale(75 + 7 * sin(elapsedSeconds));
-    }
+
+	// Update sphere
+	if (level->sphere) {
+		level->sphere->SetScale(75 + 7 * sin(elapsedSeconds));
+	}
 
 	// Update other objects
 	for (int i = 0; i < level->objects.size(); i++)
@@ -279,26 +286,26 @@ void Scene::UpdateObjects(float elapsedSeconds)
 				position.z - 0.0 < 0.0001)
 			{
 				level->objects.erase(level->objects.begin() + i--);
-            }
-            else
-            {
-                flyable->SetDirection(direction);
-                flyable->SetPosition(position);
-            }
-        }
-        if (turret && level->ship) {
-            vec3 turretPos = turret->GetPosition();
-            vec3 shipPos = level->ship->GetPosition();
-            float distance = fabs(glm::distance(shipPos, turretPos));
-            if (distance < 30) {
-                vec3 dir = normalize(shipPos - turretPos);
-                turret->AddBullet(turretPos, 20.0f * dir);
-            }
-        }
-    }
-    
-    // Update particles
-    particle_sys.Update(elapsedSeconds);
+			}
+			else
+			{
+				flyable->SetDirection(direction);
+				flyable->SetPosition(position);
+			}
+		}
+		if (turret && level->ship) {
+			vec3 turretPos = turret->GetPosition();
+			vec3 shipPos = level->ship->GetPosition();
+			float distance = fabs(glm::distance(shipPos, turretPos));
+			if (distance < 30) {
+				vec3 dir = normalize(shipPos - turretPos);
+				turret->AddBullet(turretPos, 20.0f * dir);
+			}
+		}
+	}
+
+	// Update particles
+	particle_sys.Update(elapsedSeconds);
 }
 
 /** Determine if a collision has occurred - if so,
@@ -334,7 +341,7 @@ void Scene::HandleCollisions(float elapsedSeconds)
 		Object *obj = level->objects[i];
 		if (obj == NULL) continue;
 		Missile *missile = dynamic_cast<Missile *>(obj);
-        Turret *turret = dynamic_cast<Turret *>(obj);
+		Turret *turret = dynamic_cast<Turret *>(obj);
 
 		// If the object is not in the frustum,
 		// skip it for now
@@ -343,23 +350,23 @@ void Scene::HandleCollisions(float elapsedSeconds)
 
 		// Check object-bullet intersections
 		if (particle_sys.Intersects(obj)) {
-            if (turret) {
-                turret->AddDamage(0.5);
-                if (turret->GetHealth() < 0) {
-                    particle_sys.AddExplosionCluster(obj->GetPosition(), obj->GetColor());
-                    delete obj;
-                    obj = NULL;
-                    level->objects.erase(level->objects.begin() + i--);
-                    continue;
-                }
-            }
-            else {
-                particle_sys.AddExplosionCluster(obj->GetPosition(), obj->GetColor());
-                delete obj;
-                obj = NULL;
-                level->objects.erase(level->objects.begin() + i--);
-                continue;
-            }
+			if (turret) {
+				turret->AddDamage(0.5);
+				if (turret->GetHealth() < 0) {
+					particle_sys.AddExplosionCluster(obj->GetPosition(), obj->GetColor());
+					delete obj;
+					obj = NULL;
+					level->objects.erase(level->objects.begin() + i--);
+					continue;
+				}
+			}
+			else {
+				particle_sys.AddExplosionCluster(obj->GetPosition(), obj->GetColor());
+				delete obj;
+				obj = NULL;
+				level->objects.erase(level->objects.begin() + i--);
+				continue;
+			}
 		}
 
 		// Check object-ship intersections
@@ -392,7 +399,7 @@ void Scene::HandleCollisions(float elapsedSeconds)
 		particle_sys.AddExplosionCluster(level->ship->GetPosition(), level->ship->GetColor());
 		delete level->ship;
 		level->ship = NULL;
-        gameOver = true;
+		gameOver = true;
 	}
 }
 
@@ -434,16 +441,16 @@ void Scene::UpdateView(float elapsedSeconds)
 			position + direction,
 			up);
 	}
-    
-    // Minimap view
-    if (level->ship) {
-        // Compute view vectors
+
+	// Minimap view
+	if (level->ship) {
+		// Compute view vectors
 		vec3 position = level->ship->GetPosition();
-        
+
 		SetMinimapView(lookAt(position + vec3(0.0, 0.5, 0.0),
-                       position,
-                       vec3(0, 0, -1)));
-    }
+			position,
+			vec3(0, 0, -1)));
+	}
 }
 
 /* Updates object positions in world based on elapsed
@@ -515,7 +522,7 @@ void Scene::RenderGlowMap()
 
 	main->Use();
 	main->SetUniform("illum", 0);
-    main->SetUniform("attenuate", true);
+	main->SetUniform("attenuate", true);
 	main->SetUniform("lightPosition", lightPosition);
 	main->SetUniform("cameraPosition", cameraPosition);
 
@@ -539,7 +546,7 @@ void Scene::RenderGlowMap()
 	}
 
 	// Draw particles
-    main->SetUniform("attenuate", false);
+	main->SetUniform("attenuate", false);
 	particle_sys.Draw(*main, viewProjection, cameraPosition, true);
 
 	main->Unuse();
@@ -556,7 +563,7 @@ void Scene::RenderScene()
 	level->DrawMap(viewProjection, cameraPosition, lightPosition, *frustum, NORMAL);
 
 	main->Use();
-    main->SetUniform("attenuate", true);
+	main->SetUniform("attenuate", true);
 	main->SetUniform("lightPosition", lightPosition);
 	main->SetUniform("cameraPosition", cameraPosition);
 
@@ -592,7 +599,7 @@ void Scene::RenderScene()
 	}
 
 	// Draw particles
-    main->SetUniform("attenuate", false);
+	main->SetUniform("attenuate", false);
 	particle_sys.Draw(*main, viewProjection, cameraPosition, false);
 
 	main->Unuse();
@@ -607,26 +614,26 @@ void Scene::RenderScene()
 void Scene::RenderMinimap()
 {
 	return;
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    glDisable(GL_DEPTH_TEST);
-    
-    mat4 minimapViewProjection = minimapProjection * minimapView;
-    
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glDisable(GL_DEPTH_TEST);
+
+	mat4 minimapViewProjection = minimapProjection * minimapView;
+
 	// Maps have their own shader program for vertex displacement
 	level->DrawMap(minimapViewProjection, cameraPosition, lightPosition, *frustum, MINIMAP);
-    
+
 	main->Use();
-    main->SetUniform("attenuate", true);
+	main->SetUniform("attenuate", true);
 	main->SetUniform("lightPosition", lightPosition);
 	main->SetUniform("cameraPosition", cameraPosition);
-    
+
 	// Draw ship
 	if (level->ship)
 	{
 		main->SetUniform("illum", 0);
 		level->ship->Draw(*main, minimapViewProjection, cameraPosition);
 	}
-    
+
 	// Draw objects in scene
 	for (int i = 0; i < level->objects.size(); i++)
 	{
@@ -636,28 +643,28 @@ void Scene::RenderMinimap()
 			main->SetUniform("illum", 0);
 			obj->Draw(*main, minimapViewProjection, cameraPosition);
 		}
-        else if (!level->ship) {
-            main->SetUniform("illum", 0);
+		else if (!level->ship) {
+			main->SetUniform("illum", 0);
 			obj->Draw(*main, minimapViewProjection, cameraPosition);
-        }
+		}
 	}
-    
-    // Draw level path
-    Model *path = level->GetPath();
-    main->SetMVP(minimapViewProjection);
-    main->SetUniform("baseColor", vec3(1.0));
-    main->SetUniform("illum", 0);
-    main->SetUniform("attenuate", false);
-    
-    glLineWidth(10.0f);
-    path->Draw(*main, GL_LINE_STRIP);
-    
+
+	// Draw level path
+	Model *path = level->GetPath();
+	main->SetMVP(minimapViewProjection);
+	main->SetUniform("baseColor", vec3(1.0));
+	main->SetUniform("illum", 0);
+	main->SetUniform("attenuate", false);
+
+	glLineWidth(10.0f);
+	path->Draw(*main, GL_LINE_STRIP);
+
 	main->Unuse();
-    
+
 	glBindTexture(GL_TEXTURE_2D, minimapTexture->GetID());
 	glCopyTexImage2D(GL_TEXTURE_2D, 0, minimapTexture->GetFormat(), 0, 0, minimapTexture->GetWidth(), minimapTexture->GetHeight(), 0);
-    
-    glEnable(GL_DEPTH_TEST);
+
+	glEnable(GL_DEPTH_TEST);
 }
 
 void Scene::RenderVelocityTexture()
@@ -733,7 +740,7 @@ void Scene::Render()
 
 	RenderGlowMap();
 	RenderScene();
-    RenderMinimap();
+	RenderMinimap();
 	RenderVelocityTexture();
 	PostProcess();
 

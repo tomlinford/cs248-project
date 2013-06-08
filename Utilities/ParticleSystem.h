@@ -63,7 +63,6 @@ protected:
     
     Model *model;
 	bool deleteModel;
-private:
 };
 
 /* Represents a lightning bolt. Generated using midpoint

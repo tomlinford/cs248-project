@@ -178,14 +178,14 @@ void StartGame(void *data)
 	}
     
     if (!scene)
-        scene = new Scene(p);
+        scene = new Scene();
     
     if (!hud)
         hud = new HUD();
     
     Networking::Init(scene, level, ipField->GetCurrentText(), playerField->GetCurrentText().c_str());
     
-	scene->LoadLevel(level);
+	scene->LoadLevel(level, p);
     hud->LoadLevel(level);
     
     WindowResizeCallback(win_width, win_height);

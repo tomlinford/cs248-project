@@ -91,6 +91,10 @@ public:
 
 	/** Scene's mutex */
 	std::mutex *sceneMutex;
+    
+	/** Lock between Level and Networking */
+	std::mutex mutex;
+	std::condition_variable cond;
 
 private:
 	bool ready;
@@ -98,10 +102,6 @@ private:
 
     /** Level path object */
     Model *pathModel;
-    
-	/** Lock between Level and Networking */
-	std::mutex mutex;
-	std::condition_variable cond;
     
     /** Private helpers */
     void GenPath();
