@@ -75,6 +75,8 @@ void Scene::LoadLevel(Level *l)
     gameOver = false;
     finished = false;
     
+    unique_lock<std::mutex> lock(mutex);
+    
     if (level)
         delete level;
 	level = l;

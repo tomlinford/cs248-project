@@ -138,9 +138,6 @@ private:
     ParticleSystem particle_sys;
     Screen *screen;
     
-    int frames;
-    bool updated;
-    
     /** Update helpers */
     void HandleKeys(float elapsedSeconds);
     void HandleMouse(float elapsedSeconds);
