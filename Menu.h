@@ -3,15 +3,54 @@
 #include "gl.h"
 
 #include <iostream>
+#include <math.h>
 #include <string>
 #include <FTGL/ftgl.h>
+#include <boost/timer/timer.hpp>
 
 typedef void (*menuFunc) (void *data);
 
+/** Represents a menu item; A menu item has a string label
+ and a function to execute when it is selected */
+class MenuItem
+{
+public:
+    MenuItem() {}
+    MenuItem(std::string l, menuFunc f = NULL) : label(l), func(f) {}
+    
+    virtual void HandleChar(int character, int action) {}
+    virtual void HandleKey(int key, int action) {}
+    
+    menuFunc func;
+    std::string label;
+};
+
+/** Represents a text field; Has a label and user-input text,
+ but no associated execution function. */
+class TextField : public MenuItem
+{
+public:
+    TextField() {}
+    TextField(std::string l, std::string d);
+    void SetDefaultText(std::string d) { defaultText = d; }
+    
+    virtual void HandleChar(int key, int action);
+    virtual void HandleKey(int key, int action);
+    
+    std::string GetCurrentText();
+    
+private:
+    std::string original;
+    std::string defaultText;
+    std::string currentText;
+};
+
+/** Represents a simple key-based menu consisting of a series of
+ items displayed vertically. */
 class Menu
 {
 public:
-    Menu(std::string options[], menuFunc functions[], int numItems);
+    Menu(MenuItem *items[], int numItems, float fontsize = 72.0f);
     ~Menu();
     
     void PushMenu(Menu *other);
@@ -26,18 +65,24 @@ public:
     void SetSelectionActive(bool t) { selectionActive = t; }
     
     void HandleKey(int key, int action);
+    void HandleChar(int character, int action);
     
 private:
+    
+    void UpdateSelection(int dir);
+    
     bool selectionActive;
     int selectedIndex;
     int numItems;
     int width, height;
     float padding;
     
+    boost::timer::cpu_timer *timer;
+    boost::timer::cpu_times times;
+    
     Menu *next, *previous;
     
-    menuFunc *functions;
-    std::string *options;
+    MenuItem **items;
     
     FTGLPixmapFont *font;
 };

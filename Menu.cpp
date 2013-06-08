@@ -1,22 +1,61 @@
 #include "Menu.h"
 
 using namespace::std;
+using boost::timer::cpu_timer;
+using boost::timer::cpu_times;
 
-Menu::Menu(std::string o[], menuFunc f[], int i)
+TextField::TextField(string l, string d) :
+    MenuItem(l + d, NULL), original(l), defaultText(d)
 {
-    options = o;
-    functions = f;
+}
+
+void TextField::HandleChar(int character, int action)
+{
+    currentText += toupper((char)character);
+    label = original + currentText;
+}
+
+void TextField::HandleKey(int key, int action)
+{
+    switch(key) {
+        case GLFW_KEY_BACKSPACE:
+            currentText = currentText.substr(0, currentText.size() - 1);
+            if (currentText.empty()) {
+                label = original + defaultText;
+            }
+            else {
+                label = original + currentText;
+            }
+            break;
+        default:
+            break;
+    }
+}
+
+std::string TextField::GetCurrentText()
+{
+    if (currentText.empty())
+        return defaultText;
+    return currentText;
+}
+
+Menu::Menu(MenuItem *it[], int i, float fontsize)
+{
+    items = it;
     numItems = i;
     
     next = NULL;
     previous = NULL;
     
     selectedIndex = 0;
+    selectionActive = false;
     
     padding = 20.0f;
     
     font = new FTGLPixmapFont("01 Digitall.ttf");
-	font->FaceSize(72);
+	font->FaceSize(fontsize);
+    
+    timer = new cpu_timer();
 }
 
 Menu::~Menu()
@@ -38,6 +77,31 @@ void Menu::PopMenu()
     }
 }
 
+void Menu::HandleChar(int character, int action)
+{
+    if (next) {
+        next->HandleChar(character, action);
+        return;
+    }
+    
+    if (selectionActive) {
+        items[selectedIndex]->HandleChar(character, action);
+    }
+}
+
+void Menu::UpdateSelection(int dir)
+{
+    TextField *f = NULL;
+    do {
+        selectedIndex += dir;
+        if (selectedIndex > numItems - 1)
+            selectedIndex = 0;
+        else if (selectedIndex < 0)
+            selectedIndex = numItems - 1;
+        f = dynamic_cast<TextField *>(items[selectedIndex]);
+    } while (!items[selectedIndex]->func && !f);
+}
+
 void Menu::HandleKey(int key, int action)
 {
     if (next) {
@@ -48,21 +112,26 @@ void Menu::HandleKey(int key, int action)
     if (action == GLFW_RELEASE) {
         return;
     }
+    if (selectionActive) {
+        items[selectedIndex]->HandleKey(key, action);
+    }
     
     switch(key) {
         case GLFW_KEY_UP:
-            if (!selectionActive)
-                selectedIndex--;
+            if (selectionActive)
+                selectionActive = false;
+            UpdateSelection(-1);
             break;
         case GLFW_KEY_DOWN:
-            if (!selectionActive)
-                selectedIndex++;
+            if (selectionActive)
+                selectionActive = false;
+            UpdateSelection(1);
             break;
         case GLFW_KEY_ENTER:
         {
-            if (functions[selectedIndex])
-                functions[selectedIndex](NULL);
             selectionActive = true;
+            if (items[selectedIndex]->func)
+                items[selectedIndex]->func(NULL);
             break;
         }
         case GLFW_KEY_ESC:
@@ -76,11 +145,6 @@ void Menu::HandleKey(int key, int action)
         default:
             break;
     }
-    
-    if (selectedIndex < 0)
-        selectedIndex = numItems - 1;
-    else if (selectedIndex == numItems)
-        selectedIndex = 0;
 }
 
 void Menu::Render()
@@ -92,21 +156,26 @@ void Menu::Render()
     
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     
+    times = timer->elapsed();
+    float elapsedSeconds = (float)times.wall / pow(10.f, 9.f);
+    
     float itemHeight = font->Ascender() * numItems + padding * (numItems - 1);
     float start = height / 2.0f + itemHeight / 2.0f;
     
     for (int i = 0; i < numItems; i++) {
         
         if (i == selectedIndex) {
-            glColor4f(0.0, 0.7, 0.9, 1.0);
-            //continue;
+            float k = 1.0;
+            if (!selectionActive)
+                k = sin(elapsedSeconds * 5);
+            glColor4f(0.0, 0.7, 0.9, k * 1.0);
         }
         else {
             glColor4f(0.5, 0.5, 0.5, 1.0);
         }
         glWindowPos2f(0,0);
         
-        string item = options[i];
+        string item = items[i]->label;
         FTBBox box = font->BBox(item.c_str(), -1, FTPoint(0, 0), FTPoint(0, 0));
         font->Render(item.c_str(),
                      -1,
