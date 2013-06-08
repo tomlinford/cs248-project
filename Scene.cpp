@@ -399,8 +399,8 @@ void Scene::HandleCollisions(float elapsedSeconds)
 		particle_sys.AddExplosionCluster(level->ship->GetPosition(), level->ship->GetColor());
 		delete level->ship;
 		level->ship = NULL;
-		gameOver = true;
 		Networking::GameOver();
+		gameOver = true;
 	}
 }
 
@@ -470,6 +470,8 @@ void Scene::Update()
 				delete timer;
 			timer = new cpu_timer();
 		}
+
+		if (gameOver) continue;
 
 		times = timer->elapsed();
 		float elapsedSeconds = (float)times.wall / pow(10.f, 9.f);
