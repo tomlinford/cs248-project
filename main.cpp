@@ -40,7 +40,7 @@ bool gaming;
 static float win_width, win_height;
 
 void GLFWCALL KeyCallback(int key, int action) {
-	if (scene && p == PLAYER1) {
+	if (scene && gaming && p == PLAYER1) {
 		switch(key) {
             case GLFW_KEY_LEFT:
                 scene->keyLeft = (action == GLFW_PRESS);
