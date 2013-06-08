@@ -264,11 +264,11 @@ void Scene::HandleCollisions(float elapsedSeconds)
     
 	// Delete ship?
 	if (level->ship && level->ship->GetHealth() < 0) {
-		particle_sys.AddExplosionCluster(level->ship->GetPosition(), level->ship->GetColor());
-		delete level->ship;
-		level->ship = NULL;
-		Networking::GameOver();
-        gameOver = true;
+		//particle_sys.AddExplosionCluster(level->ship->GetPosition(), level->ship->GetColor());
+		//delete level->ship;
+		//level->ship = NULL;
+		//Networking::GameOver();
+        //gameOver = true;
 	}
 }
 
@@ -341,7 +341,6 @@ void Scene::Update()
 
 		times = timer->elapsed();
 		float elapsedSeconds = (float)times.wall / pow(10.f, 9.f);
-        elapsedSeconds += 70;
         
         if (!gameOver && elapsedSeconds > level->totalTime) {
             Networking::GameOver();

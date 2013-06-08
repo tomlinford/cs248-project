@@ -66,7 +66,7 @@ private:
 };
 
 unordered_map<size_t, WirePlane *> WirePlane::computedPlanes;
-vector<float *> invalidData;
+static vector<float *> invalidData;
 
 const static string VERT_FILENAME = "Shaders/terrain.vert";
 const static string FRAG_FILENAME = "Shaders/terrain.frag";

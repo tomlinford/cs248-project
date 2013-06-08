@@ -188,7 +188,7 @@ void StartGame(void *data)
 {
     gaming = true;
     
-    // Choose player
+    // Choose player based on user input in menu
 	switch (playerField->GetCurrentText()[0]) {
         case '1':
             p = PLAYER1;
@@ -204,6 +204,8 @@ void StartGame(void *data)
     if (!hud)
         hud = new HUD();
     
+    // Stream new level from server
+    // Tom: Hook into difficulty levels here?
     Level *level = new Level();
     Networking::Init(scene, level, ipField->GetCurrentText(), playerField->GetCurrentText().c_str());
     
@@ -211,7 +213,12 @@ void StartGame(void *data)
     hud->LoadLevel(level);
     hud->LoadScene(scene);
     
+    // Update Scene textures/FBO
     WindowResizeCallback(win_width, win_height);
+    
+    // Update menus
+    start->SetSelectionActive(false);
+    nextLevel->SetSelectionActive(false);
 }
 
 void Exit(void *data)

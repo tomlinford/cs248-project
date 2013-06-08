@@ -11,6 +11,8 @@ float rand(float min, float max) {
     return min + (float)rand() / RAND_MAX * (max - min);
 }
 
+static vector<Model *> invalidModels;
+
 Particle::Particle(glm::vec3 l, glm::vec3 v, glm::vec3 f, float s)
 {
     location = l;
@@ -62,7 +64,7 @@ ParticleCluster::ParticleCluster(glm::vec3 location, glm::vec3 c): deleteModel(f
 ParticleCluster::~ParticleCluster()
 {
     if (model) {
-        delete model;
+        invalidModels.push_back(model);
     }
 }
 
@@ -85,10 +87,8 @@ void ParticleCluster::Update(float elapsedTime)
         }
     }
     
-    // TODO: delete model on main thread?
-    if (model) {
+    if (model)
         deleteModel = true;
-    }
 }
 
 // Generates and draws particle buffer
@@ -350,4 +350,9 @@ void ParticleSystem::Draw(const Program& p, const glm::mat4& viewProjection,
         ParticleCluster *cluster = *it;
         cluster->Draw(p, viewProjection, cameraPos, mode);
     }
+    
+    // Delete invalidated cluster models
+    for (int i = 0 ; i < invalidModels.size(); i++)
+        delete invalidModels[i];
+    invalidModels.clear();
 }
