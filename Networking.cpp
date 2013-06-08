@@ -213,7 +213,7 @@ namespace Networking {
 				float health; ss >> health;
 				level->ship->SetHealth(health);
 			} else if (header == END) {
-				glfwCloseWindow();
+				break;
 			}
 		}
 	}
