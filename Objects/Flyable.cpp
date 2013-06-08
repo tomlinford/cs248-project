@@ -6,7 +6,7 @@
 #define M_PI 3.14159265359
 #endif
 
-#define START_HEALTH 1000
+#define START_HEALTH 10
 
 using namespace::std;
 using namespace::glm;

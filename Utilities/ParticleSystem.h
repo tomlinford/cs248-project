@@ -62,8 +62,8 @@ protected:
     glm::vec3 color;
     
     Model *model;
-private:
 	bool deleteModel;
+private:
 };
 
 /* Represents a lightning bolt. Generated using midpoint

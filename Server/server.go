@@ -95,6 +95,7 @@ func main() {
 				return
 			}
 			player = strings.TrimSpace(player)
+			player = strings.ToLower(player)
 			if lastLevel == nil || player == "1" ||
 				(len(player) == 2 && player[1] == 's') {
 				lastLevel = level.GetLevel(level.HARD)

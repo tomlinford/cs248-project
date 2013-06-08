@@ -20,8 +20,20 @@ public:
     void LoadLevel(Level *l) { level = l; }
     void Render();
     
-    void SetWidth(int w) { width = w; }
-    void SetHeight(int h) { height = h; }
+    void SetWidth(int w) {
+		width = w;
+		if (minimap) {
+			delete minimap;
+			minimap = NULL;
+		}
+	}
+    void SetHeight(int h) {
+		height = h;
+		if (minimap) {
+			delete minimap;
+			minimap = NULL;
+		}
+	}
     
 private:
     

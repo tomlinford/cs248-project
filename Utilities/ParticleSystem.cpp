@@ -243,6 +243,11 @@ void BulletCluster::Draw(const Program& p, const glm::mat4& viewProjection,
     // Draw bullets
     if (particles.size() == 0)
         return;
+
+	if (ParticleCluster::deleteModel) {
+		delete model;
+		model = NULL;
+	}
     
     if (!model) {
         // pre allocate space for vectors
