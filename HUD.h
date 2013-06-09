@@ -32,10 +32,12 @@ private:
     int width, height;
     float padding;
     
+    /* Scene that HUD is monitoring */
     Scene *scene;
     
     FTPixmapFont *font;
     
+    /** HUD elements */
 	Minimap *minimap;
     Reticle *reticle;
 	CDIndicator *thunderCD;

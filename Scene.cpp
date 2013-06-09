@@ -18,8 +18,9 @@ Scene::Scene() : particle_sys()
 {
 	player = PLAYER1;
 	theta = phi = 0.0f;
-	score = 0;
-	totalScore = 0;
+    score = 0;
+    totalScore = 0;
+    levelNum = 0;
 
 	finished = false;
 
