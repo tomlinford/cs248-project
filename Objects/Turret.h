@@ -9,10 +9,8 @@ public:
     Turret(Model *m);
     Turret(const string& filename);
     
-    /** Accessors for health */
-    float GetHealth() { return health; }
-    void SetHealth(float h) { health = h; }
-    void AddDamage(float damage) { health -= damage; }
+    /** Score value */
+    virtual int GetValue() { return 30; }
     
     /** Override set color to update bullet cluster color
          as well */
@@ -26,5 +24,4 @@ public:
     
 private:
     BulletCluster *cluster;
-    float health;
 };

@@ -24,7 +24,6 @@ enum Direction {
 /** Defines a control point along a route */
 struct ControlPoint
 {
-public:
     glm::vec3 position;     // In world space
     glm::quat orientation;  // Multiplier against previous orientation
     CMSpline *spline;       // Spline to use for this control point (will need to be freed)
@@ -54,56 +53,64 @@ public:
     /** Gets a flyable object's direction as a function of time 
      (Assuming orientation is aligned along path axis */
     glm::vec3 GetDirection(Direction direction, float time);
-
-	/* This will be called from another thread, so Level will have to hold onto this */
-	void SetLevel(float *terrainMap, size_t size, int x, int y);
     
-    /* Fetches a line representation of the path */
-    Model *GetPath();
+    /* Updates object positions based on elapsed time */
+    void Update(float elapsedSeconds);
+    
+    /* Checks for overlap between objects and removes those
+     that have collided. Effects are added to the provided
+     particle system. */
+    void HandleCollisions(float elapsedSeconds, ParticleSystem& ps, Frustum& f);
 
-	// gets called from Networking
-	void AddEnemyShip(float timeOffset, glm::vec2 offset);
-
-	/** This will be called from the main thread, so the Level will load the map if necessary */
-	void DrawMap(const glm::mat4& viewProjection, const glm::vec3& cameraPos,
-                 const glm::vec3& lightPos, const Frustum& frustrum, DrawMode mode);
-
+	/* Level loading functions (called from Networking) */
+	void Load(); // Will block until level has loaded. Call from main thread
+	void LoadMap(float *terrainMap, size_t size, int x, int y);
+    void LoadControlPoints(const glm::vec3 *points, size_t num);
+    void LoadEnemyShip(float timeOffset, glm::vec2 offset);
+    
     /** Whether or not the level has finished loading */
 	void SetReady();
-    bool Ready() { return ready; }
-
-	void SetControlPoints(const glm::vec3 *points, size_t num);
-
-	/* This will block until the level has been loaded. Must be called from the main thread. */
-	void Load();
+    bool Ready();
 
 	/** Height at location between 0, 0 and 1, 1.
 		Returns something between 0 and 1*/
 	float GetHeightAt(float x, float y);
+    
+    /** Player score on this level */
+    int score;
 
+    /** Level path information */
     float totalTime;
-    std::vector<Map *> maps;
+    Model *pathModel;
+    std::vector<ControlPoint> path;
+    
+    /** Level objects */
     Ship *ship;
     Object *sphere;
+    std::vector<Map *> maps;
     std::vector<Object *> objects;
-    std::vector<ControlPoint> path;
 
-	/** Scene's mutex */
+	/** Synchronization */
 	std::mutex *sceneMutex;
-    
-	/** Lock between Level and Networking */
 	std::mutex mutex;
 	std::condition_variable cond;
 
 private:
 	bool ready;
 	std::vector<MapLoader> mapLoaders;
-
-    /** Level path object */
-    Model *pathModel;
     
-    /** Private helpers */
+    /** Private collision testing helpers */
+    void CheckMapCollision(float elapsedSeconds, ParticleSystem& ps, Frustum &f);
+    void CheckObjectParticleCollisions(ParticleSystem& ps, Frustum &f);
+    void CheckObjectShipCollisions(ParticleSystem& ps, Frustum &f);
+    
+    /** Private level update helpers */
+    void UpdateShip(float elapsedSeconds);
+    void UpdateSphere(float elapsedSeconds);
+    void UpdateObjects(float elapsedSeconds);
+    
+    /** Private level loading helpers */
+    void GenMaps();
     void GenPath();
     void PrecomputeSplines();
-	void LoadMaps();
 };

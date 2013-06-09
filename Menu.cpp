@@ -1,5 +1,5 @@
-
 #include "Menu.h"
+#include "Sound.h"
 
 using namespace::std;
 using boost::timer::cpu_timer;
@@ -75,6 +75,7 @@ void Menu::PushMenu(Menu *other)
     assert(this != other);
     next = other;
     other->SetPrevious(this);
+    Sound::PlayBack();
 }
 
 void Menu::PopMenu()
@@ -82,6 +83,7 @@ void Menu::PopMenu()
     if (previous) {
         previous->SetNext(NULL);
         previous->SetSelectionActive(false);
+        Sound::PlayBack();
     }
 }
 
@@ -112,6 +114,8 @@ void Menu::UpdateSelection(int dir)
             selectedIndex = numItems - 1;
         f = dynamic_cast<TextField *>(items[selectedIndex]);
     } while (!items[selectedIndex]->func && !f && selectedIndex != orig_index);
+    
+    Sound::PlaySelect();
 }
 
 void Menu::HandleKey(int key, int action)

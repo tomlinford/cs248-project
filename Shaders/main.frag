@@ -18,6 +18,8 @@ uniform bool attenuate;
 
 /* Force field position */
 uniform vec3 fieldPosition;
+uniform float fieldRadius;
+uniform bool hasField;
 
 /* Light position in camera space */
 uniform vec3 lightPosition;
@@ -31,7 +33,7 @@ void main()
     vec3 final_color;
     if (illum) {
         vec3 color = baseColor;
-        if (distance(vertexPosition, fieldPosition) < 75.0) {
+        if (hasField && distance(vertexPosition, fieldPosition) < fieldRadius) {
             color += vec3(baseColor.z, 0.0, 0.0);
         }
         
@@ -40,7 +42,7 @@ void main()
         vec3 diffuseColor = color;
         
         // Camera position
-        vec3 L = normalize(vertexPosition - lightPosition);
+        vec3 L = normalize(lightPosition - vertexPosition);
         vec3 N = normalize(-cross(dFdx(vertexPosition), dFdy(vertexPosition)));
         
         // Calculate ambient

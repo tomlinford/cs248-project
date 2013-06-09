@@ -11,6 +11,8 @@ float rand(float min, float max) {
     return min + (float)rand() / RAND_MAX * (max - min);
 }
 
+static vector<Model *> invalidModels;
+
 Particle::Particle(glm::vec3 l, glm::vec3 v, glm::vec3 f, float s)
 {
     location = l;
@@ -59,6 +61,13 @@ ParticleCluster::ParticleCluster(glm::vec3 location, glm::vec3 c): deleteModel(f
     }
 }
 
+ParticleCluster::~ParticleCluster()
+{
+    if (model) {
+        invalidModels.push_back(model);
+    }
+}
+
 void ParticleCluster::AddParticle(glm::vec3 location, glm::vec3 velocity, glm::vec3 force, float scale)
 {
     particles.push_back(Particle(location, velocity, force, scale));
@@ -78,15 +87,13 @@ void ParticleCluster::Update(float elapsedTime)
         }
     }
     
-    // TODO: delete model on main thread?
-    if (model) {
+    if (model)
         deleteModel = true;
-    }
 }
 
 // Generates and draws particle buffer
 void ParticleCluster::Draw(const Program& p, const glm::mat4& viewProjection,
-                          const glm::vec3& cameraPos, bool glowMap)
+                          const glm::vec3& cameraPos, DrawMode mode)
 {
     if (particles.size() == 0)
         return;
@@ -117,15 +124,17 @@ void ParticleCluster::Draw(const Program& p, const glm::mat4& viewProjection,
     p.SetModel(mat4(1)); // Needed for Phong shading
     p.SetMVP(viewProjection);
     
-    if (!glowMap) {
+    if (mode == NORMAL) {
         p.SetUniform("baseColor", color);
         p.SetUniform("illum", 1);
+        glLineWidth(3.0);
         model->Draw(p, GL_TRIANGLES);
     }
     
 	// color has already been set, will have the same color as above
     p.SetUniform("baseColor", color);
 	p.SetUniform("illum", 0);
+    glLineWidth(1.0);
 	model->Draw(p, GL_LINE_LOOP);
 }
 
@@ -160,7 +169,7 @@ bool Bolt::Valid() {
 }
 
 void Bolt::Draw(const Program& p, const glm::mat4& viewProjection,
-                const glm::vec3& cameraPos, bool glowMap) {
+                const glm::vec3& cameraPos, DrawMode mode) {
     lock_guard<std::mutex> lock(mutex);
     
     // Draw lightning bolt
@@ -236,7 +245,7 @@ void BulletCluster::AddBullet(glm::vec3 l, glm::vec3 v)
 }
 
 void BulletCluster::Draw(const Program& p, const glm::mat4& viewProjection,
-                  const glm::vec3& cameraPos, bool glowMap)
+                  const glm::vec3& cameraPos, DrawMode mode)
 {
     lock_guard<std::mutex> lock(mutex);
     
@@ -271,13 +280,10 @@ void BulletCluster::Draw(const Program& p, const glm::mat4& viewProjection,
     }
     
     p.SetMVP(viewProjection);
+	p.SetUniform("attenuate", false);
     p.SetUniform("baseColor", color);
     p.SetUniform("illum", 0);
-    
-    if (glowMap)
-        glLineWidth(10.0);
-    else
-        glLineWidth(3.0);
+    glLineWidth(3.0);
     model->Draw(p, GL_LINES);
 }
 
@@ -325,14 +331,28 @@ bool ParticleSystem::Intersects(Object *object)
     return false;
 }
 
+void ParticleSystem::Clear()
+{
+    for (int i = 0; i < clusters.size(); i++ ) {
+		ParticleCluster *cluster = clusters[i];
+		delete cluster;
+	}
+    clusters.clear();
+}
+
 void ParticleSystem::Draw(const Program& p, const glm::mat4& viewProjection,
-          const glm::vec3& cameraPos, bool glowMap)
+          const glm::vec3& cameraPos, DrawMode mode)
 {
     for (std::vector<ParticleCluster *>::iterator it = clusters.begin();
          it != clusters.end();
          it++)
     {
         ParticleCluster *cluster = *it;
-        cluster->Draw(p, viewProjection, cameraPos, glowMap);
+        cluster->Draw(p, viewProjection, cameraPos, mode);
     }
+    
+    // Delete invalidated cluster models
+    for (int i = 0 ; i < invalidModels.size(); i++)
+        delete invalidModels[i];
+    invalidModels.clear();
 }

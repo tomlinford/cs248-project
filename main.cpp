@@ -4,6 +4,7 @@
 #include <ApplicationServices/ApplicationServices.h>
 #endif
 
+#include <sstream>
 #include <glm/glm.hpp>
 #include <time.h>
 #include <fmod.hpp>
@@ -25,22 +26,34 @@ using namespace glm;
 #define M_PI 3.14159265359
 #endif
 
-static Menu *menu, *start, *credits, *hscores, *nextLevel;
+static Menu *menu, *start, *credits, *hscores, *nextLevel, *connect;
 static Scene *scene;
 static HUD *hud;
 static Player p;
 
 TextField *ipField;
 TextField *playerField;
+MenuItem *scoreField;
+MenuItem *totalScoreField;
 
 bool netInit;
 bool finished;
 bool gaming;
+bool menuKeyDown;
 
 static float win_width, win_height;
 
-void GLFWCALL KeyCallback(int key, int action) {
-	if (scene && gaming && p == PLAYER1) {
+template<typename T>
+static string toString(T t) {
+	stringstream s;
+	s.precision(2);
+	s << t;
+	return s.str();
+}
+
+void GLFWCALL KeyCallback(int key, int action)
+{
+	if (!menuKeyDown && scene && gaming && p == PLAYER1) {
 		switch(key) {
             case GLFW_KEY_LEFT:
                 scene->keyLeft = (action == GLFW_PRESS);
@@ -54,10 +67,17 @@ void GLFWCALL KeyCallback(int key, int action) {
             case GLFW_KEY_DOWN:
                 scene->keyDown = (action == GLFW_PRESS);
                 break;
+            default:
+                break;
 		}
         Networking::KeyAction(key, action, scene->GetShipOffset());
 	}
-    if (menu) menu->HandleKey(key, action);
+    else {
+        menuKeyDown = (action == GLFW_PRESS);
+        if (menu) {
+            menu->HandleKey(key, action);
+        }
+    }
 }
 
 void GLFWCALL CharCallback(int character, int action)
@@ -72,7 +92,7 @@ void GLFWCALL MouseCallback(int x, int y) {
 	// This gets called once before the window has been
 	// initialized; the if block makes sure we don't
 	// preset theta and phi to junk when that happens
-	if (win_width > 0 && win_height > 0 && scene)
+	if (win_width > 0 && win_height > 0 && scene && gaming)
 	{
 		glfwSetMousePos(win_width / 2, win_height / 2);
 
@@ -158,6 +178,10 @@ void GLFWCALL WindowResizeCallback(int w, int h)
         nextLevel->SetWidth(w);
         nextLevel->SetHeight(h);
     }
+    if (connect) {
+        connect->SetWidth(w);
+        connect->SetWidth(h);
+    }
 
 	// Update global
 	win_width = w;
@@ -166,12 +190,14 @@ void GLFWCALL WindowResizeCallback(int w, int h)
 
 void StartGame(void *data)
 {
-    cout << "Start game! " << endl;
+	// test to make sure server is alive
+	if (!Networking::PingServer(ipField->GetCurrentText())) {
+		return;
+	}
+
     gaming = true;
     
-    Level *level = new Level();
-    
-    // Choose player
+    // Choose player based on user input in menu
 	switch (playerField->GetCurrentText()[0]) {
         case '1':
             p = PLAYER1;
@@ -187,13 +213,21 @@ void StartGame(void *data)
     if (!hud)
         hud = new HUD();
     
+    // Stream new level from server
+    // Tom: Hook into difficulty levels here?
+    Level *level = new Level();
     Networking::Init(scene, level, ipField->GetCurrentText(), playerField->GetCurrentText().c_str());
     
 	scene->LoadLevel(level, p);
     hud->LoadLevel(level);
     hud->LoadScene(scene);
     
+    // Update Scene textures/FBO
     WindowResizeCallback(win_width, win_height);
+    
+    // Update menus
+    start->SetSelectionActive(false);
+    nextLevel->SetSelectionActive(false);
 }
 
 void Exit(void *data)
@@ -217,6 +251,11 @@ void LoadStartMenu(void *data)
     menu->GetCurrentMenu()->PushMenu(start);
 }
 
+void LoadConnectMenu(void *data)
+{
+    menu->GetCurrentMenu()->PushMenu(connect);
+}
+
 void LoadCreditsMenu(void *data)
 {
     menu->GetCurrentMenu()->PushMenu(credits);
@@ -229,22 +268,27 @@ void LoadHighScoresMenu(void *data)
 
 void LoadNextLevelMenu(void *data)
 {
+    scoreField->label = "" + toString(scene->score);
+    totalScoreField->label = "" + toString(scene->totalScore);
+    
     Menu *top = menu->GetCurrentMenu();
     if (top != nextLevel)
         top->PushMenu(nextLevel);
 }
 
-
 void CreateNextLevelMenu()
 {
     MenuItem **items = new MenuItem *[8];
     
+    scoreField = new MenuItem("", NULL);
+    totalScoreField = new MenuItem("", NULL);
+    
     items[0] = new MenuItem("LEVEL COMPLETED", NULL);
     items[1] = new MenuItem("", NULL);
     items[2] = new MenuItem("LEVEL SCORE:", NULL);
-    items[3] = new MenuItem("", NULL);
+    items[3] = scoreField;
     items[4] = new MenuItem("TOTAL SCORE:", NULL);
-    items[5] = new MenuItem("", NULL);
+    items[5] = totalScoreField;
     items[6] = new MenuItem("", NULL);
     items[7] = new MenuItem("CONTINUE", StartGame);
     
@@ -263,6 +307,17 @@ void CreateStartMenu()
     items[2] = new MenuItem("CONNECT", StartGame);
     
     start = new Menu(items, 3);
+}
+
+void CreateConnectMenu()
+{
+    MenuItem **items = new MenuItem *[3];
+    
+    items[0] = new MenuItem("CONNECTING...", NULL);
+    items[1] = new MenuItem("", NULL);
+    items[2] = new MenuItem("CANCEL", StartGame);
+    
+    connect = new Menu(items, 3);
 }
 
 void CreateHighScoresMenu()
@@ -286,7 +341,7 @@ void CreateCreditsMenu()
 {
     MenuItem **items = new MenuItem *[9];
     
-    items[0] = new MenuItem("DEVELOPMENT:", NULL);
+    items[0] = new MenuItem("DEVELOPERS:", NULL);
     items[1] = new MenuItem("tom linford", NULL);
     items[2] = new MenuItem("ben-han sung", NULL);
     items[3] = new MenuItem("", NULL);
@@ -373,7 +428,7 @@ int main(int argc, char *argv[])
 		double currentTime = glfwGetTime();
 		nbFrames++;
 		if ( currentTime - lastTime >= 1.0 ){
-			cout << nbFrames << " fps" << endl;
+			//cout << nbFrames << " fps" << endl;
 			nbFrames = 0;
 			lastTime += 1.0;
 		}
@@ -386,8 +441,9 @@ int main(int argc, char *argv[])
             scene->Render();
             hud->Render();
             gaming = !scene->gameOver;
-            if (scene->levelOver)
+            if (scene->levelOver) {
                 LoadNextLevelMenu(NULL);
+            }
         }
         else {
             menu->Render();

@@ -66,6 +66,7 @@ private:
 };
 
 unordered_map<size_t, WirePlane *> WirePlane::computedPlanes;
+static vector<float *> invalidData;
 
 const static string VERT_FILENAME = "Shaders/terrain.vert";
 const static string FRAG_FILENAME = "Shaders/terrain.frag";
@@ -94,9 +95,7 @@ Map::Map(float *heightMap, size_t size, int x, int y) :
 Map::~Map()
 {
     // Delete height data
-    /*float *data = heightField.GetData();
-    if (data)
-        delete data; */
+    invalidData.push_back(heightField.GetData());
 }
 
 void Map::ComputeBounds()
@@ -125,7 +124,18 @@ void Map::ComputeBounds()
                     position + vec3(MAP_SCALE_FACTOR, maxY, MAP_SCALE_FACTOR));
 }
 
-void Map::Draw(const glm::mat4& viewProjection, const glm::vec3& cameraPos, const glm::vec3& lightPos, DrawMode mode) const {
+void Map::DeleteInvalidData() const
+{
+    for (int i = 0; i < invalidData.size(); i++) {
+        delete invalidData[i];
+    }
+    invalidData.clear();
+}
+
+void Map::Draw(const glm::mat4& viewProjection, const glm::vec3& cameraPos, const glm::vec3& lightPos, DrawMode mode) const
+{
+    DeleteInvalidData();
+    
 	p.Use();
     
 	p.SetMVP(viewProjection * M);
@@ -151,7 +161,7 @@ void Map::Draw(const glm::mat4& viewProjection, const glm::vec3& cameraPos, cons
         triangles->Draw(p, GL_TRIANGLES);
     }
     else if (mode == MINIMAP) {
-         p.SetUniform("baseColor", vec3(0.0, 0.7, 0.9));
+        p.SetUniform("baseColor", vec3(0.0, 0.7, 0.9));
         p.SetUniform("illum", 1);
         triangles->Draw(p, GL_TRIANGLES);
     }

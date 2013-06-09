@@ -96,6 +96,15 @@ func main() {
 			}
 			player = strings.TrimSpace(player)
 			player = strings.ToLower(player)
+
+			// respond to ping request
+			if player == "ping" {
+				fmt.Fprintln(wr, "pong")
+				wr.Flush()
+				conn.Close()
+				return
+			}
+
 			if lastLevel == nil || player == "1" ||
 				(len(player) == 2 && player[1] == 's') {
 				lastLevel = level.GetLevel(level.HARD)
