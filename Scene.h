@@ -92,6 +92,7 @@ public:
     
     /** The current level */
     Level *level;
+    int levelNum;
     
 private:
     /** View matrices. These should be

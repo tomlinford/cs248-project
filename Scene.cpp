@@ -20,6 +20,7 @@ Scene::Scene() : particle_sys()
 	theta = phi = 0.0f;
     score = 0;
     totalScore = 0;
+    levelNum = 0;
 
 	finished = false;
 

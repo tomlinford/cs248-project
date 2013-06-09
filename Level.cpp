@@ -24,10 +24,12 @@ Level::Level() : ready(false), maps(MAP_DIM * MAP_DIM, NULL)
     ship = new Ship("Models/ship.obj");
     ship->SetColor(vec3(0.0, 0.9, 0.0));
     
-    sphere = new Object("Models/icosphere.obj");
+    sphere = NULL;
+    
+    /* sphere = new Object("Models/icosphere.obj");
     sphere->SetColor(vec3(1.0, 0.0, 1.0));
     sphere->SetPosition(vec3(150, 0, 150));
-    sphere->SetScale(75.0f);
+    sphere->SetScale(75.0f); */
 
 	// Prefetch turret obj file and associated buffer
 	Object turret("Models/turret.obj");

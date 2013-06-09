@@ -30,11 +30,11 @@ namespace Sound {
 	extern void Init() {
 		ERRCHECK(System_Create(&system));
 		ERRCHECK(system->init(32, FMOD_INIT_NORMAL, 0));
-		ERRCHECK(system->createSound("Graphiqs_Groove_-_09_-_Deep_Sky_Blue.mp3", FMOD_HARDWARE, 0, &menuMusic));
-		ERRCHECK(system->createSound("thunder.mp3", FMOD_HARDWARE, 0, &thunder));
-		ERRCHECK(system->createSound("146725__fins__laser.wav", FMOD_HARDWARE, 0, &laser));
-        ERRCHECK(system->createSound("menu_select.wav", FMOD_HARDWARE, 0, &select));
-        ERRCHECK(system->createSound("menu_back.wav", FMOD_HARDWARE, 0, &back));
+		ERRCHECK(system->createSound("Sounds/Graphiqs_Groove_-_09_-_Deep_Sky_Blue.mp3", FMOD_HARDWARE, 0, &menuMusic));
+		ERRCHECK(system->createSound("Sounds/thunder.mp3", FMOD_HARDWARE, 0, &thunder));
+		ERRCHECK(system->createSound("Sounds/laser.wav", FMOD_HARDWARE, 0, &laser));
+        ERRCHECK(system->createSound("Sounds/menu_select.wav", FMOD_HARDWARE, 0, &select));
+        ERRCHECK(system->createSound("Sounds/menu_back.wav", FMOD_HARDWARE, 0, &back));
 		ERRCHECK(thunder->setMode(FMOD_LOOP_OFF));
 		ERRCHECK(system->playSound(FMOD_CHANNEL_FREE, menuMusic, false, &channel));
 	}
