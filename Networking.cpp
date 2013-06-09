@@ -6,6 +6,8 @@
 #include <boost/asio.hpp>
 #include <chrono>
 
+#include "Sound.h"
+
 using namespace std;
 using namespace glm;
 
@@ -131,7 +133,12 @@ namespace Networking {
 		ss >> loc.x >> loc.y >> loc.z;
 		Turret *turret = new Turret("Models/turret.obj");
 		turret->SetColor(vec3(0.9, 0.7, 0.5));
-        turret->SetPosition(vec3(loc.x * 20, (loc.z) * 60, loc.y * 20));
+		swap(loc.y, loc.z);
+		loc *= 20.f;
+		float height = level->GetHeightAt(loc.x / 320.f, loc.z / 320.f);
+		height = (height - .5f) * 60.f;
+		loc.y = height;
+        turret->SetPosition(loc);
 		level->objects.push_back(turret);
 	}
 
@@ -205,6 +212,7 @@ namespace Networking {
 				vec3 position, velocity;
 				ss >> position.x >> position.y >> position.z;
 				ss >> velocity.x >> velocity.y >> velocity.z;
+				Sound::PlayLaser();
 				level->ship->AddBullet(position, velocity);
 			} else if (header == LIGHTNING) {
 				scene->AddLightning(true);

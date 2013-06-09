@@ -30,6 +30,7 @@ static Menu *menu, *start, *credits, *hscores, *nextLevel, *connect;
 static Scene *scene;
 static HUD *hud;
 static Player p;
+static int level = 0;
 
 TextField *ipField;
 TextField *playerField;
@@ -383,7 +384,7 @@ int main(int argc, char *argv[])
 	CGSetLocalEventsSuppressionInterval(0.0);
 #endif
 
-	if (!glfwOpenWindow(1024, 768, 5, 6, 5, 0, 24, 0, GLFW_WINDOW)) {
+	if (!glfwOpenWindow(1280, 720, 5, 6, 5, 0, 24, 0, GLFW_WINDOW)) {
 		cerr << "Failed to initialize glfw window" << endl;
 		glfwTerminate();
 		exit(-1);
@@ -401,7 +402,7 @@ int main(int argc, char *argv[])
     CreateNextLevelMenu();
     CreateHighScoresMenu();
 
-    glfwDisable(GLFW_MOUSE_CURSOR);
+    //glfwDisable(GLFW_MOUSE_CURSOR);
     
     glfwSetCharCallback(CharCallback);    
 	glfwSetKeyCallback(KeyCallback);
@@ -442,11 +443,13 @@ int main(int argc, char *argv[])
             hud->Render();
             gaming = !scene->gameOver;
             if (scene->levelOver) {
+				level++;
                 LoadNextLevelMenu(NULL);
             }
         }
         else {
             menu->Render();
+			level = 0;
         }
         
 		glfwSwapBuffers();

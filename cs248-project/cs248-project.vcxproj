@@ -12,6 +12,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\HUD.cpp" />
+    <ClCompile Include="..\HudElement.cpp" />
     <ClCompile Include="..\Level.cpp" />
     <ClCompile Include="..\main.cpp" />
     <ClCompile Include="..\Menu.cpp" />
@@ -40,6 +41,7 @@
     <ClInclude Include="..\Grid\strlib.h" />
     <ClInclude Include="..\Grid\vector.h" />
     <ClInclude Include="..\HUD.h" />
+    <ClInclude Include="..\HudElement.h" />
     <ClInclude Include="..\Level.h" />
     <ClInclude Include="..\Menu.h" />
     <ClInclude Include="..\Networking.h" />
