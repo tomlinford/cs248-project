@@ -76,6 +76,9 @@ public:
 		Returns something between 0 and 1*/
 	float GetHeightAt(float x, float y);
     
+    /** Returns a minimap texture of the given size */
+    Texture *GetMinimap(GLuint size);
+    
     /** Player score on this level */
     int score;
 

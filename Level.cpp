@@ -375,6 +375,8 @@ void Level::PrecomputeSplines()
     }
 }
 
+/************ OTHER UTILITIES HERE ************/
+
 float Level::GetHeightAt(float x, float y) {
 	float step = 1.f / MAP_DIM;
 	int xi = (int) (x / step);
@@ -387,4 +389,17 @@ float Level::GetHeightAt(float x, float y) {
         return maps[xi + yi * MAP_DIM]->GetHeightAt(nx, ny);
     else
         return 0;
+}
+
+Texture *Level::GetMinimap(GLuint size)
+{
+    vec3 *data = new vec3[size * size];
+	for (int x = 0; x < size; x++) {
+		for (int y = 0; y < size; y++) {
+			float xf = (float) x /  (float) size;
+			float yf = (float) y / (float) size;
+			data[x + y * size] = vec3(0, GetHeightAt(xf, yf) * 0.7, GetHeightAt(xf, yf) * 0.9);
+		}
+	}
+    return new Texture(size, size, GL_RGB, (float *)data);
 }

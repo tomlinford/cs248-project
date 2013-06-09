@@ -1,10 +1,60 @@
 #include "HudElement.h"
+#include <glm/gtx/rotate_vector.hpp>
 
 using namespace::std;
 using namespace::glm;
 
+CDIndicator::CDIndicator(int x, int y, int w, int h, int win_w, int win_h, string text) : text(text)
+{
+    int llx = x - win_w / 2;
+    int lly = y - win_h / 2;
+    
+    vector<vec3> vertices;
+    vertices.push_back(vec3(llx + w / 2, lly + h - w / 2, 0));
+    for (int i = 0; i < 719; i++) {
+        float angle = -((float) i) / 718.f * 2.f * pi<float>();
+        vec2 rot = rotate(vec2(w / 2, 0.f), degrees(angle));
+        vertices.push_back(vec3(rot, 0.f) + vertices[0]);
+    }
+    ab = new ArrayBuffer<vec3>(vertices);
+    
+    projection = ortho((float)-win_w / 2, (float)win_w / 2, (float)win_h / 2, (float)-win_h / 2, -0.1f, 1.f);
+}
+
+CDIndicator::~CDIndicator()
+{
+    // FIX: THIS IS CAUSING A CRASH
+    //ab->Delete();
+    //delete ab;
+}
+
+void CDIndicator::Draw(const Program &p, Scene *s) const {
+    
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_ONE, GL_ONE);
+    
+    float elapsed = s->GetTime() - s->GetLastLightning();
+    
+    if (elapsed < 5) {
+        Program plain("Shaders/plain.vert", "Shaders/plain.frag");
+        plain.Use();
+        plain.SetUniform("color", vec4(1.0, 1.0, 1.0, 0.2));
+        plain.SetMVP(projection);
+        
+        // Using an ab so we have more control about how much gets drawn
+        ab->Use(plain, "vertexCoordinates");
+        ab->Draw(GL_TRIANGLE_FAN, (5.f - elapsed) / 5.f * 720);
+        
+        glWindowPos2f(0, 0);
+        plain.Unuse();
+    }
+    
+    glDisable(GL_BLEND);
+}
+
 Minimap::Minimap(int x, int y, int w, int h, int win_w, int win_h, Texture *tex, Level *l)
-: texture(tex) {
+    : texture(tex)
+{
     vector<vec3> vertices;
     vertices.push_back(vec3(x - win_w / 2, y - win_h / 2, 0));
     vertices.push_back(vec3(x - win_w / 2, y + h - win_h / 2, 0));
@@ -71,7 +121,7 @@ Minimap::~Minimap() {
     delete shipMB;
 }
 
-void Minimap::Draw(const Program &p, Level* l) const {
+void Minimap::Draw(const Program &p, Scene *s) const {
     p.Use();
     p.SetMVP(projection);
     p.SetUniform("texture", texture, GL_TEXTURE0);
@@ -86,9 +136,9 @@ void Minimap::Draw(const Program &p, Level* l) const {
     
     pathMB->Draw(plain, GL_LINE_STRIP);
     
-    if (l->ship) {
-        vec3 shipPos = l->ship->GetPosition();
-        vec3 shipDir = l->ship->GetDirection();
+    if (s->level->ship) {
+        vec3 shipPos = s->level->ship->GetPosition();
+        vec3 shipDir = s->level->ship->GetDirection();
         float angle = atan(shipDir.z / shipDir.x) * 180 / glm::pi<float>();
         shipPos /= (16 * 20);
         shipPos *= MINIMAP_SIZE;
@@ -137,7 +187,7 @@ Reticle::~Reticle()
     
 }
 
-void Reticle::Draw(const Program &p, Level* l) const {
+void Reticle::Draw(const Program &p, Scene* s) const {
     
     glEnable(GL_BLEND);
     glBlendFunc(GL_ONE, GL_ONE);

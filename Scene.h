@@ -64,6 +64,10 @@ public:
 
 	/** Lightning effects */
 	void AddLightning(bool acquireLock);
+	float GetLastLightning() { return lastLightning; }
+
+	/** Get last time */
+	float GetTime() { return lastTime; }
     
     /** Control information. 
      Key events (Player 1)
@@ -85,6 +89,9 @@ public:
     Player player;
     int score;
     int totalScore;
+    
+    /** The current level */
+    Level *level;
     
 private:
     /** View matrices. These should be
@@ -112,13 +119,13 @@ private:
     /* View frustrum */
     Frustum *frustum;
     
-    /** The current level */
-    Level *level;
-    
     /** Global animation timer */
     boost::timer::cpu_timer *timer;
     boost::timer::cpu_times times;
     float lastTime;
+
+	/** Last lightning */
+	float lastLightning;
     
     /** Shaders and FBO stuff */
     Program *main;

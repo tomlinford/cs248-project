@@ -9,10 +9,6 @@
 #define MAX_X 2.4
 #define MAX_Y 1.8
 
-#define SHIP_VALUE 10
-#define TURRET_VALUE 20
-#define MISSILE_VALUE 30
-
 using namespace::std;
 using namespace::glm;
 using boost::timer::cpu_timer;
@@ -80,6 +76,8 @@ void Scene::Reset()
 	keyUp = false;
 	mouseLeft = false;
 	mouseRight = false;
+
+	lastLightning = -100.f;
     
     particle_sys.Clear();
 }
@@ -203,8 +201,9 @@ void Scene::HandleMouse(float elapsedSeconds)
 		Networking::AddBullet(level->ship->GetPosition() + velocity, 20.0f * velocity);
 		Sound::PlayLaser();
 	}
-	if (mouseRight && level->ship) {
+	if (mouseRight && level->ship && lastTime - lastLightning > 5.f) {
 		AddLightning(false);
+		lastLightning = lastTime;
 		Networking::AddLightning();
 	}
 }
@@ -216,7 +215,7 @@ void Scene::AddLightning(bool acquireLock)
     
 	if (acquireLock)
 		lock_guard<std::mutex> lock(mutex);
-
+        
     for (int i = 0; i < level->objects.size(); i++) {
         Object *obj = level->objects[i];
         if (glm::distance(obj->GetPosition(), level->ship->GetPosition()) < 30) {
@@ -228,8 +227,7 @@ void Scene::AddLightning(bool acquireLock)
             playThunder = true;
         }
     }
-    
-	// Only play the thunder sound if lightning bolts were added
+	
 	if (playThunder) Sound::PlayThunder();
 }
 
@@ -337,6 +335,7 @@ void Scene::Update()
 			if (timer)
 				delete timer;
 			timer = new cpu_timer();
+			lastLightning = -100.f;
 		}
 
 		times = timer->elapsed();

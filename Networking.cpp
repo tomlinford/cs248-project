@@ -66,7 +66,7 @@ namespace Networking {
 	[float data...]
 	*/
 	static void parseTerrain(boost::asio::ip::tcp::iostream& ns, string& line) {
-		cout << "Receiving terrain" << endl;
+		//cout << "Receiving terrain" << endl;
 
 		// Read size and offset
 		getline(ns, line);
@@ -217,6 +217,14 @@ namespace Networking {
 		}
 		ns << HEALTH << " " << -1 << endl;
 		ns << END << endl;
+	}
+
+	extern bool PingServer(string ip_addr) {
+		nstream ns(ip_addr.c_str(), port);
+		ns << "ping" << endl;
+		string line;
+		getline(ns, line);
+		return line == "pong";
 	}
 
 	extern void KeyAction(int key, int action, vec2 shipOffset) {

@@ -92,7 +92,7 @@ void GLFWCALL MouseCallback(int x, int y) {
 	// This gets called once before the window has been
 	// initialized; the if block makes sure we don't
 	// preset theta and phi to junk when that happens
-	if (win_width > 0 && win_height > 0 && scene)
+	if (win_width > 0 && win_height > 0 && scene && gaming)
 	{
 		glfwSetMousePos(win_width / 2, win_height / 2);
 
@@ -190,6 +190,11 @@ void GLFWCALL WindowResizeCallback(int w, int h)
 
 void StartGame(void *data)
 {
+	// test to make sure server is alive
+	if (!Networking::PingServer(ipField->GetCurrentText())) {
+		return;
+	}
+
     gaming = true;
     
     // Choose player based on user input in menu
@@ -214,7 +219,6 @@ void StartGame(void *data)
     Networking::Init(scene, level, ipField->GetCurrentText(), playerField->GetCurrentText().c_str());
     
 	scene->LoadLevel(level, p);
-    hud->LoadLevel(level);
     hud->LoadScene(scene);
     
     // Update Scene textures/FBO
@@ -398,6 +402,8 @@ int main(int argc, char *argv[])
     CreateNextLevelMenu();
     CreateHighScoresMenu();
 
+    glfwDisable(GLFW_MOUSE_CURSOR);
+    
     glfwSetCharCallback(CharCallback);    
 	glfwSetKeyCallback(KeyCallback);
 	glfwSetMousePosCallback(MouseCallback);
