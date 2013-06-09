@@ -15,16 +15,19 @@ class HUDElement
 {
 public:
 	virtual void Draw(const Program &p, Scene* s) const {}
+    void SetProjection(float win_w, float win_h);
+    void SetPosition(glm::vec3 p) { position = p; }
 
 protected:
 	ModelBuffer *mb;
     glm::mat4 projection;
+    glm::vec3 position;
 };
 
 class CDIndicator : public HUDElement
 {
 public:
-    CDIndicator(int x, int y, int w, int h, int win_w, int win_h, string text);
+    CDIndicator(int w, int h, string text);
     ~CDIndicator();
     
     virtual void Draw(const Program &p, Scene* s) const;
@@ -32,12 +35,14 @@ public:
 private:
     ArrayBuffer<glm::vec3> *ab;
     string text;
+    
+    Program *plain;
 };
 
 class Minimap : public HUDElement
 {
 public:
-	Minimap(int x, int y, int w, int h, int win_w, int win_h, Texture *tex, Level *l);
+	Minimap(int w, int h, Texture *tex, Level *l);
     ~Minimap();
     
 	virtual void Draw(const Program &p, Scene* s) const;
@@ -48,12 +53,14 @@ protected:
 	ModelBuffer *pathMB;
 	ModelBuffer *shipMB;
     glm::mat4 shipModel;
+    
+    Program *plain;
 };
 
 class Reticle : public HUDElement
 {
 public:
-    Reticle(int x, int y, int w, int h, int win_w, int win_h, Texture *tex);
+    Reticle(int w, int h, Texture *tex);
     ~Reticle();
     
     virtual void Draw(const Program &p, Scene* s) const;

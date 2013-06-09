@@ -22,8 +22,7 @@ public:
     
     /** Call when window is resized to reposition
      HUD elements */
-    void SetWidth(int w);
-    void SetHeight(int h);
+    void Resize(int w, int h);
     
 private:
     

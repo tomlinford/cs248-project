@@ -155,8 +155,7 @@ void GLFWCALL WindowResizeCallback(int w, int h)
 		scene->UpdateFBO(w, h);
 	}
     if (hud) {
-        hud->SetWidth(w);
-        hud->SetHeight(h);
+        hud->Resize(w, h);
     }
     if (menu) {
         menu->SetWidth(w);

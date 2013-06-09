@@ -13,18 +13,12 @@ static string toString(T t) {
 	return s.str();
 }
 
-HUD::HUD() : minimap(NULL), reticle(NULL), scene(NULL)
+HUD::HUD() : minimap(NULL), reticle(NULL), thunderCD(NULL), scene(NULL)
 {
 	font = new FTPixmapFont("01 Digitall.ttf");
 	font->FaceSize(36);
     
     p = new Program("Shaders/hud.vert", "Shaders/hud.frag");
-    
-    Texture *tex = new Texture("reticle.bmp");
-    reticle = new Reticle(width / 2 - 100 / 2,
-                          height / 2 - 100 / 2,
-                          100, 100,
-                          width, height, tex);
     
 	padding = 10;
 }
@@ -34,6 +28,7 @@ HUD::~HUD()
 	delete font;
 	delete minimap;
     delete reticle;
+    delete thunderCD;
     delete p;
 }
 
@@ -79,16 +74,29 @@ void HUD::RenderText()
 void HUD::RenderDynamicElements()
 {
     if (!minimap) {
-		minimap = new Minimap(width - MINIMAP_SIZE - padding,
-                              height - MINIMAP_SIZE - padding,
-                              MINIMAP_SIZE, MINIMAP_SIZE,
-                              width, height,
+		minimap = new Minimap(MINIMAP_SIZE, MINIMAP_SIZE,
                               scene->level->GetMinimap(MINIMAP_SIZE),
                               scene->level);
+        minimap->SetProjection(width, height);
+        minimap->SetPosition(vec3(width / 2 - padding - MINIMAP_SIZE / 2,
+                                  height / 2 - padding - MINIMAP_SIZE / 2,
+                                  0.0f));
 	}
     
-	if (thunderCD == NULL)
-		thunderCD = new CDIndicator(width - 240 - padding, padding, 36, 36, width, height, "Thunder Cooldown");
+    if (!reticle) {
+        Texture *tex = new Texture("reticle.bmp");
+        reticle = new Reticle(100, 100, tex);
+        reticle->SetProjection(width, height);
+        reticle->SetPosition(vec3(0.0f));
+    }
+    
+	if (!thunderCD) {
+		thunderCD = new CDIndicator(36, 36, "Thunder Cooldown");
+        thunderCD->SetProjection(width, height);
+        thunderCD->SetPosition(vec3(width / 2 - 276 - padding,
+                                    -height / 2 + padding + 18,
+                                    0.0f));
+    }
     
 	minimap->Draw(*p, scene);
     
@@ -98,26 +106,13 @@ void HUD::RenderDynamicElements()
     }
 }
 
-void HUD::SetHeight(int h) {
-	height = h;
-	if (minimap) {
-		delete minimap;
-		minimap = NULL;
-	}
-	if (thunderCD) {
-		delete thunderCD;
-		thunderCD = NULL;
-	}
-}
-
-void HUD::SetWidth(int w) {
-	width = w;
-	if (minimap) {
-		delete minimap;
-		minimap = NULL;
-	}
-	if (thunderCD) {
-		delete thunderCD;
-		thunderCD = NULL;
-	}
+void HUD::Resize(int w, int h) {
+    width = w;
+    height = h;
+    
+    if (minimap) {
+        minimap->SetProjection(width, height);
+        reticle->SetProjection(width, height);
+        thunderCD->SetProjection(width, height);
+    }
 }
