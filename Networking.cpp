@@ -18,6 +18,7 @@ namespace Networking {
 	static Level *level;
 	static string ip = "";
 	static string player;
+	static int levelNum;
 
 	// game over condition
 	static bool gameOver = false;
@@ -48,11 +49,12 @@ namespace Networking {
 	// function template
 	static void listenFunc();
 
-	extern void Init(Scene *currScene, Level *currentLevel, std::string ip_addr, const char *p) {
+	extern void Init(Scene *currScene, Level *currentLevel, std::string ip_addr, const char *p, int currLevelNum) {
 		scene = currScene;
 		level = currentLevel;
 		ip = ip_addr;
 		player = p;
+		levelNum = currLevelNum;
 
 		gameOver = false;
 
@@ -154,6 +156,12 @@ namespace Networking {
 
 		// write the player
 		ns << player << endl;
+		if (levelNum == 0)
+			ns << "easy" << endl;
+		else if (levelNum == 1)
+			ns << "medium" << endl;
+		else
+			ns << "hard" << endl;
 
 		// Will loop until stream closes
 		string line;

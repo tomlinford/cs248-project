@@ -123,3 +123,14 @@ void HUD::Resize(int w, int h) {
 			0.0f));
 	}
 }
+
+void HUD::Reset() {
+	if (minimap) {
+		delete minimap;
+		minimap = NULL;
+		delete reticle;
+		reticle = NULL;
+		delete thunderCD;
+		thunderCD = NULL;
+	}
+}

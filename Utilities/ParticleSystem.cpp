@@ -142,12 +142,14 @@ Bolt::Bolt(glm::vec3 s, glm::vec3 e) {
     color = vec3(1.0);
     model = NULL;
     
+	particles.resize(1026);
+	particles.resize(0);
     particles.push_back(Particle(s, vec3(0), vec3(0), 1.0));
     GenKeyPoints(s, e, 5.0, 10);
     particles.push_back(Particle(e, vec3(0), vec3(0), 1.0));
 }
 
-void Bolt::GenKeyPoints(glm::vec3 s, glm::vec3 e, float maxOffset, int depth) {
+void Bolt::GenKeyPoints(glm::vec3 &s, glm::vec3& e, float maxOffset, uint8_t depth) {
     if (depth == 0)
         return;
     
@@ -320,11 +322,8 @@ void ParticleSystem::AddBolt(glm::vec3 start, glm::vec3 end)
 
 bool ParticleSystem::Intersects(Object *object)
 {
-    for (std::vector<ParticleCluster *>::iterator it = clusters.begin();
-         it != clusters.end();
-         it++)
-    {
-        ParticleCluster *cluster = *it;
+	for (size_t i = 0; i < clusters.size(); i++) {
+        ParticleCluster *cluster = clusters[i];
         if (cluster->Intersects(object))
             return true;
     }

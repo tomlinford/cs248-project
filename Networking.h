@@ -3,7 +3,7 @@
 #include "Scene.h"
 
 namespace Networking {
-	void Init(Scene *currScene, Level *currentLevel, std::string ip_addr, const char *p);
+	void Init(Scene *currScene, Level *currentLevel, std::string ip_addr, const char *p, int currLevelNum);
 
 	/** Returns true if server responds to ping request */
 	bool PingServer(std::string ip_addr);

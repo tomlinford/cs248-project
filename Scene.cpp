@@ -18,9 +18,9 @@ Scene::Scene() : particle_sys()
 {
 	player = PLAYER1;
 	theta = phi = 0.0f;
-    score = 0;
-    totalScore = 0;
-    levelNum = 0;
+	score = 0;
+	totalScore = 0;
+	levelNum = 0;
 
 	finished = false;
 
@@ -216,18 +216,32 @@ void Scene::AddLightning(bool acquireLock)
 {
 	bool playThunder = false;
 
-	if (acquireLock)
+	if (acquireLock) {
+		// lock will go out of scope otherwise
 		lock_guard<std::mutex> lock(mutex);
 
-	for (int i = 0; i < level->objects.size(); i++) {
-		Object *obj = level->objects[i];
-		if (glm::distance(obj->GetPosition(), level->ship->GetPosition()) < 30) {
-			particle_sys.AddBolt(level->ship->GetPosition(), obj->GetPosition());
-			particle_sys.AddExplosionCluster(obj->GetPosition(), obj->GetColor());
-			delete obj;
-			obj = NULL;
-			level->objects.erase(level->objects.begin() + i--);
-			playThunder = true;
+		for (int i = 0; i < level->objects.size(); i++) {
+			Object *obj = level->objects[i];
+			if (glm::distance(obj->GetPosition(), level->ship->GetPosition()) < 30) {
+				particle_sys.AddBolt(level->ship->GetPosition(), obj->GetPosition());
+				particle_sys.AddExplosionCluster(obj->GetPosition(), obj->GetColor());
+				delete obj;
+				obj = NULL;
+				level->objects.erase(level->objects.begin() + i--);
+				playThunder = true;
+			}
+		}
+	} else {
+		for (int i = 0; i < level->objects.size(); i++) {
+			Object *obj = level->objects[i];
+			if (glm::distance(obj->GetPosition(), level->ship->GetPosition()) < 30) {
+				particle_sys.AddBolt(level->ship->GetPosition(), obj->GetPosition());
+				particle_sys.AddExplosionCluster(obj->GetPosition(), obj->GetColor());
+				delete obj;
+				obj = NULL;
+				level->objects.erase(level->objects.begin() + i--);
+				playThunder = true;
+			}
 		}
 	}
 

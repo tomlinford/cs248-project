@@ -23,6 +23,9 @@ public:
     /** Call when window is resized to reposition
      HUD elements */
     void Resize(int w, int h);
+
+	/** will invalidate HUD elements */
+	void Reset();
     
 private:
     
