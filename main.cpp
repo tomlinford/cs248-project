@@ -212,7 +212,7 @@ void StartGame(void *data)
     
     if (!hud)
         hud = new HUD();
-	hud->Reset();
+	hud->Reset(levelNum);
     
     // Stream new level from server
     // Tom: Hook into difficulty levels here?
@@ -443,15 +443,19 @@ int main(int argc, char *argv[])
             scene->Render();
             hud->Render();
             gaming = !scene->gameOver;
-            if (scene->levelOver) {
+            if (scene->gameOver && scene->levelOver) {
 				levelNum++;
                 LoadNextLevelMenu(NULL);
             }
-			else {
+			else if (scene->gameOver) {
 				levelNum = 0;
 			}
         }
         else {
+			if (menu->GetCurrentMenu() == menu) {
+				levelNum = 0;
+				if (scene) scene->totalScore = 0;
+			}
             menu->Render();
         }
         

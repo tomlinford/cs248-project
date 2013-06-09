@@ -21,6 +21,7 @@ HUD::HUD() : minimap(NULL), reticle(NULL), thunderCD(NULL), scene(NULL)
 	p = new Program("Shaders/hud.vert", "Shaders/hud.frag");
 
 	padding = 10;
+	levelNum = 0;
 }
 
 HUD::~HUD()
@@ -45,7 +46,7 @@ void HUD::RenderText()
 {
 	glColor4f(1, 1, 1, 1);
 	string level = "LEVEL: ";
-    if (scene) level.append(toString(scene->levelNum));
+    if (scene) level.append(toString(levelNum));
 	glWindowPos2f(0, 0);
 	font->Render(level.c_str(), -1, FTPoint(padding, height - padding - font->Ascender()));
 
@@ -124,7 +125,8 @@ void HUD::Resize(int w, int h) {
 	}
 }
 
-void HUD::Reset() {
+void HUD::Reset(int levelNum) {
+	this->levelNum = levelNum;
 	if (minimap) {
 		delete minimap;
 		minimap = NULL;

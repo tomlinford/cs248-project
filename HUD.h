@@ -25,7 +25,8 @@ public:
     void Resize(int w, int h);
 
 	/** will invalidate HUD elements */
-	void Reset();
+	/** levelNum is the current numbered level the player is on */
+	void Reset(int levelNum);
     
 private:
     
@@ -34,6 +35,7 @@ private:
     
     int width, height;
     float padding;
+	int levelNum;
     
     /* Scene that HUD is monitoring */
     Scene *scene;
