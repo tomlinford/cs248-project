@@ -67,11 +67,11 @@ Scene::~Scene()
 
 void Scene::Reset()
 {
-    shipOffset = vec2(0);
-    levelOver = false;
+	shipOffset = vec2(0);
+	levelOver = false;
 	gameOver = false;
-    
-    keyLeft = false;
+
+	keyLeft = false;
 	keyRight = false;
 	keyDown = false;
 	keyUp = false;
@@ -79,8 +79,8 @@ void Scene::Reset()
 	mouseRight = false;
 
 	lastLightning = -100.f;
-    
-    particle_sys.Clear();
+
+	particle_sys.Clear();
 }
 
 void Scene::LoadLevel(Level *l, Player p)
@@ -88,8 +88,8 @@ void Scene::LoadLevel(Level *l, Player p)
 	unique_lock<std::mutex> lock(mutex);
 
 	player = p;
-    
-    Reset();
+
+	Reset();
 
 	if (level)
 		delete level;
@@ -184,7 +184,7 @@ void Scene::HandleKeys(float elapsedSeconds)
 		shipOffset.y -= interval;
 
 	shipOffset = glm::clamp(shipOffset, vec2(-MAX_X, -MAX_Y), vec2(MAX_X, MAX_Y));
-    level->ship->SetOffset(shipOffset);
+	level->ship->SetOffset(shipOffset);
 }
 
 /** Adds bullets based on mouse presses. */
@@ -213,22 +213,22 @@ void Scene::HandleMouse(float elapsedSeconds)
 void Scene::AddLightning(bool acquireLock)
 {
 	bool playThunder = false;
-    
+
 	if (acquireLock)
 		lock_guard<std::mutex> lock(mutex);
-        
-    for (int i = 0; i < level->objects.size(); i++) {
-        Object *obj = level->objects[i];
-        if (glm::distance(obj->GetPosition(), level->ship->GetPosition()) < 30) {
-            particle_sys.AddBolt(level->ship->GetPosition(), obj->GetPosition());
-            particle_sys.AddExplosionCluster(obj->GetPosition(), obj->GetColor());
-            delete obj;
-            obj = NULL;
-            level->objects.erase(level->objects.begin() + i--);
-            playThunder = true;
-        }
-    }
-	
+
+	for (int i = 0; i < level->objects.size(); i++) {
+		Object *obj = level->objects[i];
+		if (glm::distance(obj->GetPosition(), level->ship->GetPosition()) < 30) {
+			particle_sys.AddBolt(level->ship->GetPosition(), obj->GetPosition());
+			particle_sys.AddExplosionCluster(obj->GetPosition(), obj->GetColor());
+			delete obj;
+			obj = NULL;
+			level->objects.erase(level->objects.begin() + i--);
+			playThunder = true;
+		}
+	}
+
 	if (playThunder) Sound::PlayThunder();
 }
 
@@ -238,13 +238,13 @@ void Scene::AddLightning(bool acquireLock)
 which is a function of the elapsed time. */
 void Scene::UpdateObjects(float elapsedSeconds)
 {
-    // Update level objects
-    level->Update(elapsedSeconds);
-    
-    // Update light/camera
-    lightPosition = level->ship->GetPosition();
-    cameraPosition = level->ship->GetPosition() - 3.0f * level->ship->GetDirection();
-    
+	// Update level objects
+	level->Update(elapsedSeconds);
+
+	// Update light/camera
+	lightPosition = level->ship->GetPosition();
+	cameraPosition = level->ship->GetPosition() - 3.0f * level->ship->GetDirection();
+
 	// Update particles
 	particle_sys.Update(elapsedSeconds);
 }
@@ -256,18 +256,27 @@ collision. */
 void Scene::HandleCollisions(float elapsedSeconds)
 {
 	// Check collision between level objects
-    level->HandleCollisions(elapsedSeconds, particle_sys, *frustum);
-    
-    // Update score
-    score = level->score;
-    
+	level->HandleCollisions(elapsedSeconds, particle_sys, *frustum);
+
+	// Update score
+	score = level->score;
+
+	// restrict network updates
+	static int count = 0;
+	if (++count % 10 == 0) {
+		if (player == PLAYER1 && level && level->ship)
+			Networking::SetHealth(level->ship->GetHealth());
+		else if (player == PLAYER2 && level)
+			Networking::SetScore(level->score);
+	}
+
 	// Delete ship?
 	if (level->ship && level->ship->GetHealth() < 0) {
 		//particle_sys.AddExplosionCluster(level->ship->GetPosition(), level->ship->GetColor());
 		//delete level->ship;
 		//level->ship = NULL;
 		//Networking::GameOver();
-        //gameOver = true;
+		//gameOver = true;
 	}
 }
 
@@ -275,9 +284,9 @@ void Scene::HandleCollisions(float elapsedSeconds)
 ship position. */
 void Scene::UpdateView(float elapsedSeconds)
 {
-    if (!level->ship)
-        return;
-    
+	if (!level->ship)
+		return;
+
 	// View for player 1 (chase cam)
 	if (player == PLAYER1)
 	{
@@ -314,11 +323,11 @@ void Scene::UpdateView(float elapsedSeconds)
 	}
 
 	// Minimap view (orthogonal overhead cam)
-    vec3 position = level->ship->GetPosition();
+	vec3 position = level->ship->GetPosition();
 
-    SetMinimapView(lookAt(position + vec3(0.0, 0.5, 0.0),
-        position,
-        vec3(0, 0, -1)));
+	SetMinimapView(lookAt(position + vec3(0.0, 0.5, 0.0),
+		position,
+		vec3(0, 0, -1)));
 }
 
 /* Updates object positions in world based on elapsed
@@ -341,24 +350,24 @@ void Scene::Update()
 
 		times = timer->elapsed();
 		float elapsedSeconds = (float)times.wall / pow(10.f, 9.f);
-        
-        if (!gameOver && elapsedSeconds > level->totalTime) {
-            Networking::GameOver();
-            gameOver = true;
-            levelOver = true;
-            totalScore += level->score;
-        }
-        if (gameOver) {
-            if (!levelOver) {
-                totalScore = 0;
-            }
-            continue;
-        }
+
+		if (!gameOver && elapsedSeconds > level->totalTime) {
+			Networking::GameOver();
+			gameOver = true;
+			levelOver = true;
+			totalScore += level->score;
+		}
+		if (gameOver) {
+			if (!levelOver) {
+				totalScore = 0;
+			}
+			continue;
+		}
 
 		// Handle player-specific input
 		if (player == PLAYER2)
 			HandleMouse(elapsedSeconds);
-        HandleKeys(elapsedSeconds);
+		HandleKeys(elapsedSeconds);
 		UpdateObjects(elapsedSeconds);
 		HandleCollisions(elapsedSeconds);
 		UpdateView(elapsedSeconds);
@@ -371,35 +380,35 @@ void Scene::Update()
 calls are not thread safe */
 void Scene::AddMissiles()
 {
-    if (!level->ship)
-        return;
-    
-    float interval = (float)timer->elapsed().wall / pow(10.f, 9.f) - lastTime;
-    
+	if (!level->ship)
+		return;
+
+	float interval = (float)timer->elapsed().wall / pow(10.f, 9.f) - lastTime;
+
 	float size = level->objects.size();
 	for (int i = 0; i < size; i++)
 	{
 		Ship *ship = dynamic_cast<Ship *>(level->objects[i]);
-        if (!ship)
-            continue;
-        
-        float distance = glm::distance(level->ship->GetPosition(), ship->GetPosition());
+		if (!ship)
+			continue;
+
+		float distance = glm::distance(level->ship->GetPosition(), ship->GetPosition());
 		if (distance < 20)
 		{
-            float lastFireTime = ship->GetLastFireTime();
-            lastFireTime += interval;
+			float lastFireTime = ship->GetLastFireTime();
+			lastFireTime += interval;
 
-            if (lastFireTime > ship->GetFiringRate()) {
-                Missile *missile = new Missile("Models/missile.obj");
-                missile->SetColor(vec3(1.0, 1.0, 1.0));
-                missile->SetTimeOffset(ship->GetTimeOffset());
-                missile->SetOffset(ship->GetOffset());
-                level->objects.push_back(missile);
-                ship->SetLastFireTime(0);
-            }
-            else {
-                ship->SetLastFireTime(lastFireTime);
-            }
+			if (lastFireTime > ship->GetFiringRate()) {
+				Missile *missile = new Missile("Models/missile.obj");
+				missile->SetColor(vec3(1.0, 1.0, 1.0));
+				missile->SetTimeOffset(ship->GetTimeOffset());
+				missile->SetOffset(ship->GetOffset());
+				level->objects.push_back(missile);
+				ship->SetLastFireTime(0);
+			}
+			else {
+				ship->SetLastFireTime(lastFireTime);
+			}
 		}
 	}
 }
@@ -408,26 +417,26 @@ void Scene::AddMissiles()
 
 void Scene::RenderObjects(DrawMode mode)
 {
-    // Draw sphere
+	// Draw sphere
 	if (level->sphere && frustum->Contains(*level->sphere)) {
-        main->SetUniform("hasField", true);
-        main->SetUniform("fieldRadius", level->sphere->GetScale());
-        main->SetUniform("fieldPosition", level->sphere->GetPosition());
+		main->SetUniform("hasField", true);
+		main->SetUniform("fieldRadius", level->sphere->GetScale());
+		main->SetUniform("fieldPosition", level->sphere->GetPosition());
 		level->sphere->Draw(*main, viewProjection, cameraPosition, mode);
-    }
-    
+	}
+
 	// Draw objects
 	for (int i = 0; i < level->objects.size(); i++) {
 		Object *obj = level->objects[i];
 		if (frustum->Contains(*obj))
 			obj->Draw(*main, viewProjection, cameraPosition, mode);
 	}
-    
-    // Draw ship
+
+	// Draw ship
 	if (level->ship && frustum->Contains(*level->ship))
 		level->ship->Draw(*main, viewProjection, cameraPosition, mode);
-    
-    // Draw particles
+
+	// Draw particles
 	particle_sys.Draw(*main, viewProjection, cameraPosition, mode);
 }
 
@@ -436,18 +445,18 @@ void Scene::RenderGlowMap()
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	// Draw maps
-    for (Map *map : level->maps) {
+	for (Map *map : level->maps) {
 		if (!map || !frustum->Contains(*map)) continue;
-            map->Draw(viewProjection, cameraPosition, lightPosition, GLOW);
-    }
+		map->Draw(viewProjection, cameraPosition, lightPosition, GLOW);
+	}
 
 	main->Use();
 	main->SetUniform("attenuate", true);
-    main->SetUniform("hasField", false);
+	main->SetUniform("hasField", false);
 	main->SetUniform("lightPosition", lightPosition);
 	main->SetUniform("cameraPosition", cameraPosition);
 
-    RenderObjects(GLOW);
+	RenderObjects(GLOW);
 
 	main->Unuse();
 
@@ -462,12 +471,12 @@ void Scene::RenderScene()
 	// Maps have their own shader program for vertex displacement
 	for (Map *map : level->maps) {
 		if (!map || !frustum->Contains(*map)) continue;
-        map->Draw(viewProjection, cameraPosition, lightPosition, NORMAL);
-    }
+		map->Draw(viewProjection, cameraPosition, lightPosition, NORMAL);
+	}
 
 	main->Use();
 	main->SetUniform("attenuate", true);
-    main->SetUniform("hasField", false);
+	main->SetUniform("hasField", false);
 	main->SetUniform("lightPosition", lightPosition);
 	main->SetUniform("cameraPosition", cameraPosition);
 
@@ -492,8 +501,8 @@ void Scene::RenderMinimap()
 	// Maps have their own shader program for vertex displacement
 	for (Map *map : level->maps) {
 		if (!map || !frustum->Contains(*map)) continue;
-        map->Draw(viewProjection, cameraPosition, lightPosition, MINIMAP);
-    }
+		map->Draw(viewProjection, cameraPosition, lightPosition, MINIMAP);
+	}
 
 	main->Use();
 	main->SetUniform("attenuate", true);

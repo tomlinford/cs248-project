@@ -343,11 +343,8 @@ void ParticleSystem::Clear()
 void ParticleSystem::Draw(const Program& p, const glm::mat4& viewProjection,
           const glm::vec3& cameraPos, DrawMode mode)
 {
-    for (std::vector<ParticleCluster *>::iterator it = clusters.begin();
-         it != clusters.end();
-         it++)
-    {
-        ParticleCluster *cluster = *it;
+	for (size_t i = 0; i < clusters.size(); i++) {
+        ParticleCluster *cluster = clusters[i];
         cluster->Draw(p, viewProjection, cameraPos, mode);
     }
     
