@@ -147,7 +147,7 @@ func genShips(numShips int) []ship {
 		ships[i].offset.x = randFloat32() * 2.4
 		// ships[i].offset.y = randFloat32() * 1.8
 		ships[i].offset.y = rand.Float32() * 3.6
-		ships[i].timeOffset = rand.Float32()*140 - 70
+		ships[i].timeOffset = rand.Float32()*125 - 70
 	}
 	return ships
 }
@@ -172,7 +172,7 @@ func genTurrets(numTurrents int, p path, tm terrainMap) []turret {
 	// fmt.Println("generating turrets")
 	turrets := make([]turret, numTurrents)
 	for i := range turrets {
-		turrets[i].location = p.arr[rand.Intn(len(p.arr))]
+		turrets[i].location = p.arr[rand.Intn(len(p.arr)-150)+130]
 		turrets[i].location.z -= .45
 		if i%2 == 0 {
 			// for tm.averageHeight(turrets[i].location.x, turrets[i].location.y+.2) < turrets[i].location.z &&
