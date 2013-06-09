@@ -26,7 +26,7 @@ using namespace glm;
 #define M_PI 3.14159265359
 #endif
 
-static Menu *menu, *start, *credits, *hscores, *nextLevel, *connect;
+static Menu *menu, *start, *credits, *hscores, *nextLevel, *connect, *hscoreEntry;
 static Scene *scene;
 static HUD *hud;
 static Player p;
@@ -34,8 +34,13 @@ static int level = 0;
 
 TextField *ipField;
 TextField *playerField;
+TextField *p1Field;
+TextField *p2Field;
 MenuItem *scoreField;
 MenuItem *totalScoreField;
+MenuItem **hscoreItems;
+
+std::vector<string> scores;
 
 bool netInit;
 bool finished;
@@ -174,6 +179,10 @@ void GLFWCALL WindowResizeCallback(int w, int h)
         hscores->SetWidth(w);
         hscores->SetHeight(h);
     }
+    if (hscoreEntry) {
+        hscoreEntry->SetWidth(w);
+        hscoreEntry->SetHeight(h);
+    }
     if (nextLevel) {
         nextLevel->SetWidth(w);
         nextLevel->SetHeight(h);
@@ -245,6 +254,34 @@ void Exit(void *data)
     finished = true;
 }
 
+void LoadMainMenu(void *data)
+{
+    while (menu->GetCurrentMenu() != menu)
+        menu->PopSubMenu();
+}
+
+void UpdateHighScores(void *data)
+{
+    string entry = toString(scene->score);
+    entry.append(p1Field->GetCurrentText());
+    entry.append(p2Field->GetCurrentText());
+    
+    scores.push_back(entry);
+    scene->score = 0;
+    
+    int i = 0;
+    for (i = 0; i < 8; i++)
+    {
+        if (i < scores.size())
+            hscoreItems[i + 1]->label = scores[i];
+        else
+            hscoreItems[i + 1]->label = "";
+    }
+    
+    hscoreEntry->PopMenu();
+    LoadMainMenu(NULL);
+}
+
 void LoadStartMenu(void *data)
 {
     menu->GetCurrentMenu()->PushMenu(start);
@@ -265,6 +302,11 @@ void LoadHighScoresMenu(void *data)
     menu->GetCurrentMenu()->PushMenu(hscores);
 }
 
+void LoadHscoreEntryMenu(void *data)
+{
+    menu->GetCurrentMenu()->PushMenu(hscoreEntry);
+}
+
 void LoadNextLevelMenu(void *data)
 {
     scoreField->label = "" + toString(scene->score);
@@ -273,6 +315,23 @@ void LoadNextLevelMenu(void *data)
     Menu *top = menu->GetCurrentMenu();
     if (top != nextLevel)
         top->PushMenu(nextLevel);
+}
+
+void CreateHscoreEntryMenu()
+{
+    MenuItem **items = new MenuItem *[6];
+    
+    p1Field = new TextField("PLAYER1: ", "NAME");
+    p2Field = new TextField("PLAYER2: ", "NAME");
+    
+    items[0] = new MenuItem("HIGH SCORE", NULL);
+    items[1] = new MenuItem("", NULL);
+    items[2] = p1Field;
+    items[3] = p2Field;
+    items[4] = new MenuItem("", NULL);
+    items[5] = new MenuItem("CONTINUE", UpdateHighScores);
+    
+    hscoreEntry = new Menu(items, 6, 48);
 }
 
 void CreateNextLevelMenu()
@@ -321,19 +380,19 @@ void CreateConnectMenu()
 
 void CreateHighScoresMenu()
 {
-    MenuItem **items = new MenuItem *[11];
+    hscoreItems = new MenuItem *[9];
     
-    items[0] = new MenuItem("HIGH SCORES:", NULL);
-    items[1] = new MenuItem("", NULL);
-    items[2] = new MenuItem("", NULL);
-    items[3] = new MenuItem("", NULL);
-    items[4] = new MenuItem("", NULL);
-    items[5] = new MenuItem("", NULL);
-    items[6] = new MenuItem("", NULL);
-    items[7] = new MenuItem("", NULL);
-    items[8] = new MenuItem("", NULL);
+    hscoreItems[0] = new MenuItem("HIGH SCORES:", NULL);
+    hscoreItems[1] = new MenuItem("", NULL);
+    hscoreItems[2] = new MenuItem("", NULL);
+    hscoreItems[3] = new MenuItem("", NULL);
+    hscoreItems[4] = new MenuItem("", NULL);
+    hscoreItems[5] = new MenuItem("", NULL);
+    hscoreItems[6] = new MenuItem("", NULL);
+    hscoreItems[7] = new MenuItem("", NULL);
+    hscoreItems[8] = new MenuItem("", NULL);
     
-    hscores = new Menu(items, 9, 48);
+    hscores = new Menu(hscoreItems, 9, 48);
 }
 
 void CreateCreditsMenu()
@@ -401,6 +460,7 @@ int main(int argc, char *argv[])
     CreateCreditsMenu();
     CreateNextLevelMenu();
     CreateHighScoresMenu();
+    CreateHscoreEntryMenu();
 
     //glfwDisable(GLFW_MOUSE_CURSOR);
     
@@ -442,9 +502,13 @@ int main(int argc, char *argv[])
             scene->Render();
             hud->Render();
             gaming = !scene->gameOver;
-            if (scene->levelOver) {
+            if (scene->gameOver && scene->levelOver) {
 				level++;
                 LoadNextLevelMenu(NULL);
+            }
+            else if (scene->gameOver) {
+                nextLevel->PopMenu();
+                LoadHscoreEntryMenu(NULL);
             }
         }
         else {

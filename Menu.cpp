@@ -87,6 +87,12 @@ void Menu::PopMenu()
     }
 }
 
+void Menu::PopSubMenu()
+{
+    if (next)
+        next->PopMenu();
+}
+
 void Menu::HandleChar(int character, int action)
 {
     if (next) {

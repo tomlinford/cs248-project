@@ -56,6 +56,7 @@ public:
     
     void PushMenu(Menu *other);
     void PopMenu();
+    void PopSubMenu();
     void SetPrevious(Menu *p) { previous = p; }
     void SetNext(Menu *n) { next = n; }
     
