@@ -262,6 +262,11 @@ namespace Networking {
 		(*nsp) << HEALTH << " " << health << endl;
 	}
 
+	extern void SetScore(int score) {
+		lock_guard<mutex> lock(nspMutex);
+		(*nsp) << SCORE << " " << score << endl;
+	}
+
 	extern void GameOver() {
 		gameOver = true;
 	}
