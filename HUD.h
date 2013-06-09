@@ -6,9 +6,7 @@
 #include "Scene.h"
 #include "Level.h"
 #include "Flyable.h"
-
-// forward declare
-class HUDElement;
+#include "HudElement.h"
 
 class HUD
 {
@@ -44,5 +42,7 @@ private:
     Level *level;
     
     FTPixmapFont *font;
-	HUDElement *minimap;
+    
+	Minimap *minimap;
+    Reticle *reticle;
 };

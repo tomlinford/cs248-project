@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		7801949317645407005ADD9D /* HudElement.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7801949117645407005ADD9D /* HudElement.cpp */; };
 		782C9BF6174216EA00C1B104 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 782C9BF5174216EA00C1B104 /* Cocoa.framework */; };
 		782C9C0217421A0300C1B104 /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 782C9C0117421A0300C1B104 /* OpenGL.framework */; };
 		783346C9173B6FA80036E30F /* ApplicationServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 783346C8173B6FA80036E30F /* ApplicationServices.framework */; };
@@ -60,6 +61,8 @@
 
 /* Begin PBXFileReference section */
 		08FB7796FE84155DC02AAC07 /* main.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
+		7801949117645407005ADD9D /* HudElement.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = HudElement.cpp; sourceTree = "<group>"; };
+		7801949217645407005ADD9D /* HudElement.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HudElement.h; sourceTree = "<group>"; };
 		782C9BF5174216EA00C1B104 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = ../../../../../../../System/Library/Frameworks/Cocoa.framework; sourceTree = "<group>"; };
 		782C9C0117421A0300C1B104 /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = ../../../../../../../System/Library/Frameworks/OpenGL.framework; sourceTree = "<group>"; };
 		783346C8173B6FA80036E30F /* ApplicationServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ApplicationServices.framework; path = ../../../../../../../System/Library/Frameworks/ApplicationServices.framework; sourceTree = "<group>"; };
@@ -216,6 +219,8 @@
 				7865253A17614BB7002AE042 /* HUD.h */,
 				7865253D1761A696002AE042 /* Menu.cpp */,
 				7865253E1761A696002AE042 /* Menu.h */,
+				7801949117645407005ADD9D /* HudElement.cpp */,
+				7801949217645407005ADD9D /* HudElement.h */,
 			);
 			name = Source;
 			sourceTree = "<group>";
@@ -402,6 +407,7 @@
 				7865253B17614BB7002AE042 /* HUD.cpp in Sources */,
 				7865253F1761A696002AE042 /* Menu.cpp in Sources */,
 				786525421761BC04002AE042 /* Sound.cpp in Sources */,
+				7801949317645407005ADD9D /* HudElement.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
