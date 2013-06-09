@@ -259,7 +259,8 @@ void Scene::HandleCollisions(float elapsedSeconds)
 	level->HandleCollisions(elapsedSeconds, particle_sys, *frustum);
 
 	// Update score
-	score = level->score;
+	if (player == PLAYER2)
+		score = level->score;
 
 	// restrict network updates
 	static int count = 0;
