@@ -9,6 +9,7 @@
 
 // forward declare
 class HUDElement;
+class CDElement;
 
 class HUD
 {
@@ -20,20 +21,8 @@ public:
     void LoadLevel(Level *l) { level = l; }
     void Render();
     
-    void SetWidth(int w) {
-		width = w;
-		if (minimap) {
-			delete minimap;
-			minimap = NULL;
-		}
-	}
-    void SetHeight(int h) {
-		height = h;
-		if (minimap) {
-			delete minimap;
-			minimap = NULL;
-		}
-	}
+    void SetWidth(int w);
+    void SetHeight(int h);
     
 private:
     
@@ -45,4 +34,5 @@ private:
     
     FTPixmapFont *font;
 	HUDElement *minimap;
+	CDElement *thunderCD;
 };

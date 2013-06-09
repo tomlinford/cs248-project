@@ -1,6 +1,7 @@
 #include "HUD.h"
 #include <sstream>
 #include <glm/glm.hpp>
+#include <glm/gtx/rotate_vector.hpp>
 
 using namespace glm;
 
@@ -88,7 +89,7 @@ public:
 		plain.Use();
 		plain.SetUniform("color", vec3(1));
 		plain.SetMVP(projection);
-        glLineWidth(1.0f);
+		glLineWidth(1.0f);
 		outlineMB->Draw(plain, GL_LINES);
 
 		pathMB->Draw(plain, GL_LINE_STRIP);
@@ -105,7 +106,7 @@ public:
 			plain.SetUniform("color", vec3(0, 1, 0));
 			shipMB->Draw(plain, GL_TRIANGLE_FAN);
 		}
-        p.Unuse();
+		p.Unuse();
 	}
 private:
 	Texture *texture;
@@ -114,6 +115,47 @@ private:
 	ModelBuffer *pathMB;
 	ModelBuffer *shipMB;
 	mat4 shipModel;
+	mat4 projection;
+};
+
+/** Used for ability cooldowns */
+class CDElement {
+public:
+	CDElement(int x, int y, int w, int h, int win_w, int win_h, string text) : text(text) {
+		int llx = x - win_w / 2;
+		int lly = y - win_h / 2;
+		vector<vec3> vertices;
+		vertices.push_back(vec3(llx + w / 2, lly + h - w / 2, 0));
+		for (int i = 0; i < 719; i++) {
+			float angle = -((float) i) / 718.f * 2.f * pi<float>();
+			vec2 rot = rotate(vec2(w / 2, 0.f), degrees(angle));
+			vertices.push_back(vec3(rot, 0.f) + vertices[0]);
+		}
+		ab = new ArrayBuffer<vec3>(vertices);
+
+		projection = ortho((float)-win_w / 2, (float)win_w / 2, (float)win_h / 2, (float)-win_h / 2, -0.1f, 1.f);
+	}
+	~CDElement() {
+		ab->Delete();
+		delete ab;
+	}
+	void Draw(const Program &p, Scene *s) const {
+		float elapsed = s->GetTime() - s->GetLastLightning();
+
+		if (elapsed < 10) {
+			Program plain("Shaders/plain.vert", "Shaders/plain.frag");
+			plain.Use();
+			plain.SetUniform("color", vec3(0, .7, .9) * (float) (15.f - elapsed) / 15.f);
+			plain.SetMVP(projection);
+
+			// using an ab so we have more control about how much gets drawn
+			ab->Use(plain, "vertexCoordinates");
+			ab->Draw(GL_TRIANGLE_FAN, (10.f - elapsed) / 10.f * 720);
+		}
+	}
+private:
+	ArrayBuffer<vec3> *ab;
+	string text;
 	mat4 projection;
 };
 
@@ -139,7 +181,7 @@ static float *createMinimap(Level *l) {
 
 HUD::HUD() : minimap(NULL)
 {
-    scene = NULL;
+	scene = NULL;
 	font = new FTPixmapFont("01 Digitall.ttf");
 	font->FaceSize(36);
 	padding = 10;
@@ -159,34 +201,61 @@ void HUD::Render()
 		minimap = new HUDElement(width - MINIMAP_SIZE - 5, height - MINIMAP_SIZE - 5, MINIMAP_SIZE,
 			MINIMAP_SIZE, width, height, tex, level);
 	}
+	if (thunderCD == NULL)
+		thunderCD = new CDElement(5, height - 375, 250, 375, width, height, "Thunder Cooldown");
 
-    if (!p) p = new Program("Shaders/hud.vert", "Shaders/hud.frag");
+	if (!p) p = new Program("Shaders/hud.vert", "Shaders/hud.frag");
 	minimap->Draw(*p, level);
+	thunderCD->Draw(*p, scene);
 
 	glColor4f(1, 1, 1, 1);
 	string level = "LEVEL: ";
 	level.append(toString(0));
 	glWindowPos2f(0, 0);
 	font->Render(level.c_str(), -1, FTPoint(padding, height - padding - font->Ascender()));
-    
-    float h = 0;
-    if (HUD::level->ship) {
-        h = HUD::level->ship->GetHealth();
-        if (h < 0)
-            h = 0;
-    }
-    
-    glColor4f(1 - h / 10, h / 10, 0, 1);
-    string health = "HEALTH: ";
-    health.append(toString(h));
-    FTBBox box = font->BBox(health.c_str(), -1, FTPoint(0, 0), FTPoint(0, 0));
-    glWindowPos2f(0, 0);
-    font->Render(health.c_str(), -1, FTPoint(width - 2 * padding - box.Upper().X(), height - padding - font->Ascender()));
 
-    glColor4f(1, 1, 1, 1);
+	float h = 0;
+	if (HUD::level->ship) {
+		h = HUD::level->ship->GetHealth();
+		if (h < 0)
+			h = 0;
+	}
+
+	glColor4f(1 - h / 10, h / 10, 0, 1);
+	string health = "HEALTH: ";
+	health.append(toString(h));
+	FTBBox box = font->BBox(health.c_str(), -1, FTPoint(0, 0), FTPoint(0, 0));
+	glWindowPos2f(0, 0);
+	font->Render(health.c_str(), -1, FTPoint(width - 2 * padding - box.Upper().X(), height - padding - font->Ascender()));
+
+	glColor4f(1, 1, 1, 1);
 	string score = "SCORE: ";
-    if (scene) score.append(toString(scene->score));
-    box = font->BBox(score.c_str(), -1, FTPoint(0, 0), FTPoint(0, 0));
-    glWindowPos2f(0, 0);
-    font->Render(score.c_str(), -1, FTPoint(width / 2 - box.Upper().X() / 2, height - padding - font->Ascender()));
+	if (scene) score.append(toString(scene->score));
+	box = font->BBox(score.c_str(), -1, FTPoint(0, 0), FTPoint(0, 0));
+	glWindowPos2f(0, 0);
+	font->Render(score.c_str(), -1, FTPoint(width / 2 - box.Upper().X() / 2, height - padding - font->Ascender()));
+}
+
+void HUD::SetHeight(int h) {
+	height = h;
+	if (minimap) {
+		delete minimap;
+		minimap = NULL;
+	}
+	if (thunderCD) {
+		delete thunderCD;
+		thunderCD = NULL;
+	}
+}
+
+void HUD::SetWidth(int w) {
+	width = w;
+	if (minimap) {
+		delete minimap;
+		minimap = NULL;
+	}
+	if (thunderCD) {
+		delete thunderCD;
+		thunderCD = NULL;
+	}
 }

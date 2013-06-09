@@ -80,6 +80,8 @@ void Scene::Reset()
 	keyUp = false;
 	mouseLeft = false;
 	mouseRight = false;
+
+	lastLightning = -100.f;
     
     particle_sys.Clear();
 }
@@ -203,8 +205,9 @@ void Scene::HandleMouse(float elapsedSeconds)
 		Networking::AddBullet(level->ship->GetPosition() + velocity, 20.0f * velocity);
 		Sound::PlayLaser();
 	}
-	if (mouseRight && level->ship) {
+	if (mouseRight && level->ship && lastTime - lastLightning > 10.f) {
 		AddLightning(false);
+		lastLightning = lastTime;
 		Networking::AddLightning();
 	}
 }
@@ -242,6 +245,17 @@ void Scene::AddLightning(bool acquireLock)
 		for (int i = 0; i < level->objects.size(); i++) {
 			Object *obj = level->objects[i];
 			if (glm::distance(obj->GetPosition(), level->ship->GetPosition()) < 30) {
+                Ship *flyable = dynamic_cast<Ship *>(obj);
+                Missile *missile = dynamic_cast<Missile *>(obj);
+                Turret *turret = dynamic_cast<Turret *>(obj);
+                
+                if (flyable)
+                    score += SHIP_VALUE;
+                else if (missile)
+                    score += MISSILE_VALUE;
+                else if (turret)
+                    score += TURRET_VALUE;
+                
 				particle_sys.AddBolt(level->ship->GetPosition(), obj->GetPosition());
 				particle_sys.AddExplosionCluster(obj->GetPosition(), obj->GetColor());
 				delete obj;
@@ -358,6 +372,7 @@ void Scene::Update()
 			if (timer)
 				delete timer;
 			timer = new cpu_timer();
+			lastLightning = -100.f;
 		}
 
 		times = timer->elapsed();

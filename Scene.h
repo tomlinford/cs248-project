@@ -64,6 +64,10 @@ public:
 
 	/** Lightning effects */
 	void AddLightning(bool acquireLock);
+	float GetLastLightning() { return lastLightning; }
+
+	/** Get last time */
+	float GetTime() { return lastTime; }
     
     /** Control information. 
      Key events (Player 1)
@@ -119,6 +123,9 @@ private:
     boost::timer::cpu_timer *timer;
     boost::timer::cpu_times times;
     float lastTime;
+
+	/** last lightning */
+	float lastLightning;
     
     /** Shaders and FBO stuff */
     Program *main;

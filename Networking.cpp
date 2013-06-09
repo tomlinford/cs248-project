@@ -66,7 +66,7 @@ namespace Networking {
 	[float data...]
 	*/
 	static void parseTerrain(boost::asio::ip::tcp::iostream& ns, string& line) {
-		cout << "Receiving terrain" << endl;
+		//cout << "Receiving terrain" << endl;
 
 		// Read size and offset
 		getline(ns, line);
