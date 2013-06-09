@@ -229,7 +229,6 @@ void Scene::AddLightning(bool acquireLock) {
 				playThunder = true;
 			}
 		}
-		return;
 	} else {
 		for (int i = 0; i < level->objects.size(); i++) {
 			Object *obj = level->objects[i];
@@ -493,8 +492,6 @@ void Scene::Update()
 				delete timer;
 			timer = new cpu_timer();
 		}
-        
-        cout << "Score: " << score << endl;
 
 		times = timer->elapsed();
 		float elapsedSeconds = (float)times.wall / pow(10.f, 9.f);
