@@ -263,6 +263,8 @@ void Scene::HandleCollisions(float elapsedSeconds)
 	// Update score
 	if (player == PLAYER2)
 		score = level->score;
+	else
+		health = level->ship->GetHealth();
 
 	// restrict network updates
 	static int count = 0;
@@ -358,7 +360,7 @@ void Scene::Update()
 			Networking::GameOver();
 			gameOver = true;
 			levelOver = true;
-			totalScore += level->score;
+			totalScore += score;
 		}
 		if (gameOver) {
 			if (!levelOver) {

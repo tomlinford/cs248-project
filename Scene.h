@@ -70,7 +70,7 @@ public:
 	float GetTime() { return lastTime; }
 
 	/** Scoring */
-	void SetScore(int score) { if (level) level->score = score; }
+	void SetScore(int score) { this->score = score; }
     
     /** Control information. 
      Key events (Player 1)
