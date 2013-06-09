@@ -136,7 +136,6 @@ void Level::CheckMapCollision(float elapsedSeconds, ParticleSystem& ps, Frustum&
 		if (map->Intersects(*ship)) {
 			ps.AddExplosionCluster(ship->GetPosition(), map->GetColor());
             ship->AddDamage(0.001 * elapsedSeconds);
-            Networking::SetHealth(ship->GetHealth());
 		}
 	}
 }

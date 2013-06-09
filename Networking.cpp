@@ -43,6 +43,7 @@ namespace Networking {
 	const static string TURRET = "turret";
 	const static string LIGHTNING = "lightning";
 	const static string HEALTH = "health";
+	const static string SCORE = "score";
 
 	// function template
 	static void listenFunc();
@@ -219,6 +220,9 @@ namespace Networking {
 			} else if (header == HEALTH) {
 				float health; ss >> health;
 				level->ship->SetHealth(health);
+			} else if (header == SCORE) {
+				int score; ss >> score;
+				scene->SetScore(score);
 			} else if (header == END) {
 				break;
 			}

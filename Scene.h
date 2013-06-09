@@ -68,6 +68,9 @@ public:
 
 	/** Get last time */
 	float GetTime() { return lastTime; }
+
+	/** Scoring */
+	void SetScore(int score) { if (level) level->score = score; }
     
     /** Control information. 
      Key events (Player 1)
