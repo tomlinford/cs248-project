@@ -219,7 +219,7 @@ namespace Networking {
 				scene->AddLightning(true);
 			} else if (header == HEALTH) {
 				float health; ss >> health;
-				level->ship->SetHealth(health);
+				scene->health = health;
 			} else if (header == SCORE) {
 				int score; ss >> score;
 				scene->SetScore(score);

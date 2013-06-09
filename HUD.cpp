@@ -51,7 +51,7 @@ void HUD::RenderText()
 
 	float h = 0;
 	if (scene->level->ship) {
-		h = scene->level->ship->GetHealth();
+		h = scene->health;
 		if (h < 0)
 			h = 0;
 	}

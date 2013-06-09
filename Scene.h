@@ -92,6 +92,8 @@ public:
     Player player;
     int score;
     int totalScore;
+
+	float health;
     
     /** The current level */
     Level *level;

@@ -77,6 +77,8 @@ void Scene::Reset()
 	mouseLeft = false;
 	mouseRight = false;
 
+	health = 10.f;
+
 	lastLightning = -100.f;
 
 	particle_sys.Clear();
