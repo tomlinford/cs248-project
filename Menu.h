@@ -71,6 +71,8 @@ public:
     
     Menu *GetCurrentMenu();
     
+    bool enlargeTitle;
+    
 private:
     
     void UpdateSelection(int dir);
@@ -89,4 +91,5 @@ private:
     MenuItem **items;
     
     FTGLPixmapFont *font;
+    FTGLPixmapFont *largeFont;
 };
