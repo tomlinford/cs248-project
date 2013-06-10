@@ -225,7 +225,7 @@ void StartGame(void *data)
     
     // Stream new level from server
     // Tom: Hook into difficulty levels here?
-    Level *level = new Level();
+    Level *level = new Level(levelNum > 0);
     Networking::Init(scene, level, ipField->GetCurrentText(), playerField->GetCurrentText().c_str(), levelNum);
     
 	scene->LoadLevel(level, p);
