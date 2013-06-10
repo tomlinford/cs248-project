@@ -55,7 +55,7 @@ public:
     glm::vec3 GetDirection(Direction direction, float time);
     
     /* Updates object positions based on elapsed time */
-    void Update(float elapsedSeconds);
+    void Update(float elapsedSeconds, float lastTime);
     
     /* Checks for overlap between objects and removes those
      that have collided. Effects are added to the provided
@@ -110,7 +110,7 @@ private:
     /** Private level update helpers */
     void UpdateShip(float elapsedSeconds);
     void UpdateSphere(float elapsedSeconds);
-    void UpdateObjects(float elapsedSeconds);
+    void UpdateObjects(float elapsedSeconds, float lastTime);
     
     /** Private level loading helpers */
     void GenMaps();

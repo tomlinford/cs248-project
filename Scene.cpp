@@ -255,7 +255,7 @@ which is a function of the elapsed time. */
 void Scene::UpdateObjects(float elapsedSeconds)
 {
 	// Update level objects
-	level->Update(elapsedSeconds);
+	level->Update(elapsedSeconds, lastTime);
 
 	// Update light/camera
 	lightPosition = level->ship->GetPosition();
@@ -385,7 +385,7 @@ void Scene::Update()
 			HandleMouse(elapsedSeconds);
 		HandleKeys(elapsedSeconds);
 		UpdateObjects(elapsedSeconds);
-		HandleCollisions(elapsedSeconds);
+		HandleCollisions(elapsedSeconds - lastTime);
 		UpdateView(elapsedSeconds);
 
 		lastTime = elapsedSeconds;
