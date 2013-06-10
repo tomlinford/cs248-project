@@ -29,8 +29,8 @@ const (
 	kMediumShips   = 40
 	kHardShips     = 60
 	kEasyTurrets   = 10
-	kMediumTurrets = 10
-	kHardTurrets   = 10
+	kMediumTurrets = 13
+	kHardTurrets   = 16
 )
 
 // commands
@@ -172,6 +172,7 @@ func genTurrets(numTurrents int, p path, tm terrainMap) []turret {
 	// fmt.Println("generating turrets")
 	turrets := make([]turret, numTurrents)
 	for i := range turrets {
+		// this is to prevent turrets too early or too late
 		turrets[i].location = p.arr[rand.Intn(len(p.arr)-150)+130]
 		turrets[i].location.z -= .45
 		if i%2 == 0 {
