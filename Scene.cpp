@@ -396,7 +396,7 @@ void Scene::Update()
 calls are not thread safe */
 void Scene::AddMissiles()
 {
-	if (!level->ship)
+	if (!level->ship || player != PLAYER1)
 		return;
 
 	float interval = (float)timer->elapsed().wall / pow(10.f, 9.f) - lastTime;

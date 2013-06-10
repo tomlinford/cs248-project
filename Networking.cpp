@@ -45,6 +45,7 @@ namespace Networking {
 	const static string LIGHTNING = "lightning";
 	const static string HEALTH = "health";
 	const static string SCORE = "score";
+	const static string MISSILE = "missile";
 
 	// function template
 	static void listenFunc();
@@ -223,6 +224,15 @@ namespace Networking {
 				ss >> velocity.x >> velocity.y >> velocity.z;
 				Sound::PlayLaser();
 				level->ship->AddBullet(position, velocity);
+			} else if (header == MISSILE) {
+				vec2 offset; float timeOffset;
+				ss >> offset.x >> offset.y >> timeOffset;
+				Missile *missile = new Missile("Models/missile.obj");
+				missile->SetColor(vec3(1.0, 1.0, 1.0));
+				missile->SetTimeOffset(timeOffset);
+				missile->SetOffset(offset);
+				lock_guard<mutex> lock(level->mutex);
+				level->objects.push_back(missile);
 			} else if (header == LIGHTNING) {
 				scene->AddLightning(true);
 			} else if (header == HEALTH) {
@@ -273,6 +283,12 @@ namespace Networking {
 	extern void SetScore(int score) {
 		lock_guard<mutex> lock(nspMutex);
 		(*nsp) << SCORE << " " << score << endl;
+	}
+
+	extern void AddMissile(vec2 offset, float timeOffset) {
+		lock_guard<mutex> lock(nspMutex);
+		(*nsp) << MISSILE << " " << offset.x << " " << offset.y
+			<< " " << timeOffset << endl;
 	}
 
 	extern void GameOver() {
