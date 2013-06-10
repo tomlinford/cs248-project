@@ -46,7 +46,7 @@ void HUD::RenderText()
 {
 	glColor4f(1, 1, 1, 1);
 	string level = "LEVEL: ";
-    if (scene) level.append(toString(levelNum));
+    if (scene) level.append(toString(levelNum + 1));
 	glWindowPos2f(0, 0);
 	font->Render(level.c_str(), -1, FTPoint(padding, height - padding - font->Ascender()));
 
