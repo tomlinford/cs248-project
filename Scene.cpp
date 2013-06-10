@@ -415,6 +415,7 @@ void Scene::AddMissiles()
 			lastFireTime += interval;
 
 			if (lastFireTime > ship->GetFiringRate()) {
+				Networking::AddMissile(ship->GetOffset(), ship->GetTimeOffset());
 				Missile *missile = new Missile("Models/missile.obj");
 				missile->SetColor(vec3(1.0, 1.0, 1.0));
 				missile->SetTimeOffset(ship->GetTimeOffset());
