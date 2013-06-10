@@ -139,7 +139,7 @@ void Level::CheckMapCollision(float elapsedSeconds, ParticleSystem& ps, Frustum&
 		// Check ship intersections
 		if (map->Intersects(*ship)) {
 			ps.AddExplosionCluster(ship->GetPosition(), map->GetColor());
-			ship->AddDamage(0.001 * elapsedSeconds);
+			ship->AddDamage(0.5 * elapsedSeconds);
 		}
 	}
 }
@@ -252,11 +252,11 @@ glm::vec3 Level::GetDirection(Direction direction, float time)
 }
 
 
-void Level::Update(float elapsedSeconds)
+void Level::Update(float elapsedSeconds, float lastTime)
 {
 	UpdateShip(elapsedSeconds);
 	UpdateSphere(elapsedSeconds);
-	UpdateObjects(elapsedSeconds);
+	UpdateObjects(elapsedSeconds, lastTime);
 }
 
 void Level::UpdateShip(float elapsedSeconds)
@@ -279,7 +279,7 @@ void Level::UpdateSphere(float elapsedSeconds)
 	sphere->SetScale(75 + 7 * sin(elapsedSeconds));
 }
 
-void Level::UpdateObjects(float elapsedSeconds)
+void Level::UpdateObjects(float elapsedSeconds, float lastTime)
 {
 	for (int i = 0; i < objects.size(); i++)
 	{
@@ -295,7 +295,7 @@ void Level::UpdateObjects(float elapsedSeconds)
 			shipOffset.x *= -1;
 
 			vec2 dir = shipOffset - missileOffset;
-			vec2 offset = 0.01f * dir;
+			vec2 offset = 0.01f * dir * elapsedSeconds - lastTime;
 			missile->SetOffset(missileOffset + offset);
 		}
 		else if (turret && ship) {
