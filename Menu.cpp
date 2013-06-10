@@ -1,3 +1,5 @@
+
+
 #include "Menu.h"
 #include "Sound.h"
 
@@ -134,25 +136,27 @@ void Menu::HandleKey(int key, int action)
     if (action == GLFW_RELEASE) {
         return;
     }
-    if (selectionActive) {
+    if (selectedIndex != -1 && selectionActive) {
         items[selectedIndex]->HandleKey(key, action);
     }
     
     switch(key) {
         case GLFW_KEY_UP:
-            if (selectionActive)
+            if (selectedIndex != -1 && selectionActive)
                 selectionActive = false;
             UpdateSelection(-1);
             break;
         case GLFW_KEY_DOWN:
-            if (selectionActive)
+            if (selectedIndex != -1 && selectionActive)
                 selectionActive = false;
             UpdateSelection(1);
             break;
         case GLFW_KEY_ENTER:
         {
-            selectionActive = true;
-            if (items[selectedIndex]->func)
+            if (selectedIndex != -1)
+                selectionActive = true;
+            if (selectedIndex != -1 &&
+                items[selectedIndex]->func)
                 items[selectedIndex]->func(NULL);
             break;
         }
