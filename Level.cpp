@@ -33,8 +33,9 @@ Level::Level(bool addSphere) : ready(false), maps(MAP_DIM * MAP_DIM, NULL)
 		sphere->SetScale(75.0f);
 	}
 
-	// Prefetch turret obj file and associated buffer
+	// Prefetch turret and missile
 	Object turret("Models/turret.obj");
+	Object msisile("Models/missile.obj");
 }
 
 Level::~Level()
