@@ -1,5 +1,7 @@
 #include "ParticleSystem.h"
 
+#include <mutex>
+
 #define MAX_VELOCITY 5
 #define MAX_LIFETIME 10
 #define PARTICLES_PER_CLUSTER 80
@@ -12,6 +14,7 @@ float rand(float min, float max) {
 }
 
 static vector<Model *> invalidModels;
+static std::mutex imMutex;
 
 Particle::Particle(glm::vec3 l, glm::vec3 v, glm::vec3 f, float s)
 {
@@ -64,6 +67,7 @@ ParticleCluster::ParticleCluster(glm::vec3 location, glm::vec3 c): deleteModel(f
 ParticleCluster::~ParticleCluster()
 {
     if (model) {
+		lock_guard<std::mutex> lock(imMutex);
         invalidModels.push_back(model);
     }
 }
@@ -348,6 +352,7 @@ void ParticleSystem::Draw(const Program& p, const glm::mat4& viewProjection,
     }
     
     // Delete invalidated cluster models
+	lock_guard<std::mutex> lock(imMutex);
     for (int i = 0 ; i < invalidModels.size(); i++)
         delete invalidModels[i];
     invalidModels.clear();

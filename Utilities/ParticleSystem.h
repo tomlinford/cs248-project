@@ -22,6 +22,7 @@ public:
      force, and scale */
     Particle(glm::vec3 l, glm::vec3 v, glm::vec3 f, float s);
 	Particle() {}
+	~Particle() {}
     glm::vec3 location;
     glm::vec3 velocity;
     
