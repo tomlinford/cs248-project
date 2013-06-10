@@ -301,6 +301,8 @@ void Level::UpdateObjects(float elapsedSeconds, float lastTime)
 			shipOffset.x *= -1;
 
 			vec2 dir = shipOffset - missileOffset;
+            if (elapsedSeconds > 1.0)
+                elapsedSeconds = 1.0;
 			vec2 offset = dir * (elapsedSeconds - lastTime);
 			missile->SetOffset(missileOffset + offset);
 		}
