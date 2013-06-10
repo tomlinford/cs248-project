@@ -44,7 +44,7 @@ struct MapLoader
 class Level
 {
 public:
-	Level();
+	Level(bool addSphere);
     ~Level();
 
     /** Gets a flyable object's position as a function of time */
