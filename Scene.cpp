@@ -369,7 +369,6 @@ void Scene::Update()
 
 		times = timer->elapsed();
 		float elapsedSeconds = (float)times.wall / pow(10.f, 9.f);
-        elapsedSeconds += 70;
 
 		if (!gameOver && elapsedSeconds > level->totalTime) {
 			Networking::GameOver();
