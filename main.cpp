@@ -30,7 +30,7 @@ static Menu *menu, *start, *credits, *hscores, *nextLevel, *connect, *hscoreEntr
 static Scene *scene;
 static HUD *hud;
 static Player p;
-static int level = 0;
+static int levelNum = 0;
 
 TextField *ipField;
 TextField *playerField;
@@ -221,11 +221,12 @@ void StartGame(void *data)
     
     if (!hud)
         hud = new HUD();
+	hud->Reset(levelNum);
     
     // Stream new level from server
     // Tom: Hook into difficulty levels here?
     Level *level = new Level();
-    Networking::Init(scene, level, ipField->GetCurrentText(), playerField->GetCurrentText().c_str());
+    Networking::Init(scene, level, ipField->GetCurrentText(), playerField->GetCurrentText().c_str(), levelNum);
     
 	scene->LoadLevel(level, p);
     hud->LoadScene(scene);
@@ -503,17 +504,21 @@ int main(int argc, char *argv[])
             hud->Render();
             gaming = !scene->gameOver;
             if (scene->gameOver && scene->levelOver) {
-				level++;
+				levelNum++;
                 LoadNextLevelMenu(NULL);
             }
-            else if (scene->gameOver) {
+			else if (scene->gameOver) {
+				levelNum = 0;
                 nextLevel->PopMenu();
                 LoadHscoreEntryMenu(NULL);
-            }
+			}
         }
         else {
+			if (menu->GetCurrentMenu() == menu) {
+				levelNum = 0;
+				if (scene) scene->totalScore = 0;
+			}
             menu->Render();
-			level = 0;
         }
         
 		glfwSwapBuffers();

@@ -21,6 +21,7 @@ public:
     /* Initializes particle with a given location, velocity
      force, and scale */
     Particle(glm::vec3 l, glm::vec3 v, glm::vec3 f, float s);
+	Particle() {}
     glm::vec3 location;
     glm::vec3 velocity;
     
@@ -77,7 +78,7 @@ public:
                   const glm::vec3& cameraPos, DrawMode mode);
     
 private:
-    void GenKeyPoints(glm::vec3 s, glm::vec3 e, float maxOffset, int depth);
+    void GenKeyPoints(glm::vec3 &s, glm::vec3& e, float maxOffset, uint8_t depth);
 };
 
 /** A bullet cluster is a permanent cluster that belongs to
