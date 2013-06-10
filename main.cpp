@@ -264,7 +264,9 @@ void LoadMainMenu(void *data)
 void UpdateHighScores(void *data)
 {
     string entry = toString(scene->score);
+    entry.append("         |         ");
     entry.append(p1Field->GetCurrentText());
+    entry.append("         |         ");
     entry.append(p2Field->GetCurrentText());
     
     scores.push_back(entry);
