@@ -104,7 +104,7 @@ private:
     
     /** Private collision testing helpers */
     void CheckMapCollision(float elapsedSeconds, ParticleSystem& ps, Frustum &f);
-    void CheckObjectParticleCollisions(ParticleSystem& ps, Frustum &f);
+    void CheckObjectParticleCollisions(float elapsedSeconds, ParticleSystem& ps, Frustum &f);
     void CheckObjectShipCollisions(ParticleSystem& ps, Frustum &f);
     
     /** Private level update helpers */

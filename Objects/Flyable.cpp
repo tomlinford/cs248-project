@@ -57,7 +57,7 @@ Ship::Ship(Model *model) : Flyable(model)
 	health = START_HEALTH;
     cluster = new BulletCluster();
     cluster->SetOwner(this);
-    firingRate = 0.03;
+    firingRate = 0.01;
     lastFireTime = 0;
 }
 
@@ -67,7 +67,7 @@ Ship::Ship(const string& filename) : Flyable(filename)
     health = START_HEALTH;
     cluster = new BulletCluster();
     cluster->SetOwner(this);
-    firingRate = 0.03;
+    firingRate = 0.01;
     lastFireTime = 0;
 }
 

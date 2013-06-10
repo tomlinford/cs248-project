@@ -122,7 +122,7 @@ bool Level::Ready()
 void Level::HandleCollisions(float elapsedSeconds, ParticleSystem& ps, Frustum& f)
 {
 	CheckMapCollision(elapsedSeconds, ps, f);
-	CheckObjectParticleCollisions(ps, f);
+	CheckObjectParticleCollisions(elapsedSeconds, ps, f);
 	CheckObjectShipCollisions(ps, f);
 }
 
@@ -145,7 +145,7 @@ void Level::CheckMapCollision(float elapsedSeconds, ParticleSystem& ps, Frustum&
 	}
 }
 
-void Level::CheckObjectParticleCollisions(ParticleSystem& ps, Frustum& f)
+void Level::CheckObjectParticleCollisions(float elapsedSeconds, ParticleSystem& ps, Frustum& f)
 {
 	for (int i = 0; i < objects.size(); i++)
 	{
@@ -161,6 +161,11 @@ void Level::CheckObjectParticleCollisions(ParticleSystem& ps, Frustum& f)
 		obj = NULL;
 		objects.erase(objects.begin() + i--);
 	}
+    
+    if (ship && ps.Intersects(ship)) {
+        ps.AddExplosionCluster(ship->GetPosition(), vec3(0.9, 0.7, 0.5));
+        ship->AddDamage(0.5 * elapsedSeconds);
+    }
 }
 
 void Level::CheckObjectShipCollisions(ParticleSystem& ps, Frustum& f)
@@ -296,7 +301,7 @@ void Level::UpdateObjects(float elapsedSeconds, float lastTime)
 			shipOffset.x *= -1;
 
 			vec2 dir = shipOffset - missileOffset;
-			vec2 offset = 0.5f * dir * elapsedSeconds - lastTime;
+			vec2 offset = dir * (elapsedSeconds - lastTime);
 			missile->SetOffset(missileOffset + offset);
 		}
 		else if (turret && ship) {
