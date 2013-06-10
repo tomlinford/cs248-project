@@ -36,7 +36,7 @@ namespace Sound {
         ERRCHECK(system->createSound("Sounds/menu_select.wav", FMOD_HARDWARE, 0, &select));
         ERRCHECK(system->createSound("Sounds/menu_back.wav", FMOD_HARDWARE, 0, &back));
 		ERRCHECK(thunder->setMode(FMOD_LOOP_OFF));
-		ERRCHECK(system->playSound(FMOD_CHANNEL_FREE, menuMusic, false, &channel));
+		//ERRCHECK(system->playSound(FMOD_CHANNEL_FREE, menuMusic, false, &channel));
 	}
 
 	extern void PlayThunder() {

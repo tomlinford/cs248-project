@@ -205,9 +205,16 @@ void StartGame(void *data)
 	}
 
     gaming = true;
+
+	string playerString = playerField->GetCurrentText();
+
+	if (levelNum % 2 == 1) {
+		if (playerString == "1") playerString == "2";
+		else if (playerString == "2") playerString == "1";
+	}
     
     // Choose player based on user input in menu
-	switch (playerField->GetCurrentText()[0]) {
+	switch (playerString[0]) {
         case '1':
             p = PLAYER1;
             break;
@@ -226,7 +233,7 @@ void StartGame(void *data)
     // Stream new level from server
     // Tom: Hook into difficulty levels here?
     Level *level = new Level(levelNum > 0);
-    Networking::Init(scene, level, ipField->GetCurrentText(), playerField->GetCurrentText().c_str(), levelNum);
+    Networking::Init(scene, level, ipField->GetCurrentText(), playerString.c_str(), levelNum);
     
 	scene->LoadLevel(level, p);
     hud->LoadScene(scene);
@@ -468,7 +475,7 @@ int main(int argc, char *argv[])
     CreateHighScoresMenu();
     CreateHscoreEntryMenu();
 
-    //glfwDisable(GLFW_MOUSE_CURSOR);
+    glfwDisable(GLFW_MOUSE_CURSOR);
     
     glfwSetCharCallback(CharCallback);    
 	glfwSetKeyCallback(KeyCallback);
