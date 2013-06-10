@@ -61,8 +61,13 @@ Menu::Menu(MenuItem *it[], int i, float fontsize)
     
     padding = 20.0f;
     
+    enlargeTitle = false;
+    
     font = new FTGLPixmapFont("01 Digitall.ttf");
 	font->FaceSize(fontsize);
+    
+    largeFont = new FTGLPixmapFont("01 Digitall.ttf");
+	largeFont->FaceSize(fontsize + 20);
     
     timer = new cpu_timer();
 }
@@ -204,15 +209,29 @@ void Menu::Render()
             glColor4f(0.0, 0.7, 0.9, k * 1.0);
         }
         else {
-            glColor4f(0.5, 0.5, 0.5, 1.0);
+            if (i == 0) {
+                glColor4f(1.0, 1.0, 1.0, 1.0);
+            }
+            else {
+                glColor4f(0.5, 0.5, 0.5, 1.0);
+            }
         }
         glWindowPos2f(0,0);
         
         string item = items[i]->label;
-        FTBBox box = font->BBox(item.c_str(), -1, FTPoint(0, 0), FTPoint(0, 0));
-        font->Render(item.c_str(),
-                     -1,
-                     FTPoint(width / 2.0f - box.Upper().X() / 2.0f,
-                     start - i * (padding + font->Ascender())));
+        if (enlargeTitle && i == 0) {
+            FTBBox box = largeFont->BBox(item.c_str(), -1, FTPoint(0, 0), FTPoint(0, 0));
+            largeFont->Render(item.c_str(),
+                              -1,
+                              FTPoint(width / 2.0f - box.Upper().X() / 2.0f,
+                                      start - i * (padding + largeFont->Ascender())));
+        }
+        else {
+            FTBBox box = font->BBox(item.c_str(), -1, FTPoint(0, 0), FTPoint(0, 0));
+            font->Render(item.c_str(),
+                         -1,
+                         FTPoint(width / 2.0f - box.Upper().X() / 2.0f,
+                         start - i * (padding + font->Ascender())));
+        }
     }
 }

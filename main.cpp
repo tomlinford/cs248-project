@@ -417,14 +417,17 @@ void CreateCreditsMenu()
 
 void CreateMainMenu()
 {
-    MenuItem **items = new MenuItem *[4];
+    MenuItem **items = new MenuItem *[6];
     
-    items[0] = new MenuItem("NEW GAME", LoadStartMenu);
-    items[1] = new MenuItem("HIGH SCORES", LoadHighScoresMenu);
-    items[2] = new MenuItem("CREDITS", LoadCreditsMenu);
-    items[3] = new MenuItem("EXIT", Exit);
+    items[0] = new MenuItem("GAME OF DRONES", NULL);
+    items[1] = new MenuItem("", NULL);
+    items[2] = new MenuItem("NEW GAME", LoadStartMenu);
+    items[3] = new MenuItem("HIGH SCORES", LoadHighScoresMenu);
+    items[4] = new MenuItem("CREDITS", LoadCreditsMenu);
+    items[5] = new MenuItem("EXIT", Exit);
     
-    menu = new Menu(items, 4);
+    menu = new Menu(items, 6);
+    menu->enlargeTitle = true;
 }
 
 #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
