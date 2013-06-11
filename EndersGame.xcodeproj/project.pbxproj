@@ -138,6 +138,7 @@
 		78B1AA031742EFAE003E5C24 /* ParticleSystem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ParticleSystem.h; sourceTree = "<group>"; };
 		78BA18281766D205007FE6C5 /* libboost_thread-mt.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libboost_thread-mt.a"; path = "../../../../../../../opt/local/lib/libboost_thread-mt.a"; sourceTree = "<group>"; };
 		78BA18291766D205007FE6C5 /* libboost_thread-mt.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libboost_thread-mt.dylib"; path = "../../../../../../../opt/local/lib/libboost_thread-mt.dylib"; sourceTree = "<group>"; };
+		78BA182C1766D8E4007FE6C5 /* libboost_timer-mt.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libboost_timer-mt.dylib"; path = "../../../../../../../usr/lib/libboost_timer-mt.dylib"; sourceTree = "<group>"; };
 		78C3DD121749C01E0030CEDD /* Networking.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Networking.cpp; sourceTree = "<group>"; };
 		78C3DD131749C01E0030CEDD /* Networking.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Networking.h; sourceTree = "<group>"; };
 		78E54B121746F0ED00BFC6B3 /* Level.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Level.cpp; sourceTree = "<group>"; };
@@ -174,6 +175,7 @@
 		08FB7794FE84155DC02AAC07 /* Assignment1 */ = {
 			isa = PBXGroup;
 			children = (
+				78BA182C1766D8E4007FE6C5 /* libboost_timer-mt.dylib */,
 				782C9C0117421A0300C1B104 /* OpenGL.framework */,
 				782C9BF5174216EA00C1B104 /* Cocoa.framework */,
 				783346C8173B6FA80036E30F /* ApplicationServices.framework */,
@@ -477,18 +479,12 @@
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
 				CLANG_CXX_LIBRARY = "libc++";
-				FRAMEWORK_SEARCH_PATHS = /opt/local/lib;
+				FRAMEWORK_SEARCH_PATHS = "";
 				GCC_PREPROCESSOR_DEFINITIONS = "";
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				HEADER_SEARCH_PATHS = (
-					/usr/include/boost,
-					/Users/bhnascar/Downloads/boost_1_53_0,
-				);
-				LIBRARY_SEARCH_PATHS = (
-					/opt/local/lib,
-					/Users/bhnascar/Downloads/boost_1_53_0/stage/lib,
-				);
+				HEADER_SEARCH_PATHS = "";
+				LIBRARY_SEARCH_PATHS = "";
 				OTHER_CFLAGS = "";
 				OTHER_CPLUSPLUSFLAGS = (
 					"$(OTHER_CFLAGS)",
@@ -504,18 +500,12 @@
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
 				CLANG_CXX_LIBRARY = "libc++";
-				FRAMEWORK_SEARCH_PATHS = /opt/local/lib;
+				FRAMEWORK_SEARCH_PATHS = "";
 				GCC_PREPROCESSOR_DEFINITIONS = "";
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				HEADER_SEARCH_PATHS = (
-					/usr/include/boost,
-					/Users/bhnascar/Downloads/boost_1_53_0,
-				);
-				LIBRARY_SEARCH_PATHS = (
-					/opt/local/lib,
-					/Users/bhnascar/Downloads/boost_1_53_0/stage/lib,
-				);
+				HEADER_SEARCH_PATHS = "";
+				LIBRARY_SEARCH_PATHS = "";
 				OTHER_CFLAGS = "";
 				OTHER_CPLUSPLUSFLAGS = (
 					"$(OTHER_CFLAGS)",

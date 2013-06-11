@@ -14,7 +14,7 @@ LIBPREFIX	        := lib
 STATIC_LIBSUFFIX    := .a
 CFLAGS 		        := -g
 CFLAGS_PLATFORM     := 
-LDFLAGS		        := -m32
+LDFLAGS		        :=
 FRAMEWORKS	        :=
 LIBS		        :=
 EXESUFFIX           :=
@@ -32,8 +32,8 @@ else
 ifeq ($(ARCH), Darwin)
 # Building on Mac
 CFLAGS_PLATFORM		+= -stdlib=libc++
-FRAMEWORKS          += OpenGL GLUT
-CFLAGS				+= -m32
+FRAMEWORKS          += OpenGL Cocoa ApplicationServices
+CFLAGS				+=
 LIBS				+= glfw boost_system-mt boost_timer-mt boost_iostreams-mt
 LIBS				+= fmodex ftgl
 else
