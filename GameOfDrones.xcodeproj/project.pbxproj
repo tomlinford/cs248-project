@@ -358,9 +358,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		8DD76F620486A84900D96B5E /* EndersGame */ = {
+		8DD76F620486A84900D96B5E /* GameOfDrones */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 1DEB923108733DC60010E9CD /* Build configuration list for PBXNativeTarget "EndersGame" */;
+			buildConfigurationList = 1DEB923108733DC60010E9CD /* Build configuration list for PBXNativeTarget "GameOfDrones" */;
 			buildPhases = (
 				8DD76F640486A84900D96B5E /* Sources */,
 				8DD76F660486A84900D96B5E /* Frameworks */,
@@ -370,7 +370,7 @@
 			);
 			dependencies = (
 			);
-			name = EndersGame;
+			name = GameOfDrones;
 			productInstallPath = "$(HOME)/bin";
 			productName = Assignment1;
 			productReference = 8DD76F6C0486A84900D96B5E /* EndersGame */;
@@ -384,7 +384,7 @@
 			attributes = {
 				LastUpgradeCheck = 0450;
 			};
-			buildConfigurationList = 1DEB923508733DC60010E9CD /* Build configuration list for PBXProject "EndersGame" */;
+			buildConfigurationList = 1DEB923508733DC60010E9CD /* Build configuration list for PBXProject "GameOfDrones" */;
 			compatibilityVersion = "Xcode 3.2";
 			developmentRegion = English;
 			hasScannedForEncodings = 1;
@@ -395,7 +395,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				8DD76F620486A84900D96B5E /* EndersGame */,
+				8DD76F620486A84900D96B5E /* GameOfDrones */,
 			);
 		};
 /* End PBXProject section */
@@ -455,7 +455,7 @@
 					/opt/local/lib,
 				);
 				OTHER_LDFLAGS = "-lglfw";
-				PRODUCT_NAME = EndersGame;
+				PRODUCT_NAME = GameOfDrones;
 				ZERO_LINK = YES;
 			};
 			name = Debug;
@@ -480,7 +480,7 @@
 					/opt/local/lib,
 				);
 				OTHER_LDFLAGS = "-lglfw";
-				PRODUCT_NAME = EndersGame;
+				PRODUCT_NAME = GameOfDrones;
 			};
 			name = Release;
 		};
@@ -529,7 +529,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		1DEB923108733DC60010E9CD /* Build configuration list for PBXNativeTarget "EndersGame" */ = {
+		1DEB923108733DC60010E9CD /* Build configuration list for PBXNativeTarget "GameOfDrones" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				1DEB923208733DC60010E9CD /* Debug */,
@@ -538,7 +538,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		1DEB923508733DC60010E9CD /* Build configuration list for PBXProject "EndersGame" */ = {
+		1DEB923508733DC60010E9CD /* Build configuration list for PBXProject "GameOfDrones" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				1DEB923608733DC60010E9CD /* Debug */,
