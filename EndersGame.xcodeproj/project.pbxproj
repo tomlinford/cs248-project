@@ -37,6 +37,8 @@
 		78B0CB8417424B6B00CBECC5 /* Buffer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 78B0CB78174244B200CBECC5 /* Buffer.cpp */; };
 		78B1AA001742DF2E003E5C24 /* Scene.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 78B1A9FE1742DF2E003E5C24 /* Scene.cpp */; };
 		78B1AA041742EFAE003E5C24 /* ParticleSystem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 78B1AA021742EFAE003E5C24 /* ParticleSystem.cpp */; };
+		78BA182A1766D24C007FE6C5 /* libboost_thread-mt.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 78BA18281766D205007FE6C5 /* libboost_thread-mt.a */; };
+		78BA182B1766D24C007FE6C5 /* libboost_thread-mt.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 78BA18291766D205007FE6C5 /* libboost_thread-mt.dylib */; };
 		78C3DD141749C01E0030CEDD /* Networking.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 78C3DD121749C01E0030CEDD /* Networking.cpp */; };
 		78E54B141746F0ED00BFC6B3 /* Level.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 78E54B121746F0ED00BFC6B3 /* Level.cpp */; };
 		78E54B181746F85800BFC6B3 /* Map.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 78E54B161746F85800BFC6B3 /* Map.cpp */; };
@@ -134,6 +136,8 @@
 		78B1A9FF1742DF2E003E5C24 /* Scene.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Scene.h; sourceTree = "<group>"; };
 		78B1AA021742EFAE003E5C24 /* ParticleSystem.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ParticleSystem.cpp; sourceTree = "<group>"; };
 		78B1AA031742EFAE003E5C24 /* ParticleSystem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ParticleSystem.h; sourceTree = "<group>"; };
+		78BA18281766D205007FE6C5 /* libboost_thread-mt.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libboost_thread-mt.a"; path = "../../../../../../../opt/local/lib/libboost_thread-mt.a"; sourceTree = "<group>"; };
+		78BA18291766D205007FE6C5 /* libboost_thread-mt.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libboost_thread-mt.dylib"; path = "../../../../../../../opt/local/lib/libboost_thread-mt.dylib"; sourceTree = "<group>"; };
 		78C3DD121749C01E0030CEDD /* Networking.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Networking.cpp; sourceTree = "<group>"; };
 		78C3DD131749C01E0030CEDD /* Networking.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Networking.h; sourceTree = "<group>"; };
 		78E54B121746F0ED00BFC6B3 /* Level.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Level.cpp; sourceTree = "<group>"; };
@@ -151,6 +155,8 @@
 				782C9C0217421A0300C1B104 /* OpenGL.framework in Frameworks */,
 				782C9BF6174216EA00C1B104 /* Cocoa.framework in Frameworks */,
 				783346C9173B6FA80036E30F /* ApplicationServices.framework in Frameworks */,
+				78BA182A1766D24C007FE6C5 /* libboost_thread-mt.a in Frameworks */,
+				78BA182B1766D24C007FE6C5 /* libboost_thread-mt.dylib in Frameworks */,
 				783D3D3B1749F28E00C79047 /* libboost_timer-mt.a in Frameworks */,
 				783D3D3C1749F28E00C79047 /* libboost_timer-mt.dylib in Frameworks */,
 				783D3D151749DCB100C79047 /* libboost_system-mt.a in Frameworks */,
@@ -306,6 +312,8 @@
 				783D3D3A1749F28D00C79047 /* libboost_timer-mt.dylib */,
 				783D3D131749DCB100C79047 /* libboost_system-mt.a */,
 				783D3D141749DCB100C79047 /* libboost_system-mt.dylib */,
+				78BA18281766D205007FE6C5 /* libboost_thread-mt.a */,
+				78BA18291766D205007FE6C5 /* libboost_thread-mt.dylib */,
 			);
 			name = Boost;
 			sourceTree = "<group>";

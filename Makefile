@@ -7,14 +7,14 @@ FILES   += Utilities/Program Objects/Turret
 FILES   += Menu Sound HUD HudElement
 
 
-CC                  := g++
-LD                  := g++
+CC                  := clang++
+LD                  := clang++
 OBJSUFFIX	        := .o
 LIBPREFIX	        := lib
 STATIC_LIBSUFFIX    := .a
 CFLAGS 		        := -g
-CFLAGS_PLATFORM     := -stdlib=libc++
-LDFLAGS		        :=
+CFLAGS_PLATFORM     := 
+LDFLAGS		        := -m32
 FRAMEWORKS	        :=
 LIBS		        :=
 EXESUFFIX           :=
@@ -31,8 +31,11 @@ else
 
 ifeq ($(ARCH), Darwin)
 # Building on Mac
-FRAMEWORKS          += OpenGL
-LIBS				+= glfw boost_system boost_timer fmodex64 ftgl
+CFLAGS_PLATFORM		+= -stdlib=libc++
+FRAMEWORKS          += OpenGL GLUT
+CFLAGS				+= -m32
+LIBS				+= glfw boost_system-mt boost_timer-mt boost_iostreams-mt
+LIBS				+= fmodex ftgl
 else
 # Building on Linux
 LIBS                += GLEW GL glfw boost_system boost_timer fmodex64 ftgl
@@ -68,7 +71,7 @@ $(TARGET): $(OBJS)
 	$(LD) -o $(TARGET) $(OBJS) $(LDFLAGS) $(LDLIBS) $(LDFRAMEWORKS)
 
 %.o: %.cpp
-	$(CXX) $(CFLAGS) -o $@ -c $< $(DEPARGS)
+	$(CC) $(CFLAGS) -o $@ -c $< $(DEPARGS)
 
 clean:
 	rm -rf $(OBJS) $(TARGET) $(DEPS)
