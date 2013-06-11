@@ -36,7 +36,7 @@ There are also XCode and Visual Studio 11 projects (what we used to develop the 
 Running the Game:
 =================
 
-If you built on Linux from above, start the server by typing: ./Server.out, and in a separate terminal session, start the main game by typing: ./GameOfDrones.out. Otherwise if you're on Windows, use the provided binaries "server.exe" and "Game of Drones.exe". There's no need to start from the command line for Windows and all necessary DLLs are included. If you're using the provided executables for OS X, you must run Server and GameOfDrones from the commandline.
+If you built on Linux from above, start the server by typing: ./Server.out, and in a separate terminal session, start the main game by typing: ./GameOfDrones.out. Otherwise if you're on Windows, use the provided binaries "server.exe" and "Game of Drones.exe". There's no need to start from the command line for Windows and all necessary DLLs are included. If you're using the provided executables for OS X, you must run "server_mac" and "GameOfDrones_mac" from the commandline.
 
 To check the setup, hit enter at the main screen to start a new game and then hit enter on the next screen to connect to the server. This will connect the game to a local server. It should load the level and you should be able to dodge enemies with the arrow keys.
 
