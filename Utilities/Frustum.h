@@ -1,3 +1,6 @@
+/* LightHouse3D tutorial referenced in implementation of view frustum culling.
+ http://www.lighthouse3d.com/tutorials/view-frustum-culling/ */
+
 #pragma once
 
 #include "gl.h"

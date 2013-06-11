@@ -7,46 +7,49 @@ FILES   += Utilities/Program Objects/Turret
 FILES   += Menu Sound HUD HudElement
 
 
-CC               := g++
-LD               := g++
-OBJSUFFIX	 := .o
-LIBPREFIX	 := lib
-STATIC_LIBSUFFIX := .a
-CFLAGS 		 := -g
-CFLAGS_PLATFORM  :=
-LDFLAGS		 :=
-FRAMEWORKS	 :=
-LIBS		 :=
-EXESUFFIX        :=
-DEPARGS          := -MD
-# how we link to libraries depends on the platform
+CC                  := g++
+LD                  := g++
+OBJSUFFIX	        := .o
+LIBPREFIX	        := lib
+STATIC_LIBSUFFIX    := .a
+CFLAGS 		        := -g
+CFLAGS_PLATFORM     := -stdlib=libc++
+LDFLAGS		        :=
+FRAMEWORKS	        :=
+LIBS		        :=
+EXESUFFIX           :=
+DEPARGS             := -MD
+
+# How we link to libraries depends on the platform
 ARCH=$(shell uname | sed -e 's/-.*//g')
 
 ifeq ($(ARCH), CYGWIN_NT)
 # If building on Cygwin, use glut32, opengl32
-EXESUFFIX := .exe
-LIBS      += glut32 opengl32
+EXESUFFIX           := .exe
+LIBS                += glut32 opengl32
 else
 
 ifeq ($(ARCH), Darwin)
-FRAMEWORKS += OpenGL GLUT
+# Building on Mac
+FRAMEWORKS          += OpenGL
+LIBS				+= glfw boost_system boost_timer fmodex64 ftgl
 else
 # Building on Linux
-LIBS += GLEW GL glfw boost_system boost_timer fmodex64 ftgl
+LIBS                += GLEW GL glfw boost_system boost_timer fmodex64 ftgl
 endif
 
 endif # Not CYGWIN_END
 
 
-TARGET := $(addsuffix $(EXESUFFIX), $(TARGET))
-INCDIRS := . Utilities Objects
-LIBDIRS :=
+TARGET          := $(addsuffix $(EXESUFFIX), $(TARGET))
+INCDIRS         := . Utilities Objects
+LIBDIRS         :=
 
-CFLAGS += -std=c++11 -O2 $(addprefix -I, $(INCDIRS)) $(CFLAGS_PLATFORM)
-LDFLAGS += $(addprefix -L, $(LIBDIRS))
+CFLAGS          += -std=c++11 -O2 $(addprefix -I, $(INCDIRS)) $(CFLAGS_PLATFORM)
+LDFLAGS         += $(addprefix -L, $(LIBDIRS))
 
-LDLIBS  := $(addprefix -l, $(LIBS))
-LDFRAMEWORKS := $(addprefix -framework , $(FRAMEWORKS))
+LDLIBS          := $(addprefix -l, $(LIBS))
+LDFRAMEWORKS    := $(addprefix -framework , $(FRAMEWORKS))
 
 
 OBJS := $(addsuffix $(OBJSUFFIX), $(FILES))

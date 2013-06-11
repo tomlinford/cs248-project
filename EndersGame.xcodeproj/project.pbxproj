@@ -11,8 +11,6 @@
 		782C9BF6174216EA00C1B104 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 782C9BF5174216EA00C1B104 /* Cocoa.framework */; };
 		782C9C0217421A0300C1B104 /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 782C9C0117421A0300C1B104 /* OpenGL.framework */; };
 		783346C9173B6FA80036E30F /* ApplicationServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 783346C8173B6FA80036E30F /* ApplicationServices.framework */; };
-		783D3D0E1749DC1400C79047 /* libboost_thread-mt.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 783D3D0C1749DC1400C79047 /* libboost_thread-mt.a */; };
-		783D3D0F1749DC1400C79047 /* libboost_thread-mt.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 783D3D0D1749DC1400C79047 /* libboost_thread-mt.dylib */; };
 		783D3D151749DCB100C79047 /* libboost_system-mt.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 783D3D131749DCB100C79047 /* libboost_system-mt.a */; };
 		783D3D161749DCB100C79047 /* libboost_system-mt.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 783D3D141749DCB100C79047 /* libboost_system-mt.dylib */; };
 		783D3D3B1749F28E00C79047 /* libboost_timer-mt.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 783D3D391749F28D00C79047 /* libboost_timer-mt.a */; };
@@ -66,26 +64,24 @@
 		782C9BF5174216EA00C1B104 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = ../../../../../../../System/Library/Frameworks/Cocoa.framework; sourceTree = "<group>"; };
 		782C9C0117421A0300C1B104 /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = ../../../../../../../System/Library/Frameworks/OpenGL.framework; sourceTree = "<group>"; };
 		783346C8173B6FA80036E30F /* ApplicationServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ApplicationServices.framework; path = ../../../../../../../System/Library/Frameworks/ApplicationServices.framework; sourceTree = "<group>"; };
-		783D3D0C1749DC1400C79047 /* libboost_thread-mt.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libboost_thread-mt.a"; path = "../../../../../../../opt/local/lib/libboost_thread-mt.a"; sourceTree = "<group>"; };
-		783D3D0D1749DC1400C79047 /* libboost_thread-mt.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libboost_thread-mt.dylib"; path = "../../../../../../../opt/local/lib/libboost_thread-mt.dylib"; sourceTree = "<group>"; };
-		783D3D131749DCB100C79047 /* libboost_system-mt.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libboost_system-mt.a"; path = "../../../../../../../opt/local/lib/libboost_system-mt.a"; sourceTree = "<group>"; };
-		783D3D141749DCB100C79047 /* libboost_system-mt.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libboost_system-mt.dylib"; path = "../../../../../../../opt/local/lib/libboost_system-mt.dylib"; sourceTree = "<group>"; };
+		783D3D131749DCB100C79047 /* libboost_system-mt.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libboost_system-mt.a"; path = "/opt/local/lib/libboost_system-mt.a"; sourceTree = "<absolute>"; };
+		783D3D141749DCB100C79047 /* libboost_system-mt.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libboost_system-mt.dylib"; path = "/opt/local/lib/libboost_system-mt.dylib"; sourceTree = "<absolute>"; };
 		783D3D371749ED1900C79047 /* terrain.frag */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; path = terrain.frag; sourceTree = "<group>"; };
 		783D3D381749ED1900C79047 /* terrain.vert */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; path = terrain.vert; sourceTree = "<group>"; };
-		783D3D391749F28D00C79047 /* libboost_timer-mt.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libboost_timer-mt.a"; path = "../../../../../../../opt/local/lib/libboost_timer-mt.a"; sourceTree = "<group>"; };
-		783D3D3A1749F28D00C79047 /* libboost_timer-mt.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libboost_timer-mt.dylib"; path = "../../../../../../../opt/local/lib/libboost_timer-mt.dylib"; sourceTree = "<group>"; };
+		783D3D391749F28D00C79047 /* libboost_timer-mt.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libboost_timer-mt.a"; path = "/opt/local/lib/libboost_timer-mt.a"; sourceTree = "<absolute>"; };
+		783D3D3A1749F28D00C79047 /* libboost_timer-mt.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libboost_timer-mt.dylib"; path = "/opt/local/lib/libboost_timer-mt.dylib"; sourceTree = "<absolute>"; };
 		78652528176136DE002AE042 /* Turret.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Turret.cpp; sourceTree = "<group>"; };
 		78652529176136DE002AE042 /* Turret.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Turret.h; sourceTree = "<group>"; };
-		786525351761492C002AE042 /* libfreetype.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libfreetype.a; path = ../../../../../../../opt/local/lib/libfreetype.a; sourceTree = "<group>"; };
-		786525361761492C002AE042 /* libftgl.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libftgl.a; path = ../../../../../../../opt/local/lib/libftgl.a; sourceTree = "<group>"; };
+		786525351761492C002AE042 /* libfreetype.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libfreetype.a; path = /opt/local/lib/libfreetype.a; sourceTree = "<absolute>"; };
+		786525361761492C002AE042 /* libftgl.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libftgl.a; path = /opt/local/lib/libftgl.a; sourceTree = "<absolute>"; };
 		7865253917614BB7002AE042 /* HUD.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = HUD.cpp; sourceTree = "<group>"; };
 		7865253A17614BB7002AE042 /* HUD.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HUD.h; sourceTree = "<group>"; };
 		7865253D1761A696002AE042 /* Menu.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Menu.cpp; sourceTree = "<group>"; };
 		7865253E1761A696002AE042 /* Menu.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Menu.h; sourceTree = "<group>"; };
 		786525401761BC04002AE042 /* Sound.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Sound.cpp; sourceTree = "<group>"; };
 		786525411761BC04002AE042 /* Sound.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Sound.h; sourceTree = "<group>"; };
-		786525471761BC76002AE042 /* libfmodex.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libfmodex.dylib; path = ../../../../../../../usr/lib/libfmodex.dylib; sourceTree = "<group>"; };
-		786525481761BC76002AE042 /* libfmodexL.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libfmodexL.dylib; path = ../../../../../../../usr/lib/libfmodexL.dylib; sourceTree = "<group>"; };
+		786525471761BC76002AE042 /* libfmodex.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libfmodex.dylib; path = /usr/lib/libfmodex.dylib; sourceTree = "<absolute>"; };
+		786525481761BC76002AE042 /* libfmodexL.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libfmodexL.dylib; path = /usr/lib/libfmodexL.dylib; sourceTree = "<absolute>"; };
 		7865254B17629231002AE042 /* hud.frag */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; path = hud.frag; sourceTree = "<group>"; };
 		7865254C17629231002AE042 /* hud.vert */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; path = hud.vert; sourceTree = "<group>"; };
 		786F67EF1742259B00E359E4 /* Program.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Program.cpp; sourceTree = "<group>"; };
@@ -140,10 +136,6 @@
 		78B1AA031742EFAE003E5C24 /* ParticleSystem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ParticleSystem.h; sourceTree = "<group>"; };
 		78C3DD121749C01E0030CEDD /* Networking.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Networking.cpp; sourceTree = "<group>"; };
 		78C3DD131749C01E0030CEDD /* Networking.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Networking.h; sourceTree = "<group>"; };
-		78C3DD171749C0970030CEDD /* foreach.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = foreach.h; sourceTree = "<group>"; };
-		78C3DD181749C0970030CEDD /* grid.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = grid.h; sourceTree = "<group>"; };
-		78C3DD191749C0970030CEDD /* strlib.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = strlib.h; sourceTree = "<group>"; };
-		78C3DD1A1749C0970030CEDD /* vector.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = vector.h; sourceTree = "<group>"; };
 		78E54B121746F0ED00BFC6B3 /* Level.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Level.cpp; sourceTree = "<group>"; };
 		78E54B131746F0ED00BFC6B3 /* Level.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Level.h; sourceTree = "<group>"; };
 		78E54B161746F85800BFC6B3 /* Map.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Map.cpp; sourceTree = "<group>"; };
@@ -161,8 +153,6 @@
 				783346C9173B6FA80036E30F /* ApplicationServices.framework in Frameworks */,
 				783D3D3B1749F28E00C79047 /* libboost_timer-mt.a in Frameworks */,
 				783D3D3C1749F28E00C79047 /* libboost_timer-mt.dylib in Frameworks */,
-				783D3D0E1749DC1400C79047 /* libboost_thread-mt.a in Frameworks */,
-				783D3D0F1749DC1400C79047 /* libboost_thread-mt.dylib in Frameworks */,
 				783D3D151749DCB100C79047 /* libboost_system-mt.a in Frameworks */,
 				783D3D161749DCB100C79047 /* libboost_system-mt.dylib in Frameworks */,
 				786525371761492C002AE042 /* libfreetype.a in Frameworks */,
@@ -178,22 +168,14 @@
 		08FB7794FE84155DC02AAC07 /* Assignment1 */ = {
 			isa = PBXGroup;
 			children = (
-				786525471761BC76002AE042 /* libfmodex.dylib */,
-				786525481761BC76002AE042 /* libfmodexL.dylib */,
-				786525351761492C002AE042 /* libfreetype.a */,
-				786525361761492C002AE042 /* libftgl.a */,
-				783D3D391749F28D00C79047 /* libboost_timer-mt.a */,
-				783D3D3A1749F28D00C79047 /* libboost_timer-mt.dylib */,
-				783D3D131749DCB100C79047 /* libboost_system-mt.a */,
-				783D3D141749DCB100C79047 /* libboost_system-mt.dylib */,
-				783D3D0C1749DC1400C79047 /* libboost_thread-mt.a */,
-				783D3D0D1749DC1400C79047 /* libboost_thread-mt.dylib */,
 				782C9C0117421A0300C1B104 /* OpenGL.framework */,
 				782C9BF5174216EA00C1B104 /* Cocoa.framework */,
 				783346C8173B6FA80036E30F /* ApplicationServices.framework */,
+				78BA18271766CBC3007FE6C5 /* FTGL */,
+				78BA18261766CBBC007FE6C5 /* FMOD */,
+				78BA18251766CB94007FE6C5 /* Boost */,
 				78945D2F17649BFE00FBD33A /* Sounds */,
 				786F68071742350100E359E4 /* Shaders */,
-				78C3DD161749C0970030CEDD /* Grid */,
 				789B19A017463C2C00C90C56 /* Objects */,
 				782BEAC117221FCD007668C8 /* Utilities */,
 				08FB7795FE84155DC02AAC07 /* Source */,
@@ -317,15 +299,33 @@
 			path = Objects;
 			sourceTree = "<group>";
 		};
-		78C3DD161749C0970030CEDD /* Grid */ = {
+		78BA18251766CB94007FE6C5 /* Boost */ = {
 			isa = PBXGroup;
 			children = (
-				78C3DD171749C0970030CEDD /* foreach.h */,
-				78C3DD181749C0970030CEDD /* grid.h */,
-				78C3DD191749C0970030CEDD /* strlib.h */,
-				78C3DD1A1749C0970030CEDD /* vector.h */,
+				783D3D391749F28D00C79047 /* libboost_timer-mt.a */,
+				783D3D3A1749F28D00C79047 /* libboost_timer-mt.dylib */,
+				783D3D131749DCB100C79047 /* libboost_system-mt.a */,
+				783D3D141749DCB100C79047 /* libboost_system-mt.dylib */,
 			);
-			path = Grid;
+			name = Boost;
+			sourceTree = "<group>";
+		};
+		78BA18261766CBBC007FE6C5 /* FMOD */ = {
+			isa = PBXGroup;
+			children = (
+				786525471761BC76002AE042 /* libfmodex.dylib */,
+				786525481761BC76002AE042 /* libfmodexL.dylib */,
+			);
+			name = FMOD;
+			sourceTree = "<group>";
+		};
+		78BA18271766CBC3007FE6C5 /* FTGL */ = {
+			isa = PBXGroup;
+			children = (
+				786525351761492C002AE042 /* libfreetype.a */,
+				786525361761492C002AE042 /* libftgl.a */,
+			);
+			name = FTGL;
 			sourceTree = "<group>";
 		};
 		C6859E8C029090F304C91782 /* Documentation */ = {
@@ -422,7 +422,7 @@
 				COPY_PHASE_STRIP = NO;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_MODEL_TUNING = G5;
-				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_OPTIMIZATION_LEVEL = s;
 				GCC_PREPROCESSOR_DEFINITIONS = "";
 				HEADER_SEARCH_PATHS = (
 					/usr/include,
@@ -447,7 +447,7 @@
 				CLANG_LINK_OBJC_RUNTIME = NO;
 				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
 				GCC_MODEL_TUNING = G5;
-				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_OPTIMIZATION_LEVEL = s;
 				GCC_PREPROCESSOR_DEFINITIONS = "";
 				HEADER_SEARCH_PATHS = (
 					/usr/include,

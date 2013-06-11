@@ -209,7 +209,7 @@ void Menu::Render()
             glColor4f(0.0, 0.7, 0.9, k * 1.0);
         }
         else {
-            if (i == 0) {
+            if (i == 0 && enlargeTitle) {
                 glColor4f(1.0, 1.0, 1.0, 1.0);
             }
             else {
