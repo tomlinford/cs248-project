@@ -39,23 +39,33 @@
 		78B1AA041742EFAE003E5C24 /* ParticleSystem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 78B1AA021742EFAE003E5C24 /* ParticleSystem.cpp */; };
 		78BA182A1766D24C007FE6C5 /* libboost_thread-mt.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 78BA18281766D205007FE6C5 /* libboost_thread-mt.a */; };
 		78BA182B1766D24C007FE6C5 /* libboost_thread-mt.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 78BA18291766D205007FE6C5 /* libboost_thread-mt.dylib */; };
+		78BA182F1766E22A007FE6C5 /* 01 Digitall.ttf in CopyFiles */ = {isa = PBXBuildFile; fileRef = 78BA182E1766E0A3007FE6C5 /* 01 Digitall.ttf */; };
+		78BA18301766E23A007FE6C5 /* Graphiqs_Groove_-_09_-_Deep_Sky_Blue.mp3 in CopyFiles */ = {isa = PBXBuildFile; fileRef = 78945D3017649BFE00FBD33A /* Graphiqs_Groove_-_09_-_Deep_Sky_Blue.mp3 */; };
+		78BA18311766E23A007FE6C5 /* laser.wav in CopyFiles */ = {isa = PBXBuildFile; fileRef = 78945D3117649BFE00FBD33A /* laser.wav */; };
+		78BA18321766E23A007FE6C5 /* menu_back.wav in CopyFiles */ = {isa = PBXBuildFile; fileRef = 78945D3217649BFE00FBD33A /* menu_back.wav */; };
+		78BA18331766E23A007FE6C5 /* menu_select.wav in CopyFiles */ = {isa = PBXBuildFile; fileRef = 78945D3317649BFE00FBD33A /* menu_select.wav */; };
+		78BA18341766E23A007FE6C5 /* thunder.mp3 in CopyFiles */ = {isa = PBXBuildFile; fileRef = 78945D3417649BFE00FBD33A /* thunder.mp3 */; };
 		78C3DD141749C01E0030CEDD /* Networking.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 78C3DD121749C01E0030CEDD /* Networking.cpp */; };
 		78E54B141746F0ED00BFC6B3 /* Level.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 78E54B121746F0ED00BFC6B3 /* Level.cpp */; };
 		78E54B181746F85800BFC6B3 /* Map.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 78E54B161746F85800BFC6B3 /* Map.cpp */; };
-		78E9C4C21755733800085AE7 /* EndersGame in CopyFiles */ = {isa = PBXBuildFile; fileRef = 8DD76F6C0486A84900D96B5E /* EndersGame */; };
 		8DD76F650486A84900D96B5E /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 08FB7796FE84155DC02AAC07 /* main.cpp */; settings = {ATTRIBUTES = (); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
 		8DD76F690486A84900D96B5E /* CopyFiles */ = {
 			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 8;
-			dstPath = Users/bhnascar/Documents/School/Sophomore/CS248/FinalProject;
-			dstSubfolderSpec = 0;
+			buildActionMask = 12;
+			dstPath = "";
+			dstSubfolderSpec = 16;
 			files = (
-				78E9C4C21755733800085AE7 /* EndersGame in CopyFiles */,
+				78BA18301766E23A007FE6C5 /* Graphiqs_Groove_-_09_-_Deep_Sky_Blue.mp3 in CopyFiles */,
+				78BA18311766E23A007FE6C5 /* laser.wav in CopyFiles */,
+				78BA18321766E23A007FE6C5 /* menu_back.wav in CopyFiles */,
+				78BA18331766E23A007FE6C5 /* menu_select.wav in CopyFiles */,
+				78BA18341766E23A007FE6C5 /* thunder.mp3 in CopyFiles */,
+				78BA182F1766E22A007FE6C5 /* 01 Digitall.ttf in CopyFiles */,
 			);
-			runOnlyForDeploymentPostprocessing = 1;
+			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXCopyFilesBuildPhase section */
 
@@ -138,7 +148,7 @@
 		78B1AA031742EFAE003E5C24 /* ParticleSystem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ParticleSystem.h; sourceTree = "<group>"; };
 		78BA18281766D205007FE6C5 /* libboost_thread-mt.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libboost_thread-mt.a"; path = "../../../../../../../opt/local/lib/libboost_thread-mt.a"; sourceTree = "<group>"; };
 		78BA18291766D205007FE6C5 /* libboost_thread-mt.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libboost_thread-mt.dylib"; path = "../../../../../../../opt/local/lib/libboost_thread-mt.dylib"; sourceTree = "<group>"; };
-		78BA182C1766D8E4007FE6C5 /* libboost_timer-mt.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libboost_timer-mt.dylib"; path = "../../../../../../../usr/lib/libboost_timer-mt.dylib"; sourceTree = "<group>"; };
+		78BA182E1766E0A3007FE6C5 /* 01 Digitall.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "01 Digitall.ttf"; sourceTree = "<group>"; };
 		78C3DD121749C01E0030CEDD /* Networking.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Networking.cpp; sourceTree = "<group>"; };
 		78C3DD131749C01E0030CEDD /* Networking.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Networking.h; sourceTree = "<group>"; };
 		78E54B121746F0ED00BFC6B3 /* Level.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Level.cpp; sourceTree = "<group>"; };
@@ -175,7 +185,7 @@
 		08FB7794FE84155DC02AAC07 /* Assignment1 */ = {
 			isa = PBXGroup;
 			children = (
-				78BA182C1766D8E4007FE6C5 /* libboost_timer-mt.dylib */,
+				78BA182E1766E0A3007FE6C5 /* 01 Digitall.ttf */,
 				782C9C0117421A0300C1B104 /* OpenGL.framework */,
 				782C9BF5174216EA00C1B104 /* Cocoa.framework */,
 				783346C8173B6FA80036E30F /* ApplicationServices.framework */,
