@@ -1,4 +1,4 @@
-TARGET  := EndersGame
+TARGET  := GameOfDrones
 FILES   := Level main Networking Scene Objects/Flyable Objects/Map Objects/Object
 FILES   += Utilities/Bitmap Utilities/Buffer Utilities/FBO Utilities/Frustum
 FILES   += Utilities/Model Utilities/OBJFile Utilities/ParticleSystem
@@ -14,9 +14,9 @@ LIBPREFIX	 := lib
 STATIC_LIBSUFFIX := .a
 CFLAGS 		 := -g
 CFLAGS_PLATFORM  :=
-LDFLAGS		 :=
-FRAMEWORKS	 :=
-LIBS		 :=
+LDFLAGS		     := 
+FRAMEWORKS	     :=
+LIBS		     :=
 EXESUFFIX        :=
 DEPARGS          := -MD
 # how we link to libraries depends on the platform
@@ -33,6 +33,8 @@ FRAMEWORKS += OpenGL GLUT
 else
 # Building on Linux
 LIBS += GLEW GL glfw boost_system boost_timer fmodex64 ftgl
+# Differentiate from OS X executable
+EXESUFFIX := .out
 endif
 
 endif # Not CYGWIN_END
@@ -63,6 +65,7 @@ all: $(TARGET)
 
 $(TARGET): $(OBJS)
 	$(LD) -o $(TARGET) $(OBJS) $(LDFLAGS) $(LDLIBS) $(LDFRAMEWORKS)
+	go build -o Server$(EXESUFFIX) Server/server.go
 
 %.o: %.cpp
 	$(CXX) $(CFLAGS) -o $@ -c $< $(DEPARGS)
