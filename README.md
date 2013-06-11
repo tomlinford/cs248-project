@@ -42,7 +42,7 @@ To check the setup, hit enter at the main screen to start a new game and then hi
 
 To play as a co-op, two players must start their own instances of the game. When on the new game screen, if one or more players is on a different computer from the main server, the player(s) must select the IP address field using the up and down arrow keys, hit enter, and type in the ip address. Then, in the player field, the pilot must be player “1” (no quotes), and the gunner must be player “2”. The gunner looks around using the mouse, and has two main abilities: the primary blaster (left mouse button) and a lightning strike (right mouse button).
 
-IMPORTANT: The server pairs an incoming player 2 with the last player 1, so whoever is player 1 MUST hit connect before player 2.
+<i>IMPORTANT: The server pairs an incoming player 2 with the last player 1, so whoever is player 1 MUST hit connect before player 2.</i>
 
 Additionally, you’ll notice that the initial field for player is “1s”. If the player field is “1s” or “2s”, then the player is able to play alone in his respective role. Note that because Game of Drones is a co-op game, not all features are enabled when playing without a partner.
 
