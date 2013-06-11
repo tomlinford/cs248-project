@@ -24,9 +24,12 @@ DEPARGS          := -MD
 ARCH=$(shell uname | sed -e 's/-.*//g')
 
 ifeq ($(ARCH), CYGWIN_NT)
-# If building on Cygwin, use glut32, opengl32
+# building on Cygwin
 EXESUFFIX           := .exe
-LIBS                += glut32 opengl32
+LIBS                += opengl32 ftgl GLFW glew32
+# not too sure about this one, may need slightly different syntax:
+# (I'm trying to link with libfmodex.a)
+LIBS                += fmodex
 else
 
 ifeq ($(ARCH), Darwin)

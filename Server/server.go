@@ -109,11 +109,9 @@ func main() {
 			// next thing sent is difficulty
 			difficulty, _ := rd.ReadString('\n')
 			difficulty = strings.TrimSpace(difficulty)
-			fmt.Println("difficulty:", difficulty)
 
 			if lastLevel == nil || player == "1" ||
 				(len(player) == 2 && player[1] == 's') {
-				// if lastLevel == nil {
 				var diff level.Difficulty
 				switch difficulty {
 				case "easy":
@@ -126,11 +124,9 @@ func main() {
 				lastLevel = level.GetLevel(diff)
 				lastServer = new(server)
 				lastServer.l = lastLevel
-				// lastLevel = nil
 			}
 
 			lastLevel.WriteData(wr)
-			// lastServer.l.WriteData(wr)
 			lastServer.addClient(conn, rd, wr, player == "1" || player == "1s")
 
 			if len(player) == 2 {
