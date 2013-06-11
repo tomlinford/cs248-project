@@ -66,7 +66,7 @@ bool Bitmap::loadBMP(char *file) {
 
     //read in the entire BITMAPFILEHEADER
     fread(&bmfh,sizeof(BitmapFileHeader),1,in);
-	cout << "sizeof(BitmapFileHeader)=" << sizeof(BitmapFileHeader) << endl;
+	//cout << "sizeof(BitmapFileHeader)=" << sizeof(BitmapFileHeader) << endl;
     //check for the magic number that says this is a bitmap
     if(bmfh.bfType!=BITMAP_MAGIC_NUMBER) {
         error="File is not in DIB format";
@@ -76,13 +76,13 @@ bool Bitmap::loadBMP(char *file) {
 
     //read in the entire BITMAPINFOHEADER
     fread(&bmih,sizeof(BitmapInfoHeader),1,in);
-	cout << "sizeof(BitmapInfoHeader)=" << sizeof(BitmapInfoHeader) << endl;
+	//cout << "sizeof(BitmapInfoHeader)=" << sizeof(BitmapInfoHeader) << endl;
 
     //save the width, height and bits per pixel for external use
     width=bmih.biWidth;
     height=bmih.biHeight;
     bpp=bmih.biBitCount;
-	cout << "biBitCount      =" << bmih.biBitCount << endl;
+	/*cout << "biBitCount      =" << bmih.biBitCount << endl;
 	cout << "biClrImportant  =" << bmih.biClrImportant << endl;
 	cout << "biClrUsed       =" << bmih.biClrUsed << endl;
 	cout << "biCompression   =" << bmih.biCompression << endl;
@@ -92,7 +92,7 @@ bool Bitmap::loadBMP(char *file) {
 	cout << "biSizeImage     =" << bmih.biSizeImage << endl;
 	cout << "biWidth         =" << bmih.biWidth << endl;
 	cout << "biXPelsPerMeter =" << bmih.biXPelsPerMeter << endl;
-	cout << "biYPelsPerMeter =" << bmih.biYPelsPerMeter << endl;
+	cout << "biYPelsPerMeter =" << bmih.biYPelsPerMeter << endl;*/
 
     //calculate the size of the image data with padding
     dataSize=(width*height*(unsigned int)(bmih.biBitCount/8.0));

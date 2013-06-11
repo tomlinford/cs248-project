@@ -1,4 +1,4 @@
-TARGET  := EndersGame
+TARGET  := GameOfDrones
 FILES   := Level main Networking Scene Objects/Flyable Objects/Map Objects/Object
 FILES   += Utilities/Bitmap Utilities/Buffer Utilities/FBO Utilities/Frustum
 FILES   += Utilities/Model Utilities/OBJFile Utilities/ParticleSystem
@@ -7,26 +7,29 @@ FILES   += Utilities/Program Objects/Turret
 FILES   += Menu Sound HUD HudElement
 
 
-CC                  := clang++
-LD                  := clang++
-OBJSUFFIX	        := .o
-LIBPREFIX	        := lib
-STATIC_LIBSUFFIX    := .a
-CFLAGS 		        := -g
-CFLAGS_PLATFORM     := 
-LDFLAGS		        :=
-FRAMEWORKS	        :=
-LIBS		        :=
-EXESUFFIX           :=
-DEPARGS             := -MD
+CC               := g++
+LD               := g++
+OBJSUFFIX	 := .o
+LIBPREFIX	 := lib
+STATIC_LIBSUFFIX := .a
+CFLAGS 		 := -g
+CFLAGS_PLATFORM  :=
+LDFLAGS		     := 
+FRAMEWORKS	     :=
+LIBS		     :=
+EXESUFFIX        :=
+DEPARGS          := -MD
 
-# How we link to libraries depends on the platform
+# how we link to libraries depends on the platform
 ARCH=$(shell uname | sed -e 's/-.*//g')
 
 ifeq ($(ARCH), CYGWIN_NT)
-# If building on Cygwin, use glut32, opengl32
+# building on Cygwin
 EXESUFFIX           := .exe
-LIBS                += glut32 opengl32
+LIBS                += opengl32 ftgl GLFW glew32
+# not too sure about this one, may need slightly different syntax:
+# (I'm trying to link with libfmodex.a)
+LIBS                += fmodex
 else
 
 ifeq ($(ARCH), Darwin)
@@ -39,6 +42,8 @@ LIBS				+= fmodex ftgl
 else
 # Building on Linux
 LIBS                += GLEW GL glfw boost_system boost_timer fmodex64 ftgl
+# Differentiate from OS X executable
+EXESUFFIX := .out
 endif
 
 endif # Not CYGWIN_END
@@ -69,6 +74,7 @@ all: $(TARGET)
 
 $(TARGET): $(OBJS)
 	$(LD) -o $(TARGET) $(OBJS) $(LDFLAGS) $(LDLIBS) $(LDFRAMEWORKS)
+	go build -o Server$(EXESUFFIX) Server/server.go
 
 %.o: %.cpp
 	$(CC) $(CFLAGS) -o $@ -c $< $(DEPARGS)
