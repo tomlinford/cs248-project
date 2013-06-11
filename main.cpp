@@ -207,11 +207,6 @@ void StartGame(void *data)
     gaming = true;
 
 	string playerString = playerField->GetCurrentText();
-
-	/*if (levelNum % 2 == 1) {
-		if (playerString == "1") playerString = "2";
-		else if (playerString == "2") playerString = "1";
-	}*/
     
     // Choose player based on user input in menu
 	switch (playerString[0]) {
