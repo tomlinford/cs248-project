@@ -72,7 +72,7 @@ func main() {
 	// for with three statements -- like a for loop
 	// for with a range statement -- like a foreach loop
 	for {
-		fmt.Println("waiting for connection")
+		fmt.Println("Waiting for connection...")
 
 		// the conn object is the actual tcp connection
 		conn, err := ln.Accept()
@@ -254,7 +254,7 @@ func copyToChan(rd *bufio.Reader, ch chan string) {
 			ch <- END
 			break
 		} else if err != nil {
-			fmt.Println("Error copying to chan from stream")
+			fmt.Println("Terminating connection")
 			ch <- END
 			break
 		}
