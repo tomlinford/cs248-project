@@ -1,8 +1,13 @@
 #include "HudElement.h"
 #include <glm/gtx/rotate_vector.hpp>
+#include <glm/glm.hpp>
 
 using namespace::std;
 using namespace::glm;
+
+#ifndef M_PI
+#define M_PI 3.14159265359
+#endif
 
 void HUDElement::SetProjection(float win_w, float win_h)
 {
@@ -14,7 +19,7 @@ CDIndicator::CDIndicator(int w, int h, string text) : text(text)
     vector<vec3> vertices;
     vertices.push_back(vec3(0.0f));
     for (int i = 0; i < 719; i++) {
-        float angle = -((float) i) / 718.f * 2.f * pi<float>();
+        float angle = -((float) i) / 718.f * 2.f * M_PI;
         vec2 rot = rotate(vec2(w / 2, 0.f), degrees(angle));
         vertices.push_back(vec3(rot, 0.f) + vertices[0]);
     }
@@ -146,7 +151,7 @@ void Minimap::Draw(const Program &p, Scene *s) const
     if (s->level->ship) {
         vec3 shipPos = s->level->ship->GetPosition();
         vec3 shipDir = s->level->ship->GetDirection();
-        float angle = atan(shipDir.z / shipDir.x) * 180 / glm::pi<float>();
+        float angle = atan(shipDir.z / shipDir.x) * 180 / M_PI;
         shipPos /= (16 * 20);
         shipPos *= MINIMAP_SIZE;
         mat4 model = translate(shipModel, vec3(shipPos.x, shipPos.z, 0)) * M;
