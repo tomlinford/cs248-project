@@ -13,6 +13,7 @@ class Flyable : public Object
 public:
     Flyable(Model *model) : Object(model) {}
     Flyable(const string& filename) : Object(filename) {}
+    ~Flyable() {}
     
     /** Score value */
     virtual int GetValue() { return 15; }
@@ -53,6 +54,7 @@ class Missile : public Flyable
 public:
     Missile(Model *model);
     Missile(const string& filename);
+    ~Missile() {}
     
     /** Score value */
     virtual int GetValue() { return 40; }
@@ -65,6 +67,7 @@ class Ship : public Flyable
 public:
     Ship(Model *model);
     Ship(const string& filename);
+    ~Ship();
     
     /** Score value */
     virtual int GetValue() { return 20; }
@@ -88,4 +91,31 @@ protected:
     BulletCluster *cluster;
     float firingRate;
     float lastFireTime;
+};
+
+/* A subclass of the Ship to represent the
+ ships that shoot missiles */
+class MissileShip : public Ship
+{
+public:
+    MissileShip(Model *model);
+    MissileShip(const string& filename);
+};
+
+/* A subclass of the Ship to represent the
+ ships that shoots lasers */
+class LaserShip : public Ship
+{
+public:
+    LaserShip(Model *model);
+    LaserShip(const string& filename);
+    ~LaserShip();
+    
+    virtual void SetColor(glm::vec3 c);
+    
+    /** Laser accessor */
+    Laser *GetLaser() { return laser; }
+    
+protected:
+    Laser *laser;
 };

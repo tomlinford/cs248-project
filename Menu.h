@@ -33,6 +33,7 @@ class TextField : public MenuItem
 public:
     TextField() {}
     TextField(std::string l, std::string d);
+    
     void SetDefaultText(std::string d) { defaultText = d; }
     
     virtual void HandleChar(int key, int action);
@@ -54,21 +55,36 @@ public:
     Menu(MenuItem *items[], int numItems, float fontsize = 72.0f);
     ~Menu();
     
+    /* Pushes the given menu on top of the calling menu */
     void PushMenu(Menu *other);
+    
+    /* Pops the calling menu and shows its parent, if it
+     has one */
     void PopMenu();
+    
+    /* Pops the calling menu's submenu, if it has one */
     void PopSubMenu();
+    
+    /* Changes the calling menu's parent to the specified 
+     one */
     void SetPrevious(Menu *p) { previous = p; }
+    
+    /* Changes the calling menu's child to the specified 
+     one */
     void SetNext(Menu *n) { next = n; }
     
+    /* Draws the lowest child of the calling menu */
     void Render();
     
-    void SetWidth(int w) { width = w; }
-    void SetHeight(int h) { height = h; }
+    /* Sets the dimensions of the menu */
+    void SetDimensions(int w, int h) { width = w; height = h; }
     void SetSelectionActive(bool t) { selectionActive = t; }
     
+    /* User input callbacks */
     void HandleKey(int key, int action);
     void HandleChar(int character, int action);
     
+    /* Returns the current menu's lowest child */
     Menu *GetCurrentMenu();
     
     bool enlargeTitle;
@@ -87,7 +103,6 @@ private:
     boost::timer::cpu_times times;
     
     Menu *next, *previous;
-    
     MenuItem **items;
     
     FTGLPixmapFont *font;

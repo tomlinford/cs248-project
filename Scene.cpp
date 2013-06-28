@@ -103,9 +103,13 @@ void Scene::LoadLevel(Level *l, Player p)
 	particle_sys.AddBulletCluster(level->ship->GetBulletCluster());
 	for (int i = 0; i < level->objects.size(); i++) {
 		Turret *turret = dynamic_cast<Turret *>(level->objects[i]);
+        LaserShip *ship = dynamic_cast<LaserShip *>(level->objects[i]);
 		if (turret) {
 			particle_sys.AddBulletCluster(turret->GetBulletCluster());
 		}
+        else if (ship) {
+            particle_sys.AddLaser(ship->GetLaser());
+        }
 	}
 	if (timer) {
 		delete timer;
@@ -405,7 +409,7 @@ void Scene::AddMissiles()
 	float size = level->objects.size();
 	for (int i = 0; i < size; i++)
 	{
-		Ship *ship = dynamic_cast<Ship *>(level->objects[i]);
+		MissileShip *ship = dynamic_cast<MissileShip *>(level->objects[i]);
 		if (!ship)
 			continue;
 

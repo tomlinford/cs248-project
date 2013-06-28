@@ -44,7 +44,7 @@ struct MapLoader
 class Level
 {
 public:
-	Level(bool addSphere);
+	Level(int number);
     ~Level();
 
     /** Gets a flyable object's position as a function of time */
@@ -65,6 +65,7 @@ public:
 	/* Level loading functions (called from Networking) */
 	void Load(); // Will block until level has loaded. Call from main thread
 	void LoadMap(float *terrainMap, size_t size, int x, int y);
+    void LoadObjects();
     void LoadControlPoints(const glm::vec3 *points, size_t num);
     void LoadEnemyShip(float timeOffset, glm::vec2 offset);
     
@@ -100,6 +101,7 @@ public:
 
 private:
 	bool ready;
+    int number;
 	std::vector<MapLoader> mapLoaders;
     
     /** Private collision testing helpers */

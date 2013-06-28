@@ -71,6 +71,11 @@ Ship::Ship(const string& filename) : Flyable(filename)
     lastFireTime = 1;
 }
 
+Ship::~Ship()
+{
+    // cluster->SetOwner(NULL);
+}
+
 void Ship::AddBullet(glm::vec3 location, glm::vec3 velocity)
 {
     cluster->AddBullet(location, velocity);
@@ -79,4 +84,33 @@ void Ship::AddBullet(glm::vec3 location, glm::vec3 velocity)
 void Ship::SetColor(glm::vec3 c) {
     Object::SetColor(c);
     cluster->SetColor(c);
+}
+
+MissileShip::MissileShip(Model *model) : Ship(model)
+{
+}
+
+MissileShip::MissileShip(const string& filename) : Ship(filename)
+{
+}
+
+LaserShip::LaserShip(Model *model) : Ship(model)
+{
+    laser = new Laser(this);
+}
+
+LaserShip::LaserShip(const string& filename) : Ship(filename)
+{
+    laser = new Laser(this);
+}
+
+LaserShip::~LaserShip()
+{
+    Ship::~Ship();
+    laser->SetOwner(NULL);
+}
+
+void LaserShip::SetColor(glm::vec3 c) {
+    Object::SetColor(c);
+    laser->SetColor(c);
 }

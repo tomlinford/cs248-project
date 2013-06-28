@@ -16,8 +16,9 @@ float rand2(float min, float max) {
 	return min + (float)rand() / RAND_MAX * (max - min);
 }
 
-Level::Level(bool addSphere) : ready(false), maps(MAP_DIM * MAP_DIM, NULL)
+Level::Level(int num) : ready(false), maps(MAP_DIM * MAP_DIM, NULL)
 {
+    number = num;
 	pathModel = NULL;
 	score = 0;
 
@@ -25,13 +26,8 @@ Level::Level(bool addSphere) : ready(false), maps(MAP_DIM * MAP_DIM, NULL)
 	ship->SetColor(vec3(0.0, 0.9, 0.0));
 
 	sphere = NULL;
-
-	if (addSphere) {
-		sphere = new Object("Models/icosphere.obj");
-		sphere->SetColor(vec3(1.0, 0.0, 1.0));
-		sphere->SetPosition(vec3(150, 0, 150));
-		sphere->SetScale(75.0f);
-	}
+    
+    LoadObjects();
 
 	// Prefetch turret and missile
 	Object turret("Models/turret.obj");
@@ -67,6 +63,32 @@ void Level::Load() {
 		cond.wait(lock);
 		GenMaps();
 	}
+}
+
+void Level::LoadObjects() {
+    switch (number) {
+        case 1:
+        {
+            for (int i = 0; i < 40; i++) {
+                LaserShip *ship = new LaserShip("Models/ship.obj");
+                ship->SetColor(vec3(0.7, 0.0, 0.7));
+                ship->SetTimeOffset(rand2(-70.0, 70.0));
+                ship->SetOffset(vec2(rand2(-1.8, 1.8), 3.0));
+                objects.push_back(ship);
+            }
+            break;
+        }
+        case 2:
+        {
+            sphere = new Object("Models/icosphere.obj");
+            sphere->SetColor(vec3(1.0, 0.0, 1.0));
+            sphere->SetPosition(vec3(150, 0, 150));
+            sphere->SetScale(75.0f);
+            break;
+        }
+        default:
+            break;
+    }
 }
 
 void Level::LoadControlPoints(const glm::vec3 *points, size_t num) {
@@ -292,6 +314,7 @@ void Level::UpdateObjects(float elapsedSeconds, float lastTime)
 		Object *obj = objects[i];
 		Missile *missile = dynamic_cast<Missile *>(obj);
 		Turret *turret = dynamic_cast<Turret *>(obj);
+        LaserShip *laserShip = dynamic_cast<LaserShip *>(obj);
 		Flyable *flyable = dynamic_cast<Flyable *>(obj);
 
 		if (missile && ship)
@@ -313,6 +336,15 @@ void Level::UpdateObjects(float elapsedSeconds, float lastTime)
 				turret->AddBullet(turretPos, 20.0f * dir);
 			}
 		}
+        else if (laserShip && ship) {
+            vec3 laserShipPos = laserShip->GetPosition();
+			vec3 shipPos = ship->GetPosition();
+            
+			if (fabs(glm::distance(shipPos, laserShipPos)) < 30) {
+				vec3 dir = normalize(laserShip->GetOrientation() * vec3(0, -15, 0));
+				laserShip->AddBullet(laserShipPos + dir, 20.0f * dir);
+			}
+        }
 		if (flyable)
 		{
 			vec3 direction = GetDirection(BACKWARD, elapsedSeconds + flyable->GetTimeOffset());

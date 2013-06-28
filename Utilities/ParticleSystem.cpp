@@ -207,6 +207,79 @@ void Bolt::Draw(const Program& p, const glm::mat4& viewProjection,
     model->Draw(p, GL_LINE_STRIP);
 }
 
+Laser::Laser(Object *o)
+{
+    owner = o;
+    lineWidth = 3.0;
+
+    // pre allocate space for vectors
+    vector<vec3> vertices(2);
+    vector<size_t> indices(2);
+    
+    vertices[0] = vec3(0.0);
+    vertices[1] = vec3(0.0, -100.0, 0.0);
+    
+    indices[0] = 0;
+    indices[1] = 1;
+    
+    ArrayBuffer<vec3> ab(vertices);
+    ElementArrayBuffer eab(indices);
+    model = new Model(ModelBuffer(ab, eab), Material(), Bounds());
+}
+
+Laser::~Laser()
+{
+    ParticleCluster::~ParticleCluster();
+    owner = NULL;
+}
+
+bool Laser::Valid()
+{
+    lock_guard<std::mutex> lock(mutex);
+    
+    return (owner != NULL);
+}
+
+void Laser::Update(float elapsedTime)
+{
+    lock_guard<std::mutex> lock(mutex);
+    
+    if (owner == NULL)
+        return;
+
+    lineWidth = 3.0 + rand(-2.0, 1.0);
+    
+    /* Destructor polymorphism issue */
+    vec3 position = owner->GetPosition();
+    quat orientation = owner->GetOrientation();
+    
+    M = glm::translate(mat4(1.0), position) * glm::mat4_cast(orientation);
+}
+
+bool Laser::Intersects(Object *object)
+{
+    return false;
+}
+
+void Laser::SetOwner(Object *o) {
+    lock_guard<std::mutex> lock(mutex);
+    owner = o;
+}
+
+void Laser::Draw(const Program& p, const glm::mat4& viewProjection,
+                  const glm::vec3& cameraPos, DrawMode mode)
+{
+    lock_guard<std::mutex> lock(mutex);
+    
+    p.SetMVP(viewProjection * M);
+	p.SetUniform("attenuate", true);
+    p.SetUniform("baseColor", color);
+    p.SetUniform("illum", 0);
+    glLineWidth(lineWidth);
+    
+    model->Draw(p, GL_LINES);
+}
+
 BulletCluster::BulletCluster()
 {
     owner = NULL;
@@ -248,6 +321,12 @@ void BulletCluster::AddBullet(glm::vec3 l, glm::vec3 v)
     lock_guard<std::mutex> lock(mutex);
     
     particles.push_back(Particle(l, v, vec3(0), 1.0));
+}
+
+void BulletCluster::SetOwner(Object *o)
+{
+    lock_guard<std::mutex> lock(mutex);
+    owner = o;
 }
 
 void BulletCluster::Draw(const Program& p, const glm::mat4& viewProjection,
@@ -322,6 +401,11 @@ void ParticleSystem::AddExplosionCluster(glm::vec3 location, glm::vec3 color)
 void ParticleSystem::AddBolt(glm::vec3 start, glm::vec3 end)
 {
     clusters.push_back(new Bolt(start, end));
+}
+
+void ParticleSystem::AddLaser(Laser *laser)
+{
+    clusters.push_back(laser);
 }
 
 bool ParticleSystem::Intersects(Object *object)

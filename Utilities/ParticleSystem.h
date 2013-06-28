@@ -67,6 +67,26 @@ protected:
 	bool deleteModel;
 };
 
+/* Represents a single long laser */
+class Laser : public ParticleCluster
+{
+public:
+    Laser(Object *o);
+    ~Laser();
+    
+    virtual void Update(float elapsedTime);
+    virtual bool Intersects(Object *object);
+    virtual bool Valid();
+    virtual void Draw(const Program& p, const glm::mat4& viewProjection,
+                      const glm::vec3& cameraPos, DrawMode mode);
+    void SetOwner(Object *o);
+    
+private:
+    Object *owner;
+    float lineWidth;
+    glm::mat4 M;
+};
+
 /* Represents a lightning bolt. Generated using midpoint
  displacement algorithm, given the start and end points. */
 class Bolt : public ParticleCluster
@@ -91,7 +111,7 @@ public:
     BulletCluster();
     
     void AddBullet(glm::vec3 l, glm::vec3 v);
-    void SetOwner(Object *o) { owner = o; };
+    void SetOwner(Object *o);
     virtual bool Intersects(Object *object);
     virtual bool Valid() { return true; }
     virtual void Draw(const Program& p, const glm::mat4& viewProjection,
@@ -112,6 +132,7 @@ public:
     void AddBulletCluster(BulletCluster *cluster);
     void AddExplosionCluster(glm::vec3 location, glm::vec3 color);
     void AddBolt(glm::vec3 start, glm::vec3 end);
+    void AddLaser(Laser *laser);
     void Clear();
     void Draw(const Program& p, const glm::mat4& viewProjection,
               const glm::vec3& cameraPos, DrawMode mode);

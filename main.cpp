@@ -164,32 +164,13 @@ void GLFWCALL WindowResizeCallback(int w, int h)
         hud->Resize(w, h);
     }
     if (menu) {
-        menu->SetWidth(w);
-        menu->SetHeight(h);
-    }
-    if (start) {
-        start->SetWidth(w);
-        start->SetHeight(h);
-    }
-    if (credits) {
-        credits->SetWidth(w);
-        credits->SetHeight(h);
-    }
-    if (hscores) {
-        hscores->SetWidth(w);
-        hscores->SetHeight(h);
-    }
-    if (hscoreEntry) {
-        hscoreEntry->SetWidth(w);
-        hscoreEntry->SetHeight(h);
-    }
-    if (nextLevel) {
-        nextLevel->SetWidth(w);
-        nextLevel->SetHeight(h);
-    }
-    if (connect) {
-        connect->SetWidth(w);
-        connect->SetWidth(h);
+        menu->SetDimensions(w, h);
+        start->SetDimensions(w, h);
+        credits->SetDimensions(w, h);
+        hscores->SetDimensions(w, h);
+        hscoreEntry->SetDimensions(w, h);
+        nextLevel->SetDimensions(w, h);
+        connect->SetDimensions(w, h);
     }
 
 	// Update global
@@ -200,9 +181,8 @@ void GLFWCALL WindowResizeCallback(int w, int h)
 void StartGame(void *data)
 {
 	// test to make sure server is alive
-	if (!Networking::PingServer(ipField->GetCurrentText())) {
+	if (!Networking::PingServer(ipField->GetCurrentText()))
 		return;
-	}
 
     gaming = true;
 
@@ -227,7 +207,7 @@ void StartGame(void *data)
     
     // Stream new level from server
     // Tom: Hook into difficulty levels here?
-    Level *level = new Level(levelNum > 0);
+    Level *level = new Level(levelNum);
     Networking::Init(scene, level, ipField->GetCurrentText(), playerString.c_str(), levelNum);
     
 	scene->LoadLevel(level, p);
@@ -247,12 +227,15 @@ void Exit(void *data)
         delete scene;
     if (hud)
         delete hud;
-    if (menu)
+    if (menu) {
         delete menu;
-    if (credits)
         delete credits;
-    if (start)
         delete start;
+        delete hscores;
+        delete hscoreEntry;
+        delete nextLevel;
+        delete connect;
+    }
     
     finished = true;
 }
@@ -469,6 +452,7 @@ int main(int argc, char *argv[])
     CreateNextLevelMenu();
     CreateHighScoresMenu();
     CreateHscoreEntryMenu();
+    CreateConnectMenu();
 
     glfwDisable(GLFW_MOUSE_CURSOR);
     

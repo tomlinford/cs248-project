@@ -46,6 +46,7 @@ Object::~Object()
     // We actually do not want to delete the model
     // because it is cached and may be used by
     // some other Object
+    model = NULL;
 };
 
 bool Object::Intersects(Object& other)

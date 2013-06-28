@@ -100,16 +100,11 @@ void Menu::PopSubMenu()
         next->PopMenu();
 }
 
-void Menu::HandleChar(int character, int action)
+Menu* Menu::GetCurrentMenu()
 {
-    if (next) {
-        next->HandleChar(character, action);
-        return;
-    }
-    
-    if (selectionActive) {
-        items[selectedIndex]->HandleChar(character, action);
-    }
+    if (next)
+        return next->GetCurrentMenu();
+    return this;
 }
 
 void Menu::UpdateSelection(int dir)
@@ -131,58 +126,57 @@ void Menu::UpdateSelection(int dir)
     Sound::PlaySelect();
 }
 
+void Menu::HandleChar(int character, int action)
+{
+    if (next) {
+        next->HandleChar(character, action);
+        return;
+    }
+    
+    if (selectionActive)
+        items[selectedIndex]->HandleChar(character, action);
+}
+
 void Menu::HandleKey(int key, int action)
 {
+    if (action == GLFW_RELEASE) {
+        return;
+    }
     if (next) {
         next->HandleKey(key, action);
         return;
     }
-    
-    if (action == GLFW_RELEASE) {
-        return;
-    }
-    if (selectedIndex != -1 && selectionActive) {
+    if (selectionActive) {
         items[selectedIndex]->HandleKey(key, action);
     }
     
     switch(key) {
         case GLFW_KEY_UP:
-            if (selectedIndex != -1 && selectionActive)
+            if (selectionActive && selectedIndex != -1)
                 selectionActive = false;
             UpdateSelection(-1);
             break;
         case GLFW_KEY_DOWN:
-            if (selectedIndex != -1 && selectionActive)
+            if (selectionActive && selectedIndex != -1)
                 selectionActive = false;
             UpdateSelection(1);
             break;
         case GLFW_KEY_ENTER:
-        {
             if (selectedIndex != -1)
-                selectionActive = true;
+                selectionActive = !selectionActive;
             if (selectedIndex != -1 &&
                 items[selectedIndex]->func)
                 items[selectedIndex]->func(NULL);
             break;
-        }
         case GLFW_KEY_ESC:
-        {
             if (selectionActive)
                 selectionActive = false;
             else if (previous)
                 PopMenu();
             break;
-        }
         default:
             break;
     }
-}
-
-Menu* Menu::GetCurrentMenu()
-{
-    if (next)
-        return next->GetCurrentMenu();
-    return this;
 }
 
 void Menu::Render()
@@ -200,38 +194,34 @@ void Menu::Render()
     float itemHeight = font->Ascender() * numItems + padding * (numItems - 1);
     float start = height / 2.0f + itemHeight / 2.0f;
     
-    for (int i = 0; i < numItems; i++) {
-        
+    for (int i = 0; i < numItems; i++)
+    {
         if (i == selectedIndex) {
             float k = 1.0;
             if (!selectionActive)
-                k = sin(elapsedSeconds * 5) + 1;
+                k += sin(elapsedSeconds * 5);
             glColor4f(0.0, 0.7, 0.9, k * 1.0);
         }
         else {
-            if (i == 0 && enlargeTitle) {
+            if (i == 0 && enlargeTitle)
                 glColor4f(1.0, 1.0, 1.0, 1.0);
-            }
-            else {
+            else
                 glColor4f(0.5, 0.5, 0.5, 1.0);
-            }
         }
         glWindowPos2f(0,0);
         
         string item = items[i]->label;
         if (enlargeTitle && i == 0) {
             FTBBox box = largeFont->BBox(item.c_str(), -1, FTPoint(0, 0), FTPoint(0, 0));
-            largeFont->Render(item.c_str(),
-                              -1,
-                              FTPoint(width / 2.0f - box.Upper().X() / 2.0f,
-                                      start - i * (padding + largeFont->Ascender())));
+            FTPoint corner = FTPoint(width / 2.0f - box.Upper().X() / 2.0f,
+                                     start - i * (padding + largeFont->Ascender()));
+            largeFont->Render(item.c_str(), -1, corner);
         }
         else {
             FTBBox box = font->BBox(item.c_str(), -1, FTPoint(0, 0), FTPoint(0, 0));
-            font->Render(item.c_str(),
-                         -1,
-                         FTPoint(width / 2.0f - box.Upper().X() / 2.0f,
-                         start - i * (padding + font->Ascender())));
+            FTPoint corner = FTPoint(width / 2.0f - box.Upper().X() / 2.0f,
+                                     start - i * (padding + font->Ascender()));
+            font->Render(item.c_str(), -1, corner);
         }
     }
 }

@@ -26,11 +26,11 @@ const (
 	kSize          = 1024 // size of total map
 	kDeg           = 16   // number of times to subdivide each side
 	kEasyShips     = 20
-	kMediumShips   = 40
-	kHardShips     = 60
-	kEasyTurrets   = 10
-	kMediumTurrets = 13
-	kHardTurrets   = 16
+	kMediumShips   = 0
+	kHardShips     = 20
+	kEasyTurrets   = 0
+	kMediumTurrets = 0
+	kHardTurrets   = 10
 )
 
 // commands
