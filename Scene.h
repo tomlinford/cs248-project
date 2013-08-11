@@ -72,6 +72,8 @@ public:
 	/** Scoring */
 	void SetScore(int score) { this->score = score; }
     
+    void HandleHand(glm::vec2 position);
+    
     /** Control information. 
      Key events (Player 1)
      Ship offset (Player 1) 

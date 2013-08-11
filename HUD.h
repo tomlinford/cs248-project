@@ -23,10 +23,18 @@ public:
     /** Call when window is resized to reposition
      HUD elements */
     void Resize(int w, int h);
+    
+    /** Sets the reticle position */
+    void SetReticlePosition(glm::vec2 position);
+    
+    /** Gets the reticle position */
+    glm::vec2 GetReticlePosition();
 
 	/** will invalidate HUD elements */
 	/** levelNum is the current numbered level the player is on */
 	void Reset(int levelNum);
+    
+    bool reticleVisible;
     
 private:
     

@@ -22,7 +22,7 @@ public:
      force, and scale */
     Particle(glm::vec3 l, glm::vec3 v, glm::vec3 f, float s);
 	Particle() {}
-	~Particle() {}
+	virtual ~Particle() {}
     glm::vec3 location;
     glm::vec3 velocity;
     
@@ -45,7 +45,7 @@ class ParticleCluster
 public:
     ParticleCluster() : deleteModel(false) {}
     ParticleCluster(glm::vec3 location, glm::vec3 color);
-    ~ParticleCluster();
+    virtual ~ParticleCluster();
     
     void SetColor(glm::vec3 c) { color = c; }
     
@@ -72,7 +72,7 @@ class Laser : public ParticleCluster
 {
 public:
     Laser(Object *o);
-    ~Laser();
+    virtual ~Laser();
     
     virtual void Update(float elapsedTime);
     virtual bool Intersects(Object *object);
@@ -133,7 +133,10 @@ public:
     void AddExplosionCluster(glm::vec3 location, glm::vec3 color);
     void AddBolt(glm::vec3 start, glm::vec3 end);
     void AddLaser(Laser *laser);
+    
     void Clear();
+    void RemoveCluster(ParticleCluster *cluster);
+    
     void Draw(const Program& p, const glm::mat4& viewProjection,
               const glm::vec3& cameraPos, DrawMode mode);
     

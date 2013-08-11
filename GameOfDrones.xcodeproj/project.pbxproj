@@ -27,6 +27,8 @@
 		786F680117422A6F00E359E4 /* FBO.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 786F67FF17422A6F00E359E4 /* FBO.cpp */; };
 		786F6805174232C800E359E4 /* Screen.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 786F6803174232C800E359E4 /* Screen.cpp */; };
 		786F6806174233F400E359E4 /* Program.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 786F67EF1742259B00E359E4 /* Program.cpp */; };
+		7888FD0617A776B400DE9F8B /* libLeap.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 7888FD0517A776B400DE9F8B /* libLeap.dylib */; };
+		7888FD0917A77B1A00DE9F8B /* LeapListener.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7888FD0717A77B1900DE9F8B /* LeapListener.cpp */; };
 		7890FC361752CD5000A6E28B /* Frustum.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7890FC341752CD5000A6E28B /* Frustum.cpp */; };
 		789B19A317463C8800C90C56 /* Object.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 789B19A117463C8800C90C56 /* Object.cpp */; };
 		789B19A617463D1B00C90C56 /* Flyable.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 789B19A417463D1B00C90C56 /* Flyable.cpp */; };
@@ -107,6 +109,9 @@
 		786F68081742350100E359E4 /* quad.vert */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; path = quad.vert; sourceTree = "<group>"; };
 		786F68091742358200E359E4 /* quad.frag */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; path = quad.frag; sourceTree = "<group>"; };
 		786F681917423ED700E359E4 /* CMSpline.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = CMSpline.hpp; sourceTree = "<group>"; };
+		7888FD0517A776B400DE9F8B /* libLeap.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libLeap.dylib; path = ../../../../../../../usr/lib/libLeap.dylib; sourceTree = "<group>"; };
+		7888FD0717A77B1900DE9F8B /* LeapListener.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LeapListener.cpp; sourceTree = "<group>"; };
+		7888FD0817A77B1900DE9F8B /* LeapListener.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LeapListener.h; sourceTree = "<group>"; };
 		7890FC341752CD5000A6E28B /* Frustum.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Frustum.cpp; sourceTree = "<group>"; };
 		7890FC351752CD5000A6E28B /* Frustum.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Frustum.h; sourceTree = "<group>"; };
 		7890FC3717530C7800A6E28B /* Material.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Material.h; sourceTree = "<group>"; };
@@ -163,6 +168,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				7888FD0617A776B400DE9F8B /* libLeap.dylib in Frameworks */,
 				782C9C0217421A0300C1B104 /* OpenGL.framework in Frameworks */,
 				782C9BF6174216EA00C1B104 /* Cocoa.framework in Frameworks */,
 				783346C9173B6FA80036E30F /* ApplicationServices.framework in Frameworks */,
@@ -185,6 +191,7 @@
 		08FB7794FE84155DC02AAC07 /* Assignment1 */ = {
 			isa = PBXGroup;
 			children = (
+				7888FD0517A776B400DE9F8B /* libLeap.dylib */,
 				78BA182E1766E0A3007FE6C5 /* 01 Digitall.ttf */,
 				782C9C0117421A0300C1B104 /* OpenGL.framework */,
 				782C9BF5174216EA00C1B104 /* Cocoa.framework */,
@@ -221,6 +228,8 @@
 				7865253E1761A696002AE042 /* Menu.h */,
 				7801949117645407005ADD9D /* HudElement.cpp */,
 				7801949217645407005ADD9D /* HudElement.h */,
+				7888FD0717A77B1900DE9F8B /* LeapListener.cpp */,
+				7888FD0817A77B1900DE9F8B /* LeapListener.h */,
 			);
 			name = Source;
 			sourceTree = "<group>";
@@ -428,6 +437,7 @@
 				7865253F1761A696002AE042 /* Menu.cpp in Sources */,
 				786525421761BC04002AE042 /* Sound.cpp in Sources */,
 				7801949317645407005ADD9D /* HudElement.cpp in Sources */,
+				7888FD0917A77B1A00DE9F8B /* LeapListener.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

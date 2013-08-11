@@ -16,15 +16,22 @@
 #include "Networking.h"
 #include "Sound.h"
 
+#include "Leap.h"
+#include "LeapListener.h"
+
 // memory leak detection
 //#include <vld.h>
 
 using namespace std;
 using namespace glm;
+using namespace Leap;
 
 #ifndef M_PI
 #define M_PI 3.14159265359
 #endif
+
+static Controller controller;
+static LeapListener listener;
 
 static Menu *menu, *start, *credits, *hscores, *nextLevel, *connect, *hscoreEntry;
 static Scene *scene;
@@ -55,6 +62,49 @@ static string toString(T t) {
 	s.precision(2);
 	s << t;
 	return s.str();
+}
+
+void moveShip()
+{
+    const Frame frame = controller.frame();
+    if (frame.hands().empty() || !scene->level)
+        return;
+    
+    const Hand leftHand = frame.hands().leftmost();
+    const Hand rightHand = frame.hands().rightmost();
+    
+    // Alternative flight control
+    /* const Vector normal = hand.palmNormal();
+    const Vector direction = hand.direction();
+    
+    // Calculate the hand's pitch, roll, and yaw angles
+    std::cout << "Hand pitch: " << direction.pitch() * RAD_TO_DEG << " degrees, "
+    << "roll: " << normal.roll() * RAD_TO_DEG << " degrees, "
+    << "yaw: " << direction.yaw() * RAD_TO_DEG << " degrees" << std::endl << std::endl;
+    
+    scene->keyUp = (direction.pitch() * RAD_TO_DEG > 5.0f);
+    scene->keyDown = (direction.pitch() * RAD_TO_DEG < -5.0f);
+    scene->keyLeft = ((normal.roll() * RAD_TO_DEG) > 15.0f);
+    scene->keyRight = ((normal.roll() * RAD_TO_DEG) < -15.0f);*/
+    
+    Vector position = leftHand.palmPosition();
+    vec2 shipOffset = vec2(0.06 * (position.x + 100), 0.06 * (position.y - 120));
+	scene->level->ship->SetOffset(shipOffset);
+    
+    if (frame.hands().count() > 1) {
+        hud->reticleVisible = true;
+        position = rightHand.palmPosition();
+        vec2 reticleOffset = vec2(5.0 * (position.x - 100), -5.0 * (position.y - 120));
+        hud->SetReticlePosition(reticleOffset);
+        
+        if (rightHand.fingers().count() > 3) {
+            reticleOffset.y *= -1;
+            scene->HandleHand(reticleOffset);
+        }
+	}
+    else {
+        hud->reticleVisible = false;
+    }
 }
 
 void GLFWCALL KeyCallback(int key, int action)
@@ -424,6 +474,8 @@ int main(int argc, char *argv[])
 	}
 	
 	Sound::Init();
+    
+    controller.addListener(listener);
 
 	// using opengl version 2.1
 	glfwOpenWindowHint(GLFW_FSAA_SAMPLES, 2);
@@ -491,6 +543,7 @@ int main(int argc, char *argv[])
         }
         
         if (gaming) {
+            moveShip();
             scene->Render();
             hud->Render();
             gaming = !scene->gameOver;
@@ -515,5 +568,6 @@ int main(int argc, char *argv[])
 		glfwSwapBuffers();
 	}
 	glfwTerminate();
+    controller.removeListener(listener);
 	return 0;
 }

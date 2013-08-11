@@ -7,6 +7,7 @@
 #endif
 
 #define START_HEALTH 10
+#define DEFAULT_FIRING_INTERVAL 0.015
 
 using namespace::std;
 using namespace::glm;
@@ -55,25 +56,28 @@ Ship::Ship(Model *model) : Flyable(model)
 {
     scale = 0.7;
 	health = START_HEALTH;
+    
+    firingRate = DEFAULT_FIRING_INTERVAL;
+    lastFireTime = 1;
+    
     cluster = new BulletCluster();
     cluster->SetOwner(this);
-    firingRate = 0.015;
-    lastFireTime = 1;
 }
 
 Ship::Ship(const string& filename) : Flyable(filename)
 {
     scale = 0.7;
     health = START_HEALTH;
+    
+    firingRate = DEFAULT_FIRING_INTERVAL;
+    lastFireTime = 1;
+    
     cluster = new BulletCluster();
     cluster->SetOwner(this);
-    firingRate = 0.015;
-    lastFireTime = 1;
 }
 
 Ship::~Ship()
 {
-    // cluster->SetOwner(NULL);
 }
 
 void Ship::AddBullet(glm::vec3 location, glm::vec3 velocity)
@@ -106,7 +110,6 @@ LaserShip::LaserShip(const string& filename) : Ship(filename)
 
 LaserShip::~LaserShip()
 {
-    Ship::~Ship();
     laser->SetOwner(NULL);
 }
 

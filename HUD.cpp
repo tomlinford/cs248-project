@@ -72,6 +72,12 @@ void HUD::RenderText()
 	font->Render(score.c_str(), -1, FTPoint(width / 2 - box.Upper().X() / 2, height - padding - font->Ascender()));
 }
 
+void HUD::SetReticlePosition(vec2 position)
+{
+    if (reticle)
+        reticle->SetPosition(vec3(position, 0.0));
+}
+
 void HUD::RenderDynamicElements()
 {
 	if (!minimap) {
@@ -88,7 +94,7 @@ void HUD::RenderDynamicElements()
 		Texture *tex = new Texture("reticle.bmp");
 		reticle = new Reticle(100, 100, tex);
 		reticle->SetProjection(width, height);
-		reticle->SetPosition(vec3(0.0f));
+		//reticle->SetPosition(vec3(0.0f));
 	}
 
 	if (!thunderCD) {
@@ -101,10 +107,12 @@ void HUD::RenderDynamicElements()
 
 	minimap->Draw(*p, scene);
 
-	if (scene->player == PLAYER2) {
+	// if (scene->player == PLAYER2) {
+    if (reticleVisible) {
 		reticle->Draw(*p, scene);
 		thunderCD->Draw(*p, scene);
-	}
+    }
+	// }
 }
 
 void HUD::Resize(int w, int h) {

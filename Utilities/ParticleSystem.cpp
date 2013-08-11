@@ -229,7 +229,6 @@ Laser::Laser(Object *o)
 
 Laser::~Laser()
 {
-    ParticleCluster::~ParticleCluster();
     owner = NULL;
 }
 
@@ -249,7 +248,6 @@ void Laser::Update(float elapsedTime)
 
     lineWidth = 3.0 + rand(-2.0, 1.0);
     
-    /* Destructor polymorphism issue */
     vec3 position = owner->GetPosition();
     quat orientation = owner->GetOrientation();
     
@@ -319,7 +317,6 @@ bool BulletCluster::Intersects(Object *object)
 void BulletCluster::AddBullet(glm::vec3 l, glm::vec3 v)
 {
     lock_guard<std::mutex> lock(mutex);
-    
     particles.push_back(Particle(l, v, vec3(0), 1.0));
 }
 
@@ -374,14 +371,16 @@ void BulletCluster::Draw(const Program& p, const glm::mat4& viewProjection,
 
 void ParticleSystem::Update(float elapsedTime)
 {
+    /** Synchronization issue here? */
 	for (int i = 0; i < clusters.size(); i++ ) {
 		ParticleCluster *cluster = clusters[i];
 		if (!cluster->Valid()) {
             delete cluster;
 			clusters.erase(clusters.begin() + i--);
         }
-		else
+		else {
 			cluster->Update(elapsedTime - lastTime);
+        }
 	}
     
     lastTime = elapsedTime;
@@ -420,11 +419,22 @@ bool ParticleSystem::Intersects(Object *object)
 
 void ParticleSystem::Clear()
 {
+    /* TODO: Bullet clusters being deleted here - move delete to Flyable class? */
     for (int i = 0; i < clusters.size(); i++ ) {
 		ParticleCluster *cluster = clusters[i];
 		delete cluster;
 	}
     clusters.clear();
+}
+
+void ParticleSystem::RemoveCluster(ParticleCluster *cluster)
+{
+    for (int i = 0; i < clusters.size(); i++ ) {
+		if (clusters[i] == cluster) {
+            clusters.erase(clusters.begin() + i);
+            return;
+        }
+	}
 }
 
 void ParticleSystem::Draw(const Program& p, const glm::mat4& viewProjection,

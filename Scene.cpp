@@ -172,7 +172,7 @@ void Scene::UpdateFBO(GLuint width, GLuint height)
 /** Captures ship offset based on key presses. */
 void Scene::HandleKeys(float elapsedSeconds)
 {
-	float interval = 3 * (elapsedSeconds - lastTime);
+	/* float interval = 3 * (elapsedSeconds - lastTime);
 	if (level->sphere &&
 		level->ship &&
 		glm::distance(level->ship->GetPosition(), level->sphere->GetPosition()) < level->sphere->GetScale())
@@ -190,7 +190,28 @@ void Scene::HandleKeys(float elapsedSeconds)
 		shipOffset.y -= interval;
 
 	shipOffset = glm::clamp(shipOffset, vec2(-MAX_X, -MAX_Y), vec2(MAX_X, MAX_Y));
-	level->ship->SetOffset(shipOffset);
+	level->ship->SetOffset(shipOffset); */
+}
+
+/** Fires in the direction pointed to by the hand */
+void Scene::HandleHand(glm::vec2 position)
+{
+    if (level->ship) {
+        vec2 target = vec2(512, 384) + position;
+		vec3 selected = glm::unProject(vec3(target, 1.0),
+                                       view,
+                                       projection,
+                                       vec4(0, 0, 1024 ,768));
+		vec3 velocity = normalize(selected - level->ship->GetPosition());
+		level->ship->AddBullet(level->ship->GetPosition() + velocity, 20.0f * velocity);
+		Networking::AddBullet(level->ship->GetPosition() + velocity, 20.0f * velocity);
+		Sound::PlayLaser();
+	}
+	/*if (mouseRight && level->ship && lastTime - lastLightning > 5.f) {
+		AddLightning(false);
+		lastLightning = lastTime;
+		Networking::AddLightning();
+	}*/
 }
 
 /** Adds bullets based on mouse presses. */
@@ -346,11 +367,11 @@ void Scene::UpdateView(float elapsedSeconds)
 	}
 
 	// Minimap view (orthogonal overhead cam)
-	vec3 position = level->ship->GetPosition();
+	/* vec3 position = level->ship->GetPosition();
 
 	SetMinimapView(lookAt(position + vec3(0.0, 0.5, 0.0),
 		position,
-		vec3(0, 0, -1)));
+		vec3(0, 0, -1))); */
 }
 
 /* Updates object positions in world based on elapsed
@@ -571,7 +592,7 @@ void Scene::RenderVelocityTexture()
 void Scene::PostProcess()
 {
 	// Motion blur
-	fbo->SetColorTexture(mblurTexture, GL_COLOR_ATTACHMENT3);
+	/*fbo->SetColorTexture(mblurTexture, GL_COLOR_ATTACHMENT3);
 	fbo->SetDrawTarget(GL_COLOR_ATTACHMENT3);
 	mblur->Use();
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -579,9 +600,10 @@ void Scene::PostProcess()
 	mblur->SetUniform("sceneDepthTexture", depthTexture, GL_TEXTURE1);
 	mblur->SetUniform("velocityTexture", velocityTexture, GL_TEXTURE2);
 	screen->Draw(*mblur);
-	mblur->Unuse();
+	mblur->Unuse();*/
 
 	// Horizontal blur
+    fbo->Use();
 	fbo->SetColorTexture(hblurTexture, GL_COLOR_ATTACHMENT0);
 	fbo->SetDrawTarget(GL_COLOR_ATTACHMENT0);
 	hblur->Use();
@@ -603,7 +625,7 @@ void Scene::PostProcess()
 
 	// Draw to screen
 	screenProgram->Use();
-	screenProgram->SetUniform("scene", mblurTexture, GL_TEXTURE0);
+	screenProgram->SetUniform("scene", sceneTexture, GL_TEXTURE0);
 	screenProgram->SetUniform("postProcess", vblurTexture, GL_TEXTURE1);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	screen->Draw(*screenProgram);
@@ -622,7 +644,7 @@ void Scene::Render()
 	RenderGlowMap();
 	RenderScene();
 	//RenderMinimap();
-	RenderVelocityTexture();
+	//RenderVelocityTexture();
 	PostProcess();
 
 	prevViewProjection = viewProjection;

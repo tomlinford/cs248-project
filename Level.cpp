@@ -121,7 +121,7 @@ void Level::LoadMap(float *terrainMap, size_t size, int x, int y) {
 }
 
 void Level::LoadEnemyShip(float timeOffset, glm::vec2 offset) {
-	Ship *ship = new Ship("Models/ship.obj");
+	Ship *ship = new MissileShip("Models/ship.obj");
 	ship->SetColor(vec3(0.9, 0.0, 0.0));
 	ship->SetTimeOffset(timeOffset);
 	ship->SetOffset(offset);
@@ -178,9 +178,14 @@ void Level::CheckObjectParticleCollisions(float elapsedSeconds, ParticleSystem& 
 			continue;
 
 		score += obj->GetValue();
+        LaserShip *ls = dynamic_cast<LaserShip *>(obj);
+        if (ls)
+            ps.RemoveCluster(ls->GetLaser());
+        
 		ps.AddExplosionCluster(obj->GetPosition(), obj->GetColor());
-		delete obj;
+        Object *temp = obj;
 		obj = NULL;
+        delete temp;
 		objects.erase(objects.begin() + i--);
 	}
     
@@ -206,14 +211,24 @@ void Level::CheckObjectShipCollisions(ParticleSystem& ps, Frustum& f)
 		Ship *enemy = dynamic_cast<Ship *>(obj);
 		Missile *missile = dynamic_cast<Missile *>(obj);
 
-		if (enemy) ship->AddDamage(0.2);
-		else if (missile) ship->AddDamage(0.5);
+		if (enemy) {
+            ship->AddDamage(0.2);
+            
+            LaserShip *ls = dynamic_cast<LaserShip *>(enemy);
+            if (ls)
+                ps.RemoveCluster(ls->GetLaser());
+        }
+		else if (missile)
+            ship->AddDamage(0.5);
 
 		score += obj->GetValue();
 		ps.AddExplosionCluster(obj->GetPosition(), obj->GetColor());
-		delete obj;
-		obj = NULL;
-		objects.erase(objects.begin() + i--);
+        
+        objects.erase(objects.begin() + i--);
+        
+        Object *temp = obj;
+        obj = NULL;
+		delete temp;
 	}
 }
 
